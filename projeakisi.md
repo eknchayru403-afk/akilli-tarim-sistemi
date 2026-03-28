@@ -10,5 +10,13 @@ Bu dosya, ekibimizin haftalık ilerlemesini ve görev dağılımlarını takip e
 * **[İsmet Mert Uysal]:** (Görev bekleniyor)
 
 ---
-## 2. Hafta
-* *Henüz planlanmadı.*
+## 3. Hafta (22 - 28 Mart)
+[Hayrunnisa Ekinci] (Scrum Master): - Sensör verilerini analiz eden ve tarımsal faaliyetleri (sulama, havalandırma) optimize eden karar destek algoritması geliştirildi.
+Hocanın direktifi doğrultusunda projenin çalışabilirliğini kanıtlayan sanal tarla simülasyonu (Java) kodlandı ve GitHub'a yüklendi.
+Hafta dökümanları Hafta_1 klasörü altında arşivlenerek repo düzeni sağlandı.
+
+[Betül Bilhan]: (Görev bekleniyor)
+[İrfan Duman]: (Görev bekleniyor)
+[Ahmed Osman]: (Görev bekleniyor)
+[İsmet Mert Uysal]: (Görev bekleniyor)
+[Wessam Alhamidi]: (Görev bekleniyor)
