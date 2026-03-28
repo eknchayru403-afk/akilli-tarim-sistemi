@@ -15,7 +15,9 @@ Bu dosya, ekibimizin haftalık ilerlemesini ve görev dağılımlarını takip e
 Hocanın direktifi doğrultusunda projenin çalışabilirliğini kanıtlayan sanal tarla simülasyonu (Java) kodlandı ve GitHub'a yüklendi.
 Hafta dökümanları Hafta_1 klasörü altında arşivlenerek repo düzeni sağlandı.
 
-[Betül Bilhan]: (Görev bekleniyor)
+[Betül Bilhan]:sistem için gerekli kapsam analizi ve teknoloji araştırması sonrası winframe tasarımlarımı tamamlayıp bunu raporlaştırdım.
+
+
 [İrfan Duman]: (Görev bekleniyor)
 [Ahmed Osman]: (Görev bekleniyor)
 [İsmet Mert Uysal]: (Görev bekleniyor)
