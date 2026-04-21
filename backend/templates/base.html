@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Akıllı Tarım Yönetim Sistemi — Yapay zeka destekli tarla analizi ve ürün önerisi platformu.">
+    <title>{% block title %}ATYS{% endblock %} — Akıllı Tarım</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% block body_wrapper %}
+    {% if user.is_authenticated %}
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-brand">
+            <i class="bi bi-cloud-sun-fill"></i>
+            <span>ATYS</span>
+        </div>
+        <ul class="sidebar-nav">
+            <li class="sidebar-item {% if request.resolver_match.app_name == 'dashboard' %}active{% endif %}">
+                <a href="{% url 'dashboard:index' %}">
+                    <i class="bi bi-grid-1x2-fill"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-item {% if request.resolver_match.app_name == 'fields' %}active{% endif %}">
+                <a href="{% url 'fields:list' %}">
+                    <i class="bi bi-map-fill"></i>
+                    <span>Tarlalarım</span>
+                </a>
+            </li>
+            <li class="sidebar-item {% if request.resolver_match.app_name == 'analysis' %}active{% endif %}">
+                <a href="{% url 'analysis:history' %}">
+                    <i class="bi bi-clipboard-data-fill"></i>
+                    <span>Analizler</span>
+                </a>
+            </li>
+            <li class="sidebar-item {% if request.resolver_match.app_name == 'prices' %}active{% endif %}">
+                <a href="{% url 'prices:list' %}">
+                    <i class="bi bi-currency-exchange"></i>
+                    <span>Fiyatlar</span>
+                </a>
+            </li>
+            <li class="sidebar-item {% if request.resolver_match.app_name == 'weather' %}active{% endif %}">
+                <a href="{% url 'weather:index' %}">
+                    <i class="bi bi-cloud-sun"></i>
+                    <span>Hava Durumu</span>
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="{% url 'accounts:profile' %}" class="sidebar-user">
+                <i class="bi bi-person-circle"></i>
+                <span>{{ user.get_full_name|default:user.username }}</span>
+            </a>
+            <a href="{% url 'accounts:logout' %}" class="sidebar-logout" title="Çıkış">
+                <i class="bi bi-box-arrow-right"></i>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <button class="sidebar-toggle d-md-none" onclick="document.getElementById('sidebar').classList.toggle('show')">
+                <i class="bi bi-list"></i>
+            </button>
+            <h1 class="topbar-title">{% block page_title %}Dashboard{% endblock %}</h1>
+            <div class="topbar-actions">
+                <a href="{% url 'fields:create' %}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-lg"></i> Tarla Ekle
+                </a>
+            </div>
+        </header>
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="container-fluid px-4 pt-3">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {% if message.tags == 'success' %}<i class="bi bi-check-circle-fill me-2"></i>
+                {% elif message.tags == 'warning' %}<i class="bi bi-exclamation-triangle-fill me-2"></i>
+                {% elif message.tags == 'error' %}<i class="bi bi-x-circle-fill me-2"></i>
+                {% else %}<i class="bi bi-info-circle-fill me-2"></i>{% endif %}
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Page Content -->
+        <div class="container-fluid px-4 py-3">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    {% else %}
+    <!-- Auth pages (no sidebar) -->
+    <div class="auth-wrapper">
+        {% if messages %}
+        <div class="container pt-3">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% block auth_content %}{% endblock %}
+    </div>
+    {% endif %}
+    {% endblock %}
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <!-- Custom JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

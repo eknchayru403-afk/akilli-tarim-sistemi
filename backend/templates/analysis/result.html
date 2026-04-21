@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Analiz Sonucu{% endblock %}
+{% block page_title %}Analiz Sonucu — {{ analysis.field.name }}{% endblock %}
+
+{% block content %}
+<!-- Soil Data -->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-moisture me-2"></i>Toprak Verileri
+        <span class="badge bg-{% if analysis.source == 'simulation' %}info{% else %}success{% endif %} ms-2">{{ analysis.get_source_display }}</span>
+    </div>
+    <div class="card-body">
+        <div class="soil-grid">
+            <div class="soil-item">
+                <div class="value">{{ analysis.nitrogen }}</div>
+                <div class="label">Azot (N)</div>
+            </div>
+            <div class="soil-item">
+                <div class="value">{{ analysis.phosphorus }}</div>
+                <div class="label">Fosfor (P)</div>
+            </div>
+            <div class="soil-item">
+                <div class="value">{{ analysis.potassium }}</div>
+                <div class="label">Potasyum (K)</div>
+            </div>
+            <div class="soil-item">
+                <div class="value">{{ analysis.temperature }}°</div>
+                <div class="label">Sıcaklık</div>
+            </div>
+            <div class="soil-item">
+                <div class="value">%{{ analysis.humidity }}</div>
+                <div class="label">Nem</div>
+            </div>
+            <div class="soil-item">
+                <div class="value">{{ analysis.ph }}</div>
+                <div class="label">pH</div>
+            </div>
+            <div class="soil-item">
+                <div class="value">{{ analysis.rainfall }}</div>
+                <div class="label">Yağış (mm)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recommendations -->
+<h4 class="fw-bold mb-3"><i class="bi bi-stars me-2 text-warning"></i>Ürün Önerileri</h4>
+
+{% if recommendations %}
+<div class="row g-4">
+    {% for rec in recommendations %}
+    <div class="col-md-4">
+        <div class="card rec-card rank-{{ rec.rank }}">
+            <div class="card-body">
+                <span class="rec-rank-badge rank-{{ rec.rank }}">{{ rec.rank }}</span>
+                <div class="rec-crop-name">{{ rec.crop_name_tr }}</div>
+                <small class="text-muted">({{ rec.crop_name }})</small>
+
+                <div class="rec-confidence">%{{ rec.confidence }}</div>
+                <small class="text-muted">Güven Skoru</small>
+
+                <hr>
+
+                <div class="d-flex justify-content-between mt-3">
+                    <div>
+                        <div class="fw-bold">{{ rec.estimated_yield_kg|floatformat:0 }} kg</div>
+                        <small class="text-muted">Tahmini Verim</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-success">{{ rec.estimated_revenue_tl|floatformat:0 }} ₺</div>
+                        <small class="text-muted">Tahmini Kazanç</small>
+                    </div>
+                </div>
+
+                <form method="post" action="{% url 'analysis:plant' analysis.pk rec.pk %}" class="mt-3">
+                    {% csrf_token %}
+                    {% if analysis.field.status == 'planted' and analysis.field.current_crop == rec.crop_name_tr %}
+                        <button type="button" class="btn btn-success btn-sm w-100" disabled>
+                            <i class="bi bi-check-circle me-1"></i>Şu An Ekili
+                        </button>
+                    {% else %}
+                        <button type="submit" class="btn btn-{% if rec.rank == 1 %}primary{% else %}outline-primary{% endif %} btn-sm w-100" {% if analysis.field.status == 'planted' %}onclick="return confirm('Mevcutta ekili olan {{ analysis.field.current_crop }} sökülüp yerine {{ rec.crop_name_tr }} ekilecektir. Onaylıyor musunuz?')"{% endif %}>
+                            {% if analysis.field.status == 'planted' %}
+                                <i class="bi bi-arrow-repeat me-1"></i>Bununla Değiştir
+                            {% else %}
+                                <i class="bi bi-tree me-1"></i>Bu Ürünü Ek
+                            {% endif %}
+                        </button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body empty-state">
+        <i class="bi bi-exclamation-circle"></i>
+        <h4>Öneri oluşturulamadı</h4>
+        <p>ML modeli henüz eğitilmemiş olabilir. Admin'den <code>python manage.py train_model</code> komutunu çalıştırmasını isteyin.</p>
+    </div>
+</div>
+{% endif %}
+
+<div class="mt-4">
+    <a href="{% url 'fields:detail' analysis.field.pk %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Tarlaya Dön
+    </a>
+    <a href="{% url 'analysis:history' %}" class="btn btn-outline-primary">
+        <i class="bi bi-clock-history me-1"></i>Tüm Analizler
+    </a>
+</div>
+{% endblock %}

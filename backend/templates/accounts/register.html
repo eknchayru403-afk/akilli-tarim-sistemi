@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Kayıt Ol{% endblock %}
+
+{% block auth_content %}
+<div class="auth-card">
+    <div class="auth-brand">
+        <i class="bi bi-cloud-sun-fill"></i>
+        <h2>Hesap Oluştur</h2>
+        <p>Akıllı tarım yönetimine başlayın</p>
+    </div>
+
+    <form method="post" id="register-form">
+        {% csrf_token %}
+        {{ form|crispy }}
+
+        <button type="submit" class="btn btn-primary w-100 mt-3 py-2">
+            <i class="bi bi-person-plus-fill me-2"></i>Kayıt Ol
+        </button>
+    </form>
+
+    <div class="text-center mt-3">
+        <span class="text-muted">Zaten hesabınız var mı?</span>
+        <a href="{% url 'accounts:login' %}" class="text-decoration-none fw-semibold" style="color: var(--primary);">
+            Giriş Yap
+        </a>
+    </div>
+</div>
+{% endblock %}

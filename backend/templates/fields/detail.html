@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ field.name }}{% endblock %}
+{% block page_title %}{{ field.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .revenue-hero {
+        background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 50%, #43A047 100%);
+        color: white;
+        border-radius: var(--border-radius);
+        padding: 28px;
+        text-align: center;
+        margin-bottom: 16px;
+    }
+    .revenue-hero .amount {
+        font-size: 2.4rem;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+    .revenue-hero .subtitle {
+        opacity: 0.85;
+        font-size: 0.9rem;
+        margin-top: 4px;
+    }
+    .revenue-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 16px;
+    }
+    .revenue-detail-item {
+        text-align: center;
+        padding: 12px 8px;
+        background: rgba(255,255,255,0.12);
+        border-radius: 8px;
+    }
+    .revenue-detail-item .val {
+        font-size: 1.15rem;
+        font-weight: 700;
+    }
+    .revenue-detail-item .lbl {
+        font-size: 0.75rem;
+        opacity: 0.8;
+        margin-top: 2px;
+    }
+    .revenue-compare-row {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        border-bottom: 1px solid #f1f5f9;
+        transition: background 0.2s;
+    }
+    .revenue-compare-row:hover { background: #f8fafc; }
+    .revenue-compare-row:last-child { border-bottom: none; }
+    .revenue-bar-container {
+        flex: 1;
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 4px;
+        margin: 0 12px;
+        overflow: hidden;
+    }
+    .revenue-bar {
+        height: 100%;
+        border-radius: 4px;
+        background: var(--primary-gradient);
+        transition: width 0.6s ease;
+    }
+    .revenue-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 0.72rem;
+        font-weight: 600;
+    }
+    .revenue-badge.gold { background: rgba(255,215,0,0.15); color: #B8860B; }
+    .revenue-badge.silver { background: rgba(192,192,192,0.2); color: #696969; }
+    .revenue-badge.bronze { background: rgba(205,127,50,0.15); color: #8B4513; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Field Info -->
+    <div class="col-lg-4">
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-info-circle me-2"></i>Tarla Bilgileri</span>
+                <span class="field-status {{ field.status }}">{{ field.get_status_display }}</span>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr><td class="text-muted">Konum</td><td class="fw-semibold">{{ field.location|default:"-" }}</td></tr>
+                    <tr><td class="text-muted">Alan</td><td class="fw-semibold">{{ field.area_decar }} dekar</td></tr>
+                    <tr><td class="text-muted">Toprak</td><td class="fw-semibold">{{ field.get_soil_type_display }}</td></tr>
+                    <tr><td class="text-muted">Durum</td><td class="fw-semibold">{{ field.get_status_display }}</td></tr>
+                    {% if field.current_crop %}
+                    <tr><td class="text-muted">Ürün</td><td class="fw-semibold text-success">{{ field.current_crop }}</td></tr>
+                    {% endif %}
+                </table>
+
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{% url 'fields:update' field.pk %}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-pencil me-1"></i>Düzenle
+                    </a>
+                    <a href="{% url 'fields:delete' field.pk %}" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-trash me-1"></i>Sil
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="card">
+            <div class="card-header"><i class="bi bi-lightning-fill me-2 text-warning"></i>Hızlı İşlemler</div>
+            <div class="card-body d-grid gap-2">
+                <a href="{% url 'analysis:analyze' field.pk %}" class="btn btn-primary">
+                    <i class="bi bi-clipboard-data me-2"></i>Toprak Analizi Yap
+                </a>
+                <form method="post" action="{% url 'analysis:simulate' field.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-shuffle me-2"></i>Veri Simüle Et
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-lg-8">
+
+        <!-- ═══════ TARLA GELİR TAHMİNİ ═══════ -->
+        {% if revenue.has_data %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="bi bi-cash-stack me-2 text-success"></i>Tahmini Gelir — <strong>{{ field.name }}</strong> ({{ field.area_decar }} dekar)
+            </div>
+            <div class="card-body p-0">
+
+                {% if revenue.current_crop %}
+                <!-- Ekili ürün — ana gelir kartı -->
+                <div class="revenue-hero">
+                    <div style="font-size: 0.85rem; opacity: 0.8;">
+                        <i class="bi bi-flower1 me-1"></i>Mevcut Ürün: {{ revenue.current_crop.crop_name_tr }}
+                    </div>
+                    <div class="amount">{{ revenue.current_crop.total_revenue|floatformat:0 }} ₺</div>
+                    <div class="subtitle">Tahmini Toplam Gelir</div>
+                    <div class="revenue-detail-grid">
+                        <div class="revenue-detail-item">
+                            <div class="val">{{ revenue.current_crop.yield_per_decar|floatformat:0 }} kg</div>
+                            <div class="lbl">Verim / Dekar</div>
+                        </div>
+                        <div class="revenue-detail-item">
+                            <div class="val">{{ revenue.current_crop.total_yield_kg|floatformat:0 }} kg</div>
+                            <div class="lbl">Toplam Hasat</div>
+                        </div>
+                        <div class="revenue-detail-item">
+                            <div class="val">{{ revenue.current_crop.price_per_kg }} ₺/kg</div>
+                            <div class="lbl">Birim Fiyat</div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if revenue.recommendations %}
+                <!-- Analiz önerileri bazlı gelir karşılaştırması -->
+                <div class="p-3">
+                    <h6 class="fw-bold mb-3">
+                        <i class="bi bi-stars me-1 text-warning"></i>
+                        {% if revenue.current_crop %}Alternatif Öneriler{% else %}ML Öneri Bazlı Gelir Tahmini{% endif %}
+                    </h6>
+                    {% for rec in revenue.recommendations %}
+                    <div class="revenue-compare-row">
+                        <div style="min-width: 30px;">
+                            <span class="revenue-badge {% if rec.rank == 1 %}gold{% elif rec.rank == 2 %}silver{% else %}bronze{% endif %}">
+                                #{{ rec.rank }}
+                            </span>
+                        </div>
+                        <div style="min-width: 100px;">
+                            <div class="fw-semibold">{{ rec.crop_name_tr }}</div>
+                            <small class="text-muted">%{{ rec.confidence|floatformat:1 }} güven</small>
+                        </div>
+                        <div class="revenue-bar-container">
+                            {% with max_rev=revenue.recommendations.0.total_revenue %}
+                            <div class="revenue-bar" style="width: {% widthratio rec.total_revenue max_rev 100 %}%"></div>
+                            {% endwith %}
+                        </div>
+                        <div style="min-width: 80px; text-align: center;">
+                            <div class="fw-bold" style="font-size: 0.85rem;">{{ rec.total_yield_kg|floatformat:0 }} kg</div>
+                            <small class="text-muted">{{ rec.yield_per_decar|floatformat:0 }} kg/dk</small>
+                        </div>
+                        <div style="min-width: 100px; text-align: right;">
+                            <div class="fw-bold text-success">{{ rec.total_revenue|floatformat:0 }} ₺</div>
+                            <small class="text-muted">{{ rec.price_per_kg }} ₺/kg</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Tüm ürünler karşılaştırma tablosu -->
+                <div class="p-3 pt-0">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold mb-0">
+                            <i class="bi bi-bar-chart-line me-1"></i>Bu Tarla İçin Tüm Ürün Gelirleri
+                        </h6>
+                        <small class="text-muted">{{ field.area_decar }} dekar bazında</small>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Ürün</th>
+                                    <th class="text-center">Verim/Dekar</th>
+                                    <th class="text-center">Toplam Hasat</th>
+                                    <th class="text-center">Fiyat</th>
+                                    <th class="text-end">Tahmini Gelir</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for crop in revenue.all_crops %}
+                                <tr{% if revenue.current_crop and crop.crop_name == revenue.current_crop.crop_name %} class="table-success"{% endif %}>
+                                    <td>
+                                        <strong>{{ crop.crop_name_tr }}</strong>
+                                        {% if revenue.current_crop and crop.crop_name == revenue.current_crop.crop_name %}
+                                        <span class="badge bg-success ms-1" style="font-size: 0.65rem;">EKİLİ</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">{{ crop.yield_per_decar|floatformat:0 }} kg</td>
+                                    <td class="text-center">{{ crop.total_yield_kg|floatformat:0 }} kg</td>
+                                    <td class="text-center">{{ crop.price_per_kg }} ₺/kg</td>
+                                    <td class="text-end fw-bold text-success">{{ crop.total_revenue|floatformat:0 }} ₺</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Care Recommendations -->
+        {% if care_recommendations %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="bi bi-heart-pulse-fill me-2 text-danger"></i>Bakım Tavsiyeleri
+            </div>
+            <div class="card-body p-2">
+                {% for rec in care_recommendations %}
+                <div class="alert-card {{ rec.priority }}">
+                    <i class="bi bi-{% if rec.recommendation_type == 'irrigation' %}droplet-fill text-primary{% elif rec.recommendation_type == 'fertilization' %}flower1 text-success{% elif rec.recommendation_type == 'temperature' %}thermometer-half text-danger{% else %}moisture text-info{% endif %}" style="font-size: 1.2rem;"></i>
+                    <div style="flex: 1;">
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-semibold">{{ rec.get_recommendation_type_display }}</span>
+                            <span class="badge bg-{% if rec.priority == 'critical' %}danger{% elif rec.priority == 'high' %}warning{% else %}info{% endif %}">{{ rec.get_priority_display }}</span>
+                        </div>
+                        <div style="font-size: 0.88rem; margin-top: 4px;">{{ rec.message }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Recent Analyses -->
+        <div class="card">
+            <div class="card-header"><i class="bi bi-clock-history me-2"></i>Son Analizler</div>
+            {% if analyses %}
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Kaynak</th>
+                            <th>N/P/K</th>
+                            <th>pH</th>
+                            <th>Sonuç</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for analysis in analyses %}
+                        <tr>
+                            <td>{{ analysis.created_at|date:"d.m.Y H:i" }}</td>
+                            <td><span class="badge bg-{% if analysis.source == 'simulation' %}info{% else %}success{% endif %}">{{ analysis.get_source_display }}</span></td>
+                            <td>{{ analysis.nitrogen }}/{{ analysis.phosphorus }}/{{ analysis.potassium }}</td>
+                            <td>{{ analysis.ph }}</td>
+                            <td>
+                                {% with rec=analysis.recommendations.first %}
+                                    {% if rec %}{{ rec.crop_name_tr }}{% else %}-{% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><a href="{% url 'analysis:result' analysis.pk %}" class="btn btn-sm btn-outline-primary">Görüntüle</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="card-body text-center text-muted py-4">
+                <i class="bi bi-clipboard" style="font-size: 2rem;"></i>
+                <p class="mt-2">Henüz analiz yapılmamış</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Hava Durumu{% endblock %}
+{% block page_title %}Hava Durumu{% endblock %}
+
+{% block content %}
+<!-- Current weather -->
+<div class="weather-widget mb-4">
+    <div>
+        <i class="bi bi-{{ weather.icon }}" style="font-size: 3rem;"></i>
+    </div>
+    <div>
+        <div class="weather-temp">{{ weather.temp }}°C</div>
+        <div class="weather-condition">{{ weather.condition }}</div>
+        <small style="opacity: 0.8;">{{ weather.city }} — Şu an</small>
+    </div>
+</div>
+
+<!-- All cities -->
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-geo-alt-fill me-2"></i>Şehirlere Göre Hava Durumu
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            {% for city, data in all_weather.items %}
+            <div class="col-sm-6 col-md-4 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon {% if data.temp > 25 %}orange{% elif data.temp < 10 %}blue{% else %}green{% endif %}">
+                        <i class="bi bi-{{ data.icon }}"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value" style="font-size: 1.4rem;">{{ data.temp }}°C</div>
+                        <div class="stat-label">{{ city }}</div>
+                        <small class="text-muted">{{ data.condition }}</small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-info mt-3">
+    <i class="bi bi-info-circle me-2"></i>
+    Hava durumu verileri şu an statik olarak sağlanmaktadır. v2 sürümünde gerçek zamanlı API entegrasyonu planlanmaktadır.
+</div>
+{% endblock %}
