@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Geçmiş Analizler{% endblock %}
+{% block page_title %}Geçmiş Analizler{% endblock %}
+
+{% block content %}
+{% if analyses %}
+<div class="card">
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Tarla</th>
+                    <th>Kaynak</th>
+                    <th>N / P / K</th>
+                    <th>pH</th>
+                    <th>Sıcaklık</th>
+                    <th>Önerilen Ürün</th>
+                    <th>Skor</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for analysis in analyses %}
+                <tr>
+                    <td>{{ analysis.created_at|date:"d.m.Y H:i" }}</td>
+                    <td><strong>{{ analysis.field.name }}</strong></td>
+                    <td><span class="badge bg-{% if analysis.source == 'simulation' %}info{% else %}success{% endif %}">{{ analysis.get_source_display }}</span></td>
+                    <td>{{ analysis.nitrogen }} / {{ analysis.phosphorus }} / {{ analysis.potassium }}</td>
+                    <td>{{ analysis.ph }}</td>
+                    <td>{{ analysis.temperature }}°C</td>
+                    <td>
+                        {% with rec=analysis.recommendations.first %}
+                            {% if rec %}<span class="fw-semibold text-success">{{ rec.crop_name_tr }}</span>{% else %}-{% endif %}
+                        {% endwith %}
+                    </td>
+                    <td>
+                        {% with rec=analysis.recommendations.first %}
+                            {% if rec %}%{{ rec.confidence }}{% else %}-{% endif %}
+                        {% endwith %}
+                    </td>
+                    <td><a href="{% url 'analysis:result' analysis.pk %}" class="btn btn-sm btn-outline-primary">Detay</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body empty-state">
+        <i class="bi bi-clipboard-data"></i>
+        <h4>Henüz analiz yapılmamış</h4>
+        <p>Bir tarlanızda toprak analizi yaparak başlayın.</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

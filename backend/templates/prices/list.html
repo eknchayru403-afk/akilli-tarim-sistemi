@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Ürün Fiyatları{% endblock %}
+{% block page_title %}Ürün Fiyatları{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-currency-exchange me-2"></i>TMO Referans Fiyatları
+    </div>
+    {% if prices %}
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Ürün</th>
+                    <th>Ürün (EN)</th>
+                    <th>Fiyat (TL/kg)</th>
+                    <th>Ort. Verim (kg/ha)</th>
+                    <th>Ort. Gelir (TL/ha)</th>
+                    <th>Son Güncelleme</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for price in prices %}
+                <tr>
+                    <td><strong>{{ price.crop_name_tr }}</strong></td>
+                    <td class="text-muted">{{ price.crop_name }}</td>
+                    <td class="fw-semibold">{{ price.price_per_kg }} ₺</td>
+                    <td>{{ price.avg_yield_per_hectare|floatformat:0 }} kg</td>
+                    <td class="text-success fw-bold">
+                        {% widthratio price.price_per_kg 1 price.avg_yield_per_hectare as revenue %}
+                        {{ revenue|floatformat:0 }} ₺
+                    </td>
+                    <td class="text-muted">{{ price.updated_at|date:"d.m.Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="card-body empty-state">
+        <i class="bi bi-currency-exchange"></i>
+        <h4>Fiyat verisi yüklenmemiş</h4>
+        <p><code>python manage.py load_prices</code> komutu ile yükleyebilirsiniz.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

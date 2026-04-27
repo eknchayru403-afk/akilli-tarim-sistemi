@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Tarlalarım{% endblock %}
+{% block page_title %}Tarlalarım{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <p class="text-muted mb-0">Toplam {{ fields|length }} tarla</p>
+    <a href="{% url 'fields:create' %}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Yeni Tarla Ekle
+    </a>
+</div>
+
+{% if fields %}
+<div class="row g-3">
+    {% for field in fields %}
+    <div class="col-md-6 col-xl-4">
+        <div class="card field-card {{ field.status }}" style="cursor: pointer;" onclick="window.location='{% url 'fields:detail' field.pk %}'">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="fw-bold mb-0">{{ field.name }}</h5>
+                    <span class="field-status {{ field.status }}">
+                        <i class="bi bi-{% if field.status == 'planted' %}tree-fill{% else %}geo-alt{% endif %}"></i>
+                        {{ field.get_status_display }}
+                    </span>
+                </div>
+                {% if field.location %}
+                <p class="text-muted mb-2"><i class="bi bi-geo-alt me-1"></i>{{ field.location }}</p>
+                {% endif %}
+                <div class="d-flex gap-3 mb-2">
+                    <span><i class="bi bi-rulers me-1"></i><strong>{{ field.area_decar }}</strong> dekar</span>
+                    <span><i class="bi bi-moisture me-1"></i>{{ field.get_soil_type_display }}</span>
+                </div>
+                {% if field.current_crop %}
+                <div class="mt-2 text-success fw-semibold">
+                    <i class="bi bi-flower1 me-1"></i>{{ field.current_crop }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body empty-state">
+        <i class="bi bi-map"></i>
+        <h4>Henüz tarla eklenmemiş</h4>
+        <p>İlk tarlanızı ekleyerek başlayın</p>
+        <a href="{% url 'fields:create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>İlk Tarlamı Ekle
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

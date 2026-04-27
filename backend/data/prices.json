@@ -1,0 +1,14 @@
+{
+    "wheat":       {"fiyat_tl_kg": 9.50,  "label_tr": "Buğday",    "birim": "kg"},
+    "maize":       {"fiyat_tl_kg": 7.80,  "label_tr": "Mısır",     "birim": "kg"},
+    "cotton":      {"fiyat_tl_kg": 32.00, "label_tr": "Pamuk",     "birim": "kg"},
+    "sunflower":   {"fiyat_tl_kg": 18.50, "label_tr": "Ayçiçeği",  "birim": "kg"},
+    "rice":        {"fiyat_tl_kg": 45.00, "label_tr": "Pirinç",    "birim": "kg"},
+    "chickpea":    {"fiyat_tl_kg": 55.00, "label_tr": "Nohut",     "birim": "kg"},
+    "lentil":      {"fiyat_tl_kg": 48.00, "label_tr": "Mercimek",  "birim": "kg"},
+    "apple":       {"fiyat_tl_kg": 15.00, "label_tr": "Elma",      "birim": "kg"},
+    "grapes":      {"fiyat_tl_kg": 25.00, "label_tr": "Üzüm",     "birim": "kg"},
+    "watermelon":  {"fiyat_tl_kg": 5.00,  "label_tr": "Karpuz",    "birim": "kg"},
+    "pomegranate": {"fiyat_tl_kg": 20.00, "label_tr": "Nar",       "birim": "kg"},
+    "orange":      {"fiyat_tl_kg": 12.00, "label_tr": "Portakal",  "birim": "kg"}
+}

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Toprak Analizi — {{ field.name }}{% endblock %}
+{% block page_title %}Toprak Analizi{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-clipboard-data-fill me-2"></i>{{ field.name }} — Toprak Değerleri Girin
+            </div>
+            <div class="card-body">
+                <form method="post" id="analysis-form">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Azot (N)</label>
+                            {{ form.nitrogen }}
+                            {% if form.nitrogen.errors %}<div class="text-danger small mt-1">{{ form.nitrogen.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Fosfor (P)</label>
+                            {{ form.phosphorus }}
+                            {% if form.phosphorus.errors %}<div class="text-danger small mt-1">{{ form.phosphorus.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Potasyum (K)</label>
+                            {{ form.potassium }}
+                            {% if form.potassium.errors %}<div class="text-danger small mt-1">{{ form.potassium.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Sıcaklık (°C)</label>
+                            {{ form.temperature }}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Nem (%)</label>
+                            {{ form.humidity }}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">pH</label>
+                            {{ form.ph }}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Yağış (mm)</label>
+                            {{ form.rainfall }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search me-1"></i>Analiz Et
+                        </button>
+                        <a href="{% url 'fields:detail' field.pk %}" class="btn btn-outline-secondary">İptal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
