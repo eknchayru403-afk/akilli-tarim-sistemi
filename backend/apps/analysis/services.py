@@ -4,10 +4,15 @@ Analysis servisleri — iş mantığı katmanı.
 SimulationService: CSV'den sensör verisi simüle eder.
 AnalysisService: ML modeli ile ürün tahmini yapar.
 CareAdvisor: Kural tabanlı bakım tavsiyesi üretir.
+
+Performans iyileştirmeleri:
+- SimulationService: CSV DataFrame sınıf düzeyinde önbelleklenir
+  (her simülasyonda dosya I/O ve pandas parse işlemi engellenir).
+- CareAdvisor: bulk_create ile tek INSERT sorgusu.
 """
 
 import logging
-import random
+import threading
 
 import pandas as pd
 from django.conf import settings
@@ -24,10 +29,44 @@ logger = logging.getLogger(__name__)
 class SimulationService:
     """CSV'den rastgele sensör verisi simüle eder."""
 
+    # Sınıf düzeyinde DataFrame önbelleği — CSV dosyası her çağrıda yeniden okunmaz
+    _cached_df = None
+    _cache_lock = threading.Lock()
+
+    @classmethod
+    def _get_dataframe(cls) -> pd.DataFrame:
+        """
+        CSV DataFrame'ini döndürür; ilk çağrıda yükler, sonrakilerinde cache'ten.
+
+        Thread-safe: _cache_lock ile korunur.
+
+        Returns:
+            Türkiye mahsulleri filtrelenmiş DataFrame.
+        """
+        if cls._cached_df is not None:
+            return cls._cached_df
+
+        with cls._cache_lock:
+            # Double-checked locking
+            if cls._cached_df is not None:
+                return cls._cached_df
+
+            csv_path = settings.DATA_DIR / 'Crop_recommendation.csv'
+            df = pd.read_csv(csv_path)
+            cls._cached_df = df[df['label'].isin(TURKEY_CROP_LABELS)].copy()
+            logger.info(
+                "Simülasyon CSV cache'e yüklendi: %d satır",
+                len(cls._cached_df),
+            )
+            return cls._cached_df
+
     @staticmethod
     def simulate_sensor_data(field: Field) -> SoilAnalysis:
         """
         CSV'den rastgele bir satır seçip SoilAnalysis kaydı oluşturur.
+
+        Optimizasyon: CSV dosyası sadece ilk çağrıda okunur, sonraki
+        çağrılarda class-level cache'ten alınır.
 
         Args:
             field: Simülasyon yapılacak tarla.
@@ -35,11 +74,7 @@ class SimulationService:
         Returns:
             Oluşturulan SoilAnalysis kaydı.
         """
-        csv_path = settings.DATA_DIR / 'Crop_recommendation.csv'
-        df = pd.read_csv(csv_path)
-
-        # Türkiye mahsullerini filtrele
-        df = df[df['label'].isin(TURKEY_CROP_LABELS)]
+        df = SimulationService._get_dataframe()
 
         # Rastgele bir satır seç
         row = df.sample(n=1).iloc[0]
@@ -93,9 +128,9 @@ class AnalysisService:
             area_hectare=area_hectare,
         )
 
-        recommendations = []
-        for pred in predictions:
-            rec = CropRecommendation.objects.create(
+        # bulk_create ile tek INSERT sorgusu (N adet INSERT yerine)
+        recommendation_objects = [
+            CropRecommendation(
                 analysis=soil_analysis,
                 crop_name=pred['crop_name'],
                 crop_name_tr=pred['crop_name_tr'],
@@ -104,7 +139,9 @@ class AnalysisService:
                 estimated_revenue_tl=pred['estimated_revenue_tl'],
                 rank=pred['rank'],
             )
-            recommendations.append(rec)
+            for pred in predictions
+        ]
+        recommendations = CropRecommendation.objects.bulk_create(recommendation_objects)
 
         logger.info(
             "Analiz tamamlandı: %d öneri oluşturuldu",
@@ -124,6 +161,8 @@ class CareAdvisor:
         """
         Toprak verilerine göre bakım tavsiyeleri üretir.
 
+        Optimizasyon: bulk_create ile tek INSERT sorgusu.
+
         Args:
             field: Tarla.
             analysis: Son toprak analizi.
@@ -134,7 +173,6 @@ class CareAdvisor:
         # Eski tavsiyeleri temizle
         field.care_recommendations.filter(is_done=False).delete()
 
-        recommendations = []
         checks = [
             CareAdvisor._check_humidity,
             CareAdvisor._check_ph,
@@ -145,13 +183,19 @@ class CareAdvisor:
             CareAdvisor._check_rainfall,
         ]
 
+        # Tüm kontrolleri topla
+        recommendation_objects = []
         for check_fn in checks:
             result = check_fn(analysis)
             if result:
-                rec = CareRecommendation.objects.create(
-                    field=field, **result,
+                recommendation_objects.append(
+                    CareRecommendation(field=field, **result)
                 )
-                recommendations.append(rec)
+
+        # bulk_create ile tek INSERT
+        recommendations = []
+        if recommendation_objects:
+            recommendations = CareRecommendation.objects.bulk_create(recommendation_objects)
 
         logger.info(
             "%s için %d bakım tavsiyesi üretildi",

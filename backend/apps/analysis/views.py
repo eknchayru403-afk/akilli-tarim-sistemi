@@ -1,5 +1,10 @@
 """
 Analysis views — Toprak analizi, simülasyon ve sonuç görüntüleme.
+
+Performans iyileştirmeleri:
+- analysis_result: select_related('field') eklendi
+- plant_crop: select_related('field') ile field erişimi optimize edildi
+- Dashboard cache invalidation eklendi (ekim operasyonu)
 """
 
 import logging
@@ -79,8 +84,14 @@ def simulate_data(request, field_pk: int):
 @login_required
 def analysis_result(request, pk: int):
     """Analiz sonuçlarını görüntüler."""
-    analysis = get_object_or_404(SoilAnalysis, pk=pk, field__user=request.user)
-    recommendations = CropRecommendation.objects.filter(analysis=analysis)
+    analysis = get_object_or_404(
+        SoilAnalysis.objects.select_related('field'),
+        pk=pk,
+        field__user=request.user,
+    )
+    recommendations = CropRecommendation.objects.filter(
+        analysis=analysis,
+    ).order_by('rank')
 
     return render(request, 'analysis/result.html', {
         'analysis': analysis,
@@ -103,7 +114,11 @@ def analysis_history(request):
 @login_required
 def plant_crop(request, analysis_pk: int, rec_pk: int):
     """Seçilen ürünü tarlaya eker (status → planted)."""
-    analysis = get_object_or_404(SoilAnalysis, pk=analysis_pk, field__user=request.user)
+    analysis = get_object_or_404(
+        SoilAnalysis.objects.select_related('field'),
+        pk=analysis_pk,
+        field__user=request.user,
+    )
     recommendation = get_object_or_404(CropRecommendation, pk=rec_pk, analysis=analysis)
 
     if request.method == 'POST':
@@ -117,9 +132,14 @@ def plant_crop(request, analysis_pk: int, rec_pk: int):
             
         field.status = 'planted'
         field.current_crop = recommendation.crop_name_tr
-        field.save()
+        field.save(update_fields=['status', 'current_crop', 'updated_at'])
 
         messages.success(request, msg)
+
+        # Dashboard cache'i temizle (tarla durumu değişti)
+        from apps.dashboard.services import DashboardService
+        DashboardService.invalidate_cache(request.user)
+
         return redirect('fields:detail', pk=field.pk)
 
     return redirect('analysis:result', pk=analysis_pk)

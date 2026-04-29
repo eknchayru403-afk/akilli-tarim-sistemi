@@ -77,6 +77,10 @@ class Field(TimeStampedModel):
         verbose_name = 'Tarla'
         verbose_name_plural = 'Tarlalar'
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', 'status'], name='idx_field_user_status'),
+            models.Index(fields=['user', '-created_at'], name='idx_field_user_created'),
+        ]
 
     def __str__(self) -> str:
         """Tarla adı ve durumunu döndürür."""

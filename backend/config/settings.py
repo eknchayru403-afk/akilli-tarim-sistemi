@@ -148,6 +148,20 @@ DATA_DIR = BASE_DIR / 'data'
 ML_DIR = BASE_DIR / 'ml'
 ML_MODELS_DIR = ML_DIR / 'saved_models'
 
+# Cache — LocMemCache (geliştirme), Redis'e geçiş için django-redis ekleyin
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'atys-cache',
+        'TIMEOUT': 300,  # 5 dakika varsayılan
+    }
+}
+
+# Uygulama önbellek süreleri (saniye)
+CACHE_TTL_PRICES = 60 * 30       # 30 dakika — Fiyat verisi (seyrek değişir)
+CACHE_TTL_DASHBOARD = 60 * 2     # 2 dakika  — Dashboard istatistikleri
+CACHE_TTL_CSV_DATA = 60 * 60     # 1 saat    — Simülasyon CSV verisi
+
 # Logging
 LOGGING = {
     'version': 1,
