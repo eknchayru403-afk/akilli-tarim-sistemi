@@ -62,6 +62,9 @@ class SoilAnalysis(TimeStampedModel):
         verbose_name = 'Toprak Analizi'
         verbose_name_plural = 'Toprak Analizleri'
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['field', '-created_at'], name='idx_soil_field_created'),
+        ]
 
     def __str__(self) -> str:
         """Tarla adı ve analiz tarihi döndürür."""
@@ -108,6 +111,9 @@ class CropRecommendation(TimeStampedModel):
         verbose_name = 'Ürün Önerisi'
         verbose_name_plural = 'Ürün Önerileri'
         ordering = ['rank']
+        indexes = [
+            models.Index(fields=['analysis', 'rank'], name='idx_rec_analysis_rank'),
+        ]
 
     def __str__(self) -> str:
         """Ürün adı ve güven skoru döndürür."""
@@ -161,6 +167,9 @@ class CareRecommendation(TimeStampedModel):
         verbose_name = 'Bakım Tavsiyesi'
         verbose_name_plural = 'Bakım Tavsiyeleri'
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['field', 'is_done', 'priority'], name='idx_care_field_done_prio'),
+        ]
 
     def __str__(self) -> str:
         """Tavsiye tipi ve öncelik döndürür."""
