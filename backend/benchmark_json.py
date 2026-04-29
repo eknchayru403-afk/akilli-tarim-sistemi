@@ -3,9 +3,10 @@ import orjson
 import time
 import os
 import random
+import tracemalloc
 from pathlib import Path
 
-def generate_data(num_items=100000):
+def generate_data_dicts(num_items=100000):
     return [
         {
             "crop_name": f"crop_{i}",
@@ -22,10 +23,59 @@ def generate_data(num_items=100000):
         for i in range(num_items)
     ]
 
+class SensorData:
+    __slots__ = ['crop_name', 'nitrogen', 'phosphorus', 'potassium', 'temperature', 'humidity', 'ph', 'rainfall', 'metadata', 'history']
+    def __init__(self, i):
+        self.crop_name = f"crop_{i}"
+        self.nitrogen = random.random() * 100
+        self.phosphorus = random.random() * 100
+        self.potassium = random.random() * 100
+        self.temperature = random.random() * 40
+        self.humidity = random.random() * 100
+        self.ph = random.random() * 14
+        self.rainfall = random.random() * 200
+        self.metadata = {"source": "sensor", "id": i, "tags": ["test", "data", "benchmark"]}
+        self.history = [random.random() for _ in range(10)]
+
+def serialize_sensor_data(obj):
+    return {
+        "crop_name": obj.crop_name,
+        "nitrogen": obj.nitrogen,
+        "phosphorus": obj.phosphorus,
+        "potassium": obj.potassium,
+        "temperature": obj.temperature,
+        "humidity": obj.humidity,
+        "ph": obj.ph,
+        "rainfall": obj.rainfall,
+        "metadata": obj.metadata,
+        "history": obj.history
+    }
+
+def generate_data_slots(num_items=100000):
+    return [SensorData(i) for i in range(num_items)]
+
 def benchmark():
-    print("Veri oluşturuluyor...")
-    data = generate_data(500000)
-    print(f"Toplam kayıt: {len(data)}")
+    num_records = 500000
+    
+    # Bellek ölçümünü başlat
+    print("Veri oluşturuluyor (Sözlük/Dict Yapısı)...")
+    tracemalloc.start()
+    data_dicts = generate_data_dicts(num_records)
+    current_dicts, peak_dicts = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    print(f"Toplam kayıt: {len(data_dicts)}")
+    print(f"Bellek Tüketimi (Sözlükler): {peak_dicts / 1024 / 1024:.2f} MB")
+
+    print("\nVeri oluşturuluyor (__slots__ Yapısı)...")
+    tracemalloc.start()
+    data_slots = generate_data_slots(num_records)
+    current_slots, peak_slots = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    print(f"Bellek Tüketimi (__slots__): {peak_slots / 1024 / 1024:.2f} MB")
+    
+    # Performans testleri için orjson varsayılan yöntemini slot verisine ayarlayalım
+    print("\n--- Serileştirme Karşılaştırması Başlıyor ---\n")
+    data = data_dicts  # Serileştirme testlerine dict ile devam edelim ki adil olsun
 
     # Serialization - standard json
     start = time.time()
