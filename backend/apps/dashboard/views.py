@@ -6,6 +6,7 @@ import logging
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.http import JsonResponse
 from apps.fields.models import Field
 
 from .services import DashboardService
@@ -27,3 +28,20 @@ def realtime_dashboard(request):
         'fields': fields,
     }
     return render(request, 'dashboard/realtime.html', context)
+
+@login_required
+def api_realtime_data(request):
+    """Tarla verilerinin ilk yüklemesi (Geçmiş veya anlık simüle değerler)"""
+    fields = Field.objects.filter(owner=request.user)
+    data = []
+    import random
+    for field in fields:
+        data.append({
+            'field_id': field.id,
+            'name': field.name,
+            'soil_moisture': round(random.uniform(30.0, 70.0), 1), # Simulated
+            'air_temperature': round(random.uniform(20.0, 30.0), 1),
+            'ph_level': round(random.uniform(6.0, 7.5), 1),
+            'irrigation_status': random.choice([0, 1])
+        })
+    return JsonResponse({'status': 'success', 'data': data})
