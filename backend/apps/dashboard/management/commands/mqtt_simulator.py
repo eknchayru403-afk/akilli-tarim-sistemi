@@ -41,6 +41,7 @@ class Command(BaseCommand):
                         "timestamp": time.time(),
                         "soil_moisture": round(random.uniform(20.0, 80.0), 2),
                         "air_temperature": round(random.uniform(15.0, 35.0), 2),
+                        "ph_level": round(random.uniform(5.0, 8.5), 2),
                         "irrigation_status": random.choice([0, 1]),
                     }
                     
