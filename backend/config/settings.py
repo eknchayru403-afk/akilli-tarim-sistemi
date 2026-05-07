@@ -26,6 +26,7 @@ ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 # Application definition
 DJANGO_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,6 +39,7 @@ THIRD_PARTY_APPS = [
     'django_htmx',
     'crispy_forms',
     'crispy_bootstrap5',
+    'channels',
 ]
 
 LOCAL_APPS = [
@@ -80,6 +82,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 # Database — SQLite (geliştirme), MySQL'e geçiş için .env ayarlarını güncelleyin
 DATABASES = {
@@ -162,32 +171,69 @@ CACHE_TTL_PRICES = 60 * 30       # 30 dakika — Fiyat verisi (seyrek değişir)
 CACHE_TTL_DASHBOARD = 60 * 2     # 2 dakika  — Dashboard istatistikleri
 CACHE_TTL_CSV_DATA = 60 * 60     # 1 saat    — Simülasyon CSV verisi
 
-# Logging
+# Logging dizini
+LOGS_DIR = BASE_DIR / 'logs'
+import os
+os.makedirs(LOGS_DIR, exist_ok=True)
+
+# Logging Konfigürasyonu
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
+            'format': '[{asctime}] {levelname} [{name}:{lineno}] [PID:{process} TID:{thread}] - {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '[{asctime}] {levelname} - {message}',
             'style': '{',
         },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'atys.log',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
             'formatter': 'verbose',
+            'encoding': 'utf-8',
+        },
+        'queue': {
+            'class': 'logging.handlers.QueueHandler',
+            'handlers': ['console', 'file'],
+            'respect_handler_level': True,
         },
     },
     'loggers': {
+        'django': {
+            'handlers': ['queue'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['queue'],
+            'level': 'WARNING',  # Filtre: 200 OK HTTP loglarını gizle
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['queue'],
+            'level': 'WARNING',  # Filtre: Gereksiz SQL sorgu loglarını gizle
+            'propagate': False,
+        },
         'apps': {
-            'handlers': ['console'],
-            'level': 'DEBUG' if DEBUG else 'INFO',
-            'propagate': True,
+            'handlers': ['queue'],
+            'level': 'INFO',
+            'propagate': False,
         },
         'ml': {
-            'handlers': ['console'],
-            'level': 'DEBUG' if DEBUG else 'INFO',
-            'propagate': True,
+            'handlers': ['queue'],
+            'level': 'INFO',
+            'propagate': False,
         },
     },
 }

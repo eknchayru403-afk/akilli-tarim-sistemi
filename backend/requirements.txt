@@ -10,3 +10,6 @@ django-crispy-forms>=2.1
 crispy-bootstrap5>=2024.2
 pytest-django>=4.8
 gunicorn>=22.0
+channels>=4.0.0
+daphne>=4.0.0
+paho-mqtt>=2.0.0
