@@ -1,0 +1,303 @@
+{% extends 'base.html' %}
+
+{% block title %}Canlı İzleme{% endblock %}
+{% block page_title %}Canlı Sensör İzleme{% endblock %}
+
+{% block extra_css %}
+<style>
+    .realtime-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+    .realtime-card:hover {
+        transform: translateY(-5px);
+    }
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+    }
+    .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+    .status-active { background-color: #10b981; box-shadow: 0 0 8px #10b981; }
+    .status-inactive { background-color: #ef4444; box-shadow: 0 0 8px #ef4444; }
+    
+    /* Modern Select */
+    .form-select-glass {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: var(--bs-body-color);
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+    }
+    .form-select-glass:focus {
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255,255,255,0.4);
+        box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+        color: var(--bs-body-color);
+    }
+    
+    .current-val {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0;
+    }
+    .val-unit {
+        font-size: 1rem;
+        opacity: 0.7;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6 col-lg-4">
+        <label class="form-label fw-bold">Tarla Seçimi</label>
+        <select id="fieldSelect" class="form-select form-select-glass shadow-sm">
+            <option value="">Tüm Tarlalar</option>
+            {% for field in fields %}
+            <option value="{{ field.id }}">{{ field.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-6 col-lg-8 d-flex align-items-end justify-content-end">
+        <div class="d-flex align-items-center bg-white px-3 py-2 rounded shadow-sm">
+            <span id="connectionStatus" class="status-indicator status-inactive"></span>
+            <span id="connectionText" class="fw-bold">Bağlantı Bekleniyor...</span>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Toprak Nemi -->
+    <div class="col-lg-6">
+        <div class="realtime-card h-100 bg-white">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h5 class="fw-bold text-primary mb-0"><i class="bi bi-droplet-fill me-2"></i>Toprak Nemi</h5>
+                    <small class="text-muted">Son 20 ölçüm</small>
+                </div>
+                <div class="text-end">
+                    <p class="current-val text-primary" id="currentMoisture">--<span class="val-unit">%</span></p>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="moistureChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hava Sıcaklığı -->
+    <div class="col-lg-6">
+        <div class="realtime-card h-100 bg-white">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h5 class="fw-bold text-danger mb-0"><i class="bi bi-thermometer-sun me-2"></i>Hava Sıcaklığı</h5>
+                    <small class="text-muted">Son 20 ölçüm</small>
+                </div>
+                <div class="text-end">
+                    <p class="current-val text-danger" id="currentTemp">--<span class="val-unit">°C</span></p>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="tempChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sulama Durumu -->
+    <div class="col-lg-12">
+        <div class="realtime-card bg-white">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h5 class="fw-bold text-info mb-0"><i class="bi bi-water me-2"></i>Sulama Aktivitesi</h5>
+                    <small class="text-muted">Zamana Göre Sulama Açık/Kapalı Durumu</small>
+                </div>
+                <div class="text-end">
+                    <span id="irrigationBadge" class="badge bg-secondary fs-6">Bilinmiyor</span>
+                </div>
+            </div>
+            <div class="chart-container" style="height: 200px;">
+                <canvas id="irrigationChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const MAX_DATA_POINTS = 20;
+        
+        // Chart Configs
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    grid: { display: false }
+                },
+                y: {
+                    border: { display: false }
+                }
+            },
+            animation: {
+                duration: 400
+            }
+        };
+
+        // Initialize Charts
+        const ctxMoisture = document.getElementById('moistureChart').getContext('2d');
+        const moistureChart = new Chart(ctxMoisture, {
+            type: 'line',
+            data: { labels: [], datasets: [{ 
+                label: 'Nem (%)', 
+                data: [], 
+                borderColor: '#0d6efd', 
+                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            }]},
+            options: { ...chartOptions, scales: { y: { min: 0, max: 100 } } }
+        });
+
+        const ctxTemp = document.getElementById('tempChart').getContext('2d');
+        const tempChart = new Chart(ctxTemp, {
+            type: 'line',
+            data: { labels: [], datasets: [{ 
+                label: 'Sıcaklık (°C)', 
+                data: [], 
+                borderColor: '#dc3545', 
+                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            }]},
+            options: { ...chartOptions, scales: { y: { min: 0, max: 50 } } }
+        });
+        
+        const ctxIrrigation = document.getElementById('irrigationChart').getContext('2d');
+        const irrigationChart = new Chart(ctxIrrigation, {
+            type: 'bar',
+            data: { labels: [], datasets: [{ 
+                label: 'Sulama', 
+                data: [], 
+                backgroundColor: '#0dcaf0',
+                borderRadius: 4
+            }]},
+            options: { 
+                ...chartOptions, 
+                scales: { 
+                    y: { 
+                        min: 0, 
+                        max: 1.5,
+                        ticks: {
+                            callback: function(value) {
+                                if (value === 0) return 'Kapalı';
+                                if (value === 1) return 'Açık';
+                                return '';
+                            },
+                            stepSize: 1
+                        }
+                    } 
+                } 
+            }
+        });
+
+        // WebSocket Connection
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        const socket = new WebSocket(wsProtocol + window.location.host + '/ws/sensor/');
+
+        const statusIndicator = document.getElementById('connectionStatus');
+        const statusText = document.getElementById('connectionText');
+
+        socket.onopen = function(e) {
+            statusIndicator.className = 'status-indicator status-active';
+            statusText.innerText = 'Canlı Veri Akışı Bağlandı';
+            statusText.classList.add('text-success');
+        };
+
+        socket.onclose = function(e) {
+            statusIndicator.className = 'status-indicator status-inactive';
+            statusText.innerText = 'Bağlantı Koptu';
+            statusText.classList.remove('text-success');
+            statusText.classList.add('text-danger');
+            console.error('Sensor socket closed unexpectedly');
+        };
+
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            
+            // Check Filter
+            const selectedField = document.getElementById('fieldSelect').value;
+            if (selectedField && selectedField != data.field_id) {
+                return; // Ignore if it doesn't match the selected field
+            }
+
+            // Update UI
+            updateDashboard(data);
+        };
+
+        function updateDashboard(data) {
+            const timeStr = new Date(data.timestamp * 1000).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            // Update Current Values
+            document.getElementById('currentMoisture').innerHTML = data.soil_moisture + '<span class="val-unit">%</span>';
+            document.getElementById('currentTemp').innerHTML = data.air_temperature + '<span class="val-unit">°C</span>';
+            
+            const badge = document.getElementById('irrigationBadge');
+            if (data.irrigation_status === 1) {
+                badge.className = 'badge bg-info fs-6';
+                badge.innerText = 'AÇIK (Sulama Yapılıyor)';
+            } else {
+                badge.className = 'badge bg-secondary fs-6';
+                badge.innerText = 'KAPALI';
+            }
+
+            // Helper to update chart
+            function addDataToChart(chart, label, dataPoint) {
+                chart.data.labels.push(label);
+                chart.data.datasets[0].data.push(dataPoint);
+                if (chart.data.labels.length > MAX_DATA_POINTS) {
+                    chart.data.labels.shift();
+                    chart.data.datasets[0].data.shift();
+                }
+                chart.update();
+            }
+
+            addDataToChart(moistureChart, timeStr, data.soil_moisture);
+            addDataToChart(tempChart, timeStr, data.air_temperature);
+            addDataToChart(irrigationChart, timeStr, data.irrigation_status);
+        }
+        
+        // Handle filter change - clear charts
+        document.getElementById('fieldSelect').addEventListener('change', function() {
+            [moistureChart, tempChart, irrigationChart].forEach(chart => {
+                chart.data.labels = [];
+                chart.data.datasets[0].data = [];
+                chart.update();
+            });
+            document.getElementById('currentMoisture').innerHTML = '--<span class="val-unit">%</span>';
+            document.getElementById('currentTemp').innerHTML = '--<span class="val-unit">°C</span>';
+            document.getElementById('irrigationBadge').className = 'badge bg-secondary fs-6';
+            document.getElementById('irrigationBadge').innerText = 'Bilinmiyor';
+        });
+    });
+</script>
+{% endblock %}

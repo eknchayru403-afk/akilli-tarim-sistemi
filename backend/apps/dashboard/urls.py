@@ -8,4 +8,5 @@ app_name = 'dashboard'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('realtime/', views.realtime_dashboard, name='realtime'),
 ]

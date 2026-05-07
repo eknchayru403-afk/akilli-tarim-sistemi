@@ -26,6 +26,7 @@ ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 # Application definition
 DJANGO_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,6 +39,7 @@ THIRD_PARTY_APPS = [
     'django_htmx',
     'crispy_forms',
     'crispy_bootstrap5',
+    'channels',
 ]
 
 LOCAL_APPS = [
@@ -80,6 +82,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 # Database — SQLite (geliştirme), MySQL'e geçiş için .env ayarlarını güncelleyin
 DATABASES = {
