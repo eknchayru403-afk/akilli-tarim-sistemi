@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Raporlar{% endblock %}
+{% block page_title %}Tarımsal Raporlar{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-file-earmark-bar-graph me-2"></i>Rapor Oluştur
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    Sulama, gübreleme ve ilaçlama geçmişinizi içeren raporları PDF veya Excel formatında indirin.
+                    Tarih aralığı ve tarla seçerek raporu filtreleyebilirsiniz.
+                </p>
+
+                <form id="reportForm">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label for="id_field" class="form-label fw-semibold">Tarla</label>
+                            {{ form.field }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="id_date_from" class="form-label fw-semibold">Başlangıç Tarihi</label>
+                            {{ form.date_from }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="id_date_to" class="form-label fw-semibold">Bitiş Tarihi</label>
+                            {{ form.date_to }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3">
+                        <a id="pdfBtn" href="{% url 'reports:download_pdf' %}" class="btn btn-danger btn-lg">
+                            <i class="bi bi-file-earmark-pdf me-2"></i>PDF İndir
+                        </a>
+                        <a id="excelBtn" href="{% url 'reports:download_excel' %}" class="btn btn-success btn-lg">
+                            <i class="bi bi-file-earmark-excel me-2"></i>Excel İndir
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-info-circle me-2"></i>Rapor İçeriği
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="bi bi-droplet text-primary me-2"></i> Sulama geçmişi</li>
+                    <li class="mb-2"><i class="bi bi-flower1 text-success me-2"></i> Gübreleme geçmişi</li>
+                    <li class="mb-2"><i class="bi bi-bug text-warning me-2"></i> İlaçlama geçmişi</li>
+                    <li class="mb-2"><i class="bi bi-clipboard-data text-info me-2"></i> Toprak analizi özeti</li>
+                    <li class="mb-2"><i class="bi bi-graph-up text-danger me-2"></i> Ürün önerileri</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-question-circle me-2"></i>Kullanım
+                </h6>
+            </div>
+            <div class="card-body">
+                <ol class="small">
+                    <li>Tarla seçin (opsiyonel)</li>
+                    <li>Tarih aralığı belirleyin (opsiyonel)</li>
+                    <li>PDF veya Excel formatını seçin</li>
+                    <li>Rapor otomatik indirilecektir</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Form değiştiğinde download linklerini güncelle
+document.getElementById('reportForm').addEventListener('change', function() {
+    const form = this;
+    const params = new URLSearchParams();
+
+    const field = form.querySelector('#id_field');
+    if (field && field.value) params.set('field', field.value);
+
+    const dateFrom = form.querySelector('#id_date_from');
+    if (dateFrom && dateFrom.value) params.set('date_from', dateFrom.value);
+
+    const dateTo = form.querySelector('#id_date_to');
+    if (dateTo && dateTo.value) params.set('date_to', dateTo.value);
+
+    const queryString = params.toString();
+    const pdfBase = "{% url 'reports:download_pdf' %}";
+    const excelBase = "{% url 'reports:download_excel' %}";
+
+    document.getElementById('pdfBtn').href = queryString ? `${pdfBase}?${queryString}` : pdfBase;
+    document.getElementById('excelBtn').href = queryString ? `${excelBase}?${queryString}` : excelBase;
+});
+</script>
+{% endblock %}
