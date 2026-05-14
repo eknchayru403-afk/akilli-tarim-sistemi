@@ -1,58 +1,120 @@
+"""
+MQTT Simulator — Sensör verisi simüle ederek MQTT broker'a yayınlar.
+
+Her tarla için ayrı ayrı sensör verisi üretir ve ilgili topic'lere gönderir.
+Topic hiyerarşisi mqtt.config modülünden yönetilir.
+
+Kullanım:
+    python manage.py mqtt_simulator
+"""
+
 import json
-import time
 import random
-from django.core.management.base import BaseCommand
+import time
+
 import paho.mqtt.client as mqtt
+from django.core.management.base import BaseCommand
 
 from apps.fields.models import Field
+from mqtt.config import (
+    DEFAULT_SENSOR_QOS,
+    MQTT_BROKER_HOST,
+    MQTT_BROKER_PORT,
+    MQTT_KEEPALIVE,
+    TOPIC_SENSORS,
+    TOPIC_SENSORS_ALL,
+)
+
 
 class Command(BaseCommand):
-    help = 'Simulates sensor data and publishes to MQTT broker'
+    help = 'Sensör verisi simüle ederek MQTT broker\'a yayınlar (topic bazlı)'
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--interval',
+            type=int,
+            default=5,
+            help='Yayın aralığı (saniye), varsayılan: 5',
+        )
 
     def handle(self, *args, **options):
-        broker = 'broker.hivemq.com'
-        port = 1883
-        topic = 'atys/sensors'
+        interval = options['interval']
 
-        client = mqtt.Client()
+        client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
         try:
-            client.connect(broker, port, 60)
-            self.stdout.write(self.style.SUCCESS(f"Successfully connected to MQTT broker at {broker}:{port}"))
+            client.connect(MQTT_BROKER_HOST, MQTT_BROKER_PORT, MQTT_KEEPALIVE)
+            self.stdout.write(self.style.SUCCESS(
+                f"✅ MQTT Broker'a bağlanıldı: {MQTT_BROKER_HOST}:{MQTT_BROKER_PORT}"
+            ))
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f"Failed to connect to MQTT broker: {e}"))
+            self.stdout.write(self.style.ERROR(f"❌ Bağlantı hatası: {e}"))
             return
 
         client.loop_start()
+        self.stdout.write(f"🚀 Simülatör başlatıldı (aralık: {interval}s). Ctrl+C ile durdurun.\n")
 
-        self.stdout.write("Starting simulator... Press Ctrl+C to stop.")
         try:
+            cycle = 0
             while True:
-                # Get all fields
-                fields = list(Field.objects.all().values_list('id', flat=True))
-                
+                cycle += 1
+                fields = list(Field.objects.all().values_list('id', 'name', flat=False))
+
                 if not fields:
-                    self.stdout.write(self.style.WARNING("No fields found in database. Simulating for field_id=1 as fallback."))
-                    fields = [1]
-                
-                for field_id in fields:
-                    # Generate fake data
-                    payload = {
-                        "field_id": field_id,
-                        "timestamp": time.time(),
-                        "soil_moisture": round(random.uniform(20.0, 80.0), 2),
-                        "air_temperature": round(random.uniform(15.0, 35.0), 2),
-                        "ph_level": round(random.uniform(5.0, 8.5), 2),
-                        "irrigation_status": random.choice([0, 1]),
+                    self.stdout.write(self.style.WARNING(
+                        "⚠️  DB'de tarla yok, field_id=1 ile simüle ediliyor."
+                    ))
+                    fields = [(1, 'Varsayılan Tarla')]
+
+                self.stdout.write(f"\n--- Döngü {cycle} ({len(fields)} tarla) ---")
+
+                for field_id, field_name in fields:
+                    sensor_data = {
+                        'field_id': field_id,
+                        'timestamp': time.time(),
+                        'soil_moisture': round(random.uniform(20.0, 80.0), 2),
+                        'air_temperature': round(random.uniform(15.0, 35.0), 2),
+                        'humidity': round(random.uniform(30.0, 90.0), 2),
+                        'ph_level': round(random.uniform(5.0, 8.5), 2),
+                        'irrigation_status': random.choice([0, 1]),
                     }
-                    
-                    client.publish(topic, json.dumps(payload))
-                    self.stdout.write(f"Published to {topic}: {payload}")
-                
-                # Wait 5 seconds
-                time.sleep(5)
+
+                    # 1) Toplu mesaj — tüm sensör verisi tek topic'te
+                    client.publish(
+                        TOPIC_SENSORS_ALL,
+                        json.dumps(sensor_data),
+                        qos=DEFAULT_SENSOR_QOS,
+                    )
+
+                    # 2) Ayrı topic'lere yayınla
+                    topic_value_map = {
+                        'humidity': sensor_data['humidity'],
+                        'temperature': sensor_data['air_temperature'],
+                        'soil_moisture': sensor_data['soil_moisture'],
+                        'ph': sensor_data['ph_level'],
+                    }
+
+                    for sensor_type, value in topic_value_map.items():
+                        topic = TOPIC_SENSORS[sensor_type]
+                        payload = {
+                            'field_id': field_id,
+                            'timestamp': sensor_data['timestamp'],
+                            'value': value,
+                        }
+                        client.publish(topic, json.dumps(payload), qos=DEFAULT_SENSOR_QOS)
+
+                    self.stdout.write(
+                        f"  📡 {field_name} (#{field_id}): "
+                        f"nem={sensor_data['humidity']}% "
+                        f"sıcaklık={sensor_data['air_temperature']}°C "
+                        f"toprak={sensor_data['soil_moisture']}% "
+                        f"pH={sensor_data['ph_level']}"
+                    )
+
+                time.sleep(interval)
+
         except KeyboardInterrupt:
-            self.stdout.write("\nStopping simulator...")
+            self.stdout.write("\n⏹️  Simülatör durduruldu.")
         finally:
             client.loop_stop()
             client.disconnect()
-            self.stdout.write(self.style.SUCCESS("Disconnected."))
+            self.stdout.write(self.style.SUCCESS("🔌 Bağlantı kapatıldı."))
