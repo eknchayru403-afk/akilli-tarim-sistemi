@@ -23,7 +23,7 @@ def index(request):
 @login_required
 def realtime_dashboard(request):
     """Gerçek zamanlı sensör izleme panosu."""
-    fields = Field.objects.filter(owner=request.user)
+    fields = Field.objects.filter(user=request.user)
     context = {
         'fields': fields,
     }
@@ -32,7 +32,7 @@ def realtime_dashboard(request):
 @login_required
 def api_realtime_data(request):
     """Tarla verilerinin ilk yüklemesi (Geçmiş veya anlık simüle değerler)"""
-    fields = Field.objects.filter(owner=request.user)
+    fields = Field.objects.filter(user=request.user)
     data = []
     import random
     for field in fields:
