@@ -13,3 +13,4 @@ gunicorn>=22.0
 channels>=4.0.0
 daphne>=4.0.0
 paho-mqtt>=2.0.0
+tensorflow>=2.16
