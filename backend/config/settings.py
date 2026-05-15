@@ -52,6 +52,7 @@ LOCAL_APPS = [
     'apps.weather',
     'apps.dashboard',
     'apps.api',
+    'apps.reports',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -94,29 +95,11 @@ CHANNEL_LAYERS = {
     },
 }
 
-# Database — SQLite (geliştirme), MySQL'e geçiş için .env ayarlarını güncelleyin
+# Database - PostgreSQL konfigürasyonu
+# .env dosyasında DATABASE_URL=postgres://user:password@localhost:5432/akilli_tarim
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': env.db('DATABASE_URL', default=f'sqlite:///{BASE_DIR}/db.sqlite3')
 }
-
-# MySQL konfigürasyonu (MySQL kullanmak için aşağıyı aktifleştirin):
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': env('DB_NAME', default='akilli_tarim'),
-#         'USER': env('DB_USER', default='root'),
-#         'PASSWORD': env('DB_PASSWORD', default=''),
-#         'HOST': env('DB_HOST', default='localhost'),
-#         'PORT': env('DB_PORT', default='3306'),
-#         'OPTIONS': {
-#             'charset': 'utf8mb4',
-#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-#         },
-#     }
-# }
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.CustomUser'
