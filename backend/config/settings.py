@@ -40,6 +40,9 @@ THIRD_PARTY_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'channels',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'django_filters',
 ]
 
 LOCAL_APPS = [
@@ -48,6 +51,7 @@ LOCAL_APPS = [
     'apps.analysis',
     'apps.weather',
     'apps.dashboard',
+    'apps.api',
     'apps.reports',
 ]
 
@@ -139,6 +143,33 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 DATA_DIR = BASE_DIR / 'data'
 ML_DIR = BASE_DIR / 'ml'
 ML_MODELS_DIR = ML_DIR / 'saved_models'
+
+# Django REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'apps.api.v1.pagination.StandardPagination',
+    'PAGE_SIZE': 20,
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ),
+}
+
+# JWT Ayarları
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
 
 # Cache — LocMemCache (geliştirme), Redis'e geçiş için django-redis ekleyin
 CACHES = {
