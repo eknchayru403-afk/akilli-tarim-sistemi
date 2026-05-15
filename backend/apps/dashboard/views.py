@@ -45,3 +45,8 @@ def api_realtime_data(request):
             'irrigation_status': random.choice([0, 1])
         })
     return JsonResponse({'status': 'success', 'data': data})
+
+@login_required
+def settings_view(request):
+    """Sistem ayarları sayfası (Wireframe)."""
+    return render(request, 'dashboard/settings.html')
