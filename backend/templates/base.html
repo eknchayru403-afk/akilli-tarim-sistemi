@@ -57,6 +57,10 @@
                     <span>Hava Durumu</span>
                 </a>
             </li>
+            <li class="sidebar-item {% if request.resolver_match.app_name == 'reports' %}active{% endif %}">
+                <a href="{% url 'reports:index' %}">
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                    <span>Raporlar</span>
             <li class="sidebar-item {% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
                 <a href="{% url 'dashboard:settings' %}">
                     <i class="bi bi-gear-fill"></i>

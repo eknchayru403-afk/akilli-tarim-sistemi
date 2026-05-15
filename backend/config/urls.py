@@ -11,4 +11,5 @@ urlpatterns = [
     path('analysis/', include('apps.analysis.urls')),
     path('weather/', include('apps.weather.urls')),
     path('prices/', include('apps.analysis.price_urls')),
+    path('reports/', include('apps.reports.urls')),
 ]
