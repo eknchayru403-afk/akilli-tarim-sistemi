@@ -90,3 +90,93 @@ class Field(TimeStampedModel):
     def area_hectare(self) -> float:
         """Dekar cinsinden alanı hektara çevirir."""
         return float(self.area_decar) / 10
+
+
+class SensorData(TimeStampedModel):
+    """Tarladaki sensörlerden gelen anlık ölçüm verileri."""
+
+    field = models.ForeignKey(
+        Field,
+        on_delete=models.CASCADE,
+        related_name='sensor_data',
+        verbose_name='Tarla',
+    )
+    humidity = models.DecimalField(
+        max_digits=5, decimal_places=2,
+        verbose_name='Nem (%)',
+    )
+    temperature = models.DecimalField(
+        max_digits=5, decimal_places=2,
+        verbose_name='Sıcaklık (°C)',
+    )
+    soil_moisture = models.DecimalField(
+        max_digits=5, decimal_places=2,
+        default=0,
+        verbose_name='Toprak Nemi (%)',
+    )
+    plant_water_consumption = models.DecimalField(
+        max_digits=6, decimal_places=2,
+        default=0,
+        verbose_name='Bitki Su Tüketimi (mm/gün)',
+    )
+    soil_ph = models.DecimalField(
+        max_digits=4, decimal_places=2,
+        verbose_name='Toprak pH',
+    )
+    light_intensity = models.DecimalField(
+        max_digits=8, decimal_places=2,
+        verbose_name='Işık Yoğunluğu (Lux)',
+    )
+
+    class Meta:
+        verbose_name = 'Sensör Verisi'
+        verbose_name_plural = 'Sensör Verileri'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['field', '-created_at'], name='idx_sensor_field_created'),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.field.name} - {self.created_at:%d.%m.%Y %H:%M}"
+
+
+class IrrigationLog(TimeStampedModel):
+    """Tarlaya uygulanan sulama ve gübreleme işlemlerinin geçmişi."""
+
+    LOG_TYPE_CHOICES = [
+        ('irrigation', 'Sulama'),
+        ('fertilization', 'Gübreleme'),
+    ]
+
+    field = models.ForeignKey(
+        Field,
+        on_delete=models.CASCADE,
+        related_name='irrigation_logs',
+        verbose_name='Tarla',
+    )
+    log_type = models.CharField(
+        max_length=20,
+        choices=LOG_TYPE_CHOICES,
+        default='irrigation',
+        verbose_name='İşlem Tipi',
+    )
+    amount = models.DecimalField(
+        max_digits=8, decimal_places=2,
+        verbose_name='Miktar (Litre veya kg)',
+    )
+    details = models.TextField(
+        blank=True,
+        verbose_name='Detaylar/Notlar',
+    )
+
+    class Meta:
+        verbose_name = 'Sulama/Gübreleme Kaydı'
+        verbose_name_plural = 'Sulama/Gübreleme Kayıtları'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['field', 'log_type', '-created_at'], name='idx_irrigation_field_type'),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.field.name} - {self.get_log_type_display()} ({self.amount})"
+
