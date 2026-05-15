@@ -11,6 +11,10 @@ Kullanım:
 import json
 import logging
 
+import numpy as np
+from collections import defaultdict, deque
+from asgiref.sync import async_to_sync
+from django.core.management.base import BaseCommand
 import paho.mqtt.client as mqtt
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -30,11 +34,62 @@ logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     help = 'MQTT broker\'dan sensör mesajlarını dinler ve Channels\'a iletir (wildcard)'
+from apps.fields.models import Field
+from apps.analysis.models import CareRecommendation
+
+class Command(BaseCommand):
+    help = 'Listens to MQTT broker, forwards to Channels, and detects anomalies using Z-Score.'
 
     def handle(self, *args, **options):
         channel_layer = get_channel_layer()
 
         def on_connect(client, userdata, flags, rc, properties=None):
+        # field_id -> { sensor_type: deque(maxlen=50) }
+        sensor_buffers = defaultdict(lambda: defaultdict(lambda: deque(maxlen=50)))
+        Z_THRESHOLD = 3.0
+
+        def check_anomaly(field_id, sensor_type, value):
+            buffer = sensor_buffers[field_id][sensor_type]
+            
+            # Yeterli veri yoksa anomali tespiti yapma (en az 10 veri olsun)
+            if len(buffer) < 10:
+                buffer.append(value)
+                return
+            
+            mean = np.mean(buffer)
+            std = np.std(buffer)
+            
+            # Standart sapma 0 ise Z-score tanımsız olur
+            if std == 0:
+                buffer.append(value)
+                return
+                
+            z_score = abs(value - mean) / std
+            
+            if z_score > Z_THRESHOLD:
+                self.stdout.write(self.style.WARNING(f"ANOMALY DETECTED: Field {field_id}, {sensor_type}={value} (Z={z_score:.2f})"))
+                
+                try:
+                    field = Field.objects.get(id=field_id)
+                    
+                    # Tavsiye tipi belirleme
+                    rec_type = 'temperature' if sensor_type == 'temperature' else 'soil_amendment'
+                    
+                    # Veritabanına kaydet
+                    CareRecommendation.objects.create(
+                        field=field,
+                        recommendation_type=rec_type,
+                        message=f"{sensor_type.capitalize()} sensöründe anlık anomali tespit edildi. Z-Skoru: {z_score:.2f}, Değer: {value}",
+                        priority='critical'
+                    )
+                except Field.DoesNotExist:
+                    self.stdout.write(self.style.ERROR(f"Field with ID {field_id} not found, anomaly not saved."))
+                except Exception as e:
+                    self.stdout.write(self.style.ERROR(f"Error saving anomaly: {e}"))
+            
+            buffer.append(value)
+
+        def on_connect(client, userdata, flags, rc):
             if rc == 0:
                 self.stdout.write(self.style.SUCCESS(
                     f"✅ MQTT Broker'a bağlanıldı: {MQTT_BROKER_HOST}:{MQTT_BROKER_PORT}"
@@ -70,6 +125,19 @@ class Command(BaseCommand):
                     data['_sensor_type'] = topic_parts[-1]
 
                 # Django Channels grubuna ilet
+            
+            try:
+                data = json.loads(payload)
+                field_id = data.get('field_id')
+                
+                if field_id is not None:
+                    # Sensör değerlerini kontrol et
+                    for sensor_type in ['temperature', 'soil_moisture', 'soil_ph']:
+                        if sensor_type in data:
+                            value = float(data[sensor_type])
+                            check_anomaly(field_id, sensor_type, value)
+                
+                # Forward to channels group
                 async_to_sync(channel_layer.group_send)(
                     'sensor_data',
                     {
