@@ -23,6 +23,7 @@ from mqtt.config import (
     MQTT_KEEPALIVE,
     TOPIC_SENSORS,
     TOPIC_SENSORS_ALL,
+    TOPIC_FARM_PATTERN,
 )
 
 
@@ -94,13 +95,19 @@ class Command(BaseCommand):
                     }
 
                     for sensor_type, value in topic_value_map.items():
-                        topic = TOPIC_SENSORS[sensor_type]
+                        # Yeni format (Görev 1)
+                        topic = TOPIC_FARM_PATTERN.format(field_id=field_id, sensor_type=sensor_type)
                         payload = {
                             'field_id': field_id,
                             'timestamp': sensor_data['timestamp'],
                             'value': value,
                         }
                         client.publish(topic, json.dumps(payload), qos=DEFAULT_SENSOR_QOS)
+                        
+                        # Eski format (Geriye uyumluluk için)
+                        old_topic = TOPIC_SENSORS.get(sensor_type)
+                        if old_topic:
+                            client.publish(old_topic, json.dumps(payload), qos=DEFAULT_SENSOR_QOS)
 
                     self.stdout.write(
                         f"  📡 {field_name} (#{field_id}): "

@@ -210,3 +210,25 @@ class CropPrice(models.Model):
     def __str__(self) -> str:
         """Ürün adı ve fiyat döndürür."""
         return f"{self.crop_name_tr} — {self.price_per_kg} TL/kg"
+
+
+class ModelLog(TimeStampedModel):
+    """ML model eğitim ve optimizasyon kayıtları."""
+    model_name = models.CharField(max_length=100)
+    model_type = models.CharField(max_length=50)  # RandomForest, GradientBoosting
+    parameters = models.JSONField(default=dict)
+    accuracy = models.DecimalField(max_digits=6, decimal_places=4)
+    val_accuracy = models.DecimalField(max_digits=6, decimal_places=4, null=True)
+    cv_mean_score = models.DecimalField(max_digits=6, decimal_places=4, null=True)
+    cv_std_score = models.DecimalField(max_digits=6, decimal_places=4, null=True)
+    training_time_seconds = models.DecimalField(max_digits=10, decimal_places=2)
+    notes = models.TextField(blank=True)
+
+    class Meta:
+        verbose_name = 'Model Logu'
+        verbose_name_plural = 'Model Logları'
+        db_table = 'model_logs'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.model_name} - {self.model_type} ({self.created_at:%d.%m.%Y})"

@@ -26,8 +26,12 @@ TOPIC_SENSORS = {
 # Toplu sensör verisi (tüm veriler tek mesajda)
 TOPIC_SENSORS_ALL = f'{TOPIC_ROOT}/sensors'
 
-# Wildcard — tüm sensör topic'lerine abone olmak için
+# Wildcard — tüm sensör topic'lerine abone olmak için (Eski format)
 TOPIC_SENSORS_WILDCARD = f'{TOPIC_ROOT}/sensors/#'
+
+# Yeni topic formatı (Görev 1 gereksinimi)
+TOPIC_FARM_PATTERN = 'farm/{field_id}/sensor/{sensor_type}'
+TOPIC_FARM_WILDCARD = 'farm/+/sensor/#'
 
 # Komut topic'leri — cihaz kontrolü için
 TOPIC_COMMANDS = {

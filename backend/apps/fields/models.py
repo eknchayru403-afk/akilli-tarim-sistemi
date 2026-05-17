@@ -140,6 +140,49 @@ class SensorData(TimeStampedModel):
         return f"{self.field.name} - {self.created_at:%d.%m.%Y %H:%M}"
 
 
+class SensorReading(TimeStampedModel):
+    """MQTT üzerinden gelen ham sensör okuma verileri."""
+
+    field = models.ForeignKey(
+        Field,
+        on_delete=models.CASCADE,
+        related_name='sensor_readings',
+        verbose_name='Tarla',
+    )
+    sensor_type = models.CharField(
+        max_length=30,
+        verbose_name='Sensör Tipi',
+    )
+    value = models.DecimalField(
+        max_digits=10, decimal_places=4,
+        verbose_name='Değer',
+    )
+    topic = models.CharField(
+        max_length=200,
+        verbose_name='Topic',
+    )
+    raw_payload = models.JSONField(
+        default=dict,
+        verbose_name='Ham Veri',
+    )
+    is_valid = models.BooleanField(
+        default=True,
+        verbose_name='Geçerli mi?',
+    )
+
+    class Meta:
+        verbose_name = 'Sensör Okuması'
+        verbose_name_plural = 'Sensör Okumaları'
+        db_table = 'sensör_okumalari'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['field', 'sensor_type', '-created_at'], name='idx_sensorreading_field_type'),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.field.name} - {self.sensor_type}: {self.value}"
+
+
 class IrrigationLog(TimeStampedModel):
     """Tarlaya uygulanan sulama ve gübreleme işlemlerinin geçmişi."""
 

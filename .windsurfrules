@@ -1,0 +1,37 @@
+# Akıllı Tarım Yönetim Sistemi — Windsurf Kuralları
+
+## Zorunlu Okuma
+- Her görev öncesi `ARCHITECTURE.md` dosyasını oku.
+- Klasör yapısına, state management kurallarına ve routing kurallarına uy.
+
+## Genel Kurallar
+- Değişiklik yapmadan önce mevcut dosyayı oku, sorunları raporla, onay al, sonra düzelt.
+- Çalışan koda dokunma. İzole fix yap. Yan etkisi olan değişiklikten kaçın.
+- Her değişiklik sonrası `ARCHITECTURE.md` dosyasının CHANGELOG bölümünü güncelle.
+- `flutter analyze` çalıştır, warning/error bırakma.
+
+## Flutter Spesifik
+- **State Management:** Sadece Riverpod (flutter_riverpod ^2.x). setState(), Provider, Bloc, GetX YASAK.
+- **Routing:** Sadece GoRouter. Navigator.push / Navigator.pop KULLANMA.
+- **HTTP:** Sadece Dio. http paketi KULLANMA.
+- **Klasör yapısı:** `lib/features/<feature>/` altında `data/`, `providers/`, `screens/`, `widgets/` pattern'ı.
+- **Model sınıfları:** `fromJson` / `toJson` factory constructor ile. freezed veya json_serializable opsiyonel.
+- **Tema:** `core/theme/app_theme.dart` içindeki ThemeData'yı kullan. Hardcode renk YAZMA.
+- **Widget:** Tekrar eden UI parçalarını `shared/widgets/` veya feature'ın `widgets/` klasörüne çıkar.
+- **Türkçe UI metinleri** şimdilik hardcode. i18n ikinci fazda.
+
+## Dosya İsimlendirme
+- Snake_case: `login_screen.dart`, `tarla_card.dart`, `auth_provider.dart`
+- Ekran dosyaları: `*_screen.dart`
+- Widget dosyaları: `*_widget.dart` veya `*_card.dart`
+- Provider dosyaları: `*_provider.dart`
+- Model dosyaları: `*_model.dart`
+- Repository dosyaları: `*_repository.dart`
+
+## Yapma
+- Tek dosyaya 300+ satır yazma. Böl.
+- `print()` debug bırakma. Logger kullan veya kaldır.
+- API key'leri hardcode etme. `.env` veya `--dart-define` kullan.
+- Kullanılmayan import bırakma.
+- `dynamic` tip kullanma, explicit tip yaz.
+- Widget tree'de 4'ten fazla iç içe geçme — ayrı widget'a çıkar.
