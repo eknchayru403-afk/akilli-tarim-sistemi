@@ -53,6 +53,7 @@ LOCAL_APPS = [
     'apps.dashboard',
     'apps.api',
     'apps.reports',
+    'apps.iot',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -95,11 +96,41 @@ CHANNEL_LAYERS = {
     },
 }
 
-# Database - PostgreSQL konfigürasyonu
-# .env dosyasında DATABASE_URL=postgres://user:password@localhost:5432/akilli_tarim
-DATABASES = {
-    'default': env.db('DATABASE_URL', default=f'sqlite:///{BASE_DIR}/db.sqlite3')
-}
+# Database — DATABASE_URL veya DB_ENGINE ile yapılandırılır
+# Örnek: DATABASE_URL=postgres://ats:ats@localhost:5432/akilli_tarim
+_db_engine = env('DB_ENGINE', default='')
+if _db_engine == 'django.db.backends.postgresql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_NAME', default='akilli_tarim'),
+            'USER': env('DB_USER', default='ats'),
+            'PASSWORD': env('DB_PASSWORD', default='ats'),
+            'HOST': env('DB_HOST', default='localhost'),
+            'PORT': env('DB_PORT', default='5432'),
+            'CONN_MAX_AGE': env.int('DB_CONN_MAX_AGE', default=60),
+            'OPTIONS': {'connect_timeout': 10},
+        }
+    }
+elif _db_engine == 'django.db.backends.mysql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': env('DB_NAME', default='akilli_tarim'),
+            'USER': env('DB_USER', default='root'),
+            'PASSWORD': env('DB_PASSWORD', default=''),
+            'HOST': env('DB_HOST', default='localhost'),
+            'PORT': env('DB_PORT', default='3306'),
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
+    }
+else:
+    DATABASES = {
+        'default': env.db('DATABASE_URL', default=f'sqlite:///{BASE_DIR}/db.sqlite3'),
+    }
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -179,6 +210,18 @@ CACHES = {
         'TIMEOUT': 300,  # 5 dakika varsayılan
     }
 }
+
+# MQTT / IoT (EMQX broker)
+MQTT_HOST = env('MQTT_HOST', default='localhost')
+MQTT_PORT = env.int('MQTT_PORT', default=1883)
+MQTT_TLS = env.bool('MQTT_TLS', default=False)
+MQTT_CA_CERT = env('MQTT_CA_CERT', default='')
+MQTT_USERNAME = env('MQTT_USERNAME', default='ingest')
+MQTT_PASSWORD = env('MQTT_PASSWORD', default='')
+MQTT_CLIENT_ID = env('MQTT_CLIENT_ID', default='ats-ingest-1')
+MQTT_ENV = env('MQTT_ENV', default='dev')
+MQTT_TOPIC_VERSION = env('MQTT_TOPIC_VERSION', default='v1')
+MQTT_KEEPALIVE = env.int('MQTT_KEEPALIVE', default=60)
 
 # Uygulama önbellek süreleri (saniye)
 CACHE_TTL_PRICES = 60 * 30       # 30 dakika — Fiyat verisi (seyrek değişir)

@@ -15,6 +15,7 @@ class SoilAnalysis(TimeStampedModel):
     SOURCE_CHOICES = [
         ('manual', 'Manuel Giriş'),
         ('simulation', 'Simülasyon'),
+        ('mqtt', 'MQTT Sensör'),
     ]
 
     field = models.ForeignKey(

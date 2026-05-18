@@ -1,0 +1,63 @@
+# Akıllı Tarım — MQTT altyapısı (geliştirme)
+# Kullanım: docker compose up -d
+# Dashboard: http://localhost:18083 (admin / public)
+
+services:
+  emqx:
+    image: emqx/emqx:5.8.6
+    container_name: ats-emqx
+    restart: unless-stopped
+    ports:
+      - "1883:1883"    # MQTT (dev — TLS için 8883 prod'da açın)
+      - "8883:8883"    # MQTT over TLS
+      - "8083:8083"    # WebSocket
+      - "8084:8084"    # WebSocket TLS
+      - "18083:18083"  # Dashboard
+    environment:
+      EMQX_NAME: ats-emqx
+      # Geliştirme: anonim açık; üretimde kapatın ve infra/mqtt/acl.conf kullanın
+      EMQX_ALLOW_ANONYMOUS: "true"
+      EMQX_DASHBOARD__DEFAULT_USERNAME: admin
+      EMQX_DASHBOARD__DEFAULT_PASSWORD: public
+    volumes:
+      - emqx_data:/opt/emqx/data
+      - emqx_log:/opt/emqx/log
+    healthcheck:
+      test: ["CMD", "emqx", "ctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: ats-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: ats-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: akilli_tarim
+      POSTGRES_USER: ats
+      POSTGRES_PASSWORD: ats
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ats -d akilli_tarim"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  emqx_data:
+  emqx_log:
+  redis_data:
+  postgres_data:
