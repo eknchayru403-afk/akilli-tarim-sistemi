@@ -1,17 +1,19 @@
--- Akıllı Tarım Sistemi Veritabanı Şeması (Python ile uyumlu)
+-- Akıllı Tarım Sistemi Veritabanı Şeması
 
--- Sensör verilerini saklayan tablo
-CREATE TABLE sensor_data (
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    sensor_type VARCHAR(50),      -- Örn: 'nem', 'sicaklik'
-    value FLOAT,                  -- Ölçülen değer
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+-- Sensörlerden gelen verileri (nem, sıcaklık vb.) saklamak için tablo
+CREATE TABLE sensor_readings (
+    id INT PRIMARY KEY AUTO_INCREMENT,           -- Her kayıt için benzersiz kimlik
+    sensor_type VARCHAR(50) NOT NULL,            -- Sensör tipi (Örn: Toprak Nemi, Hava Sıcaklığı)
+    value DOUBLE NOT NULL,                       -- Ölçülen değer
+    unit VARCHAR(10),                           -- Ölçüm birimi (Örn: %, °C)
+    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Kaydın oluşturulduğu tarih ve saat
 );
 
--- Pompa veya fan işlemlerini saklayan tablo
+-- Cihazların (Su pompası, Fan vb.) durumlarını takip etmek için tablo
 CREATE TABLE device_logs (
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    device_name VARCHAR(50),      -- Örn: 'su_pompasi'
-    status VARCHAR(20),           -- Örn: 'ACIK', 'KAPALI'
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    device_name VARCHAR(50),                     -- Cihaz adı (Örn: Su Pompası)
+    action VARCHAR(20),                          -- Yapılan işlem (AÇIK / KAPALI)
+    triggered_by VARCHAR(50),                    -- İşlemi kim tetikledi (Otomatik / Manuel)
+    event_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
