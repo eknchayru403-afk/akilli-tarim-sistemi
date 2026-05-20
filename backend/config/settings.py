@@ -210,7 +210,7 @@ REST_FRAMEWORK = {
     },
     # Hata yanıt formatı
     'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.openapi.AutoSchema',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.openapi.AutoSchema',
 }
 
 # JWT Ayarları

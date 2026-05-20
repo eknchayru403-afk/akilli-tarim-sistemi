@@ -146,7 +146,7 @@ class SensorReading(TimeStampedModel):
     field = models.ForeignKey(
         Field,
         on_delete=models.CASCADE,
-        related_name='sensor_readings',
+        related_name='field_sensor_readings',
         verbose_name='Tarla',
     )
     sensor_type = models.CharField(
