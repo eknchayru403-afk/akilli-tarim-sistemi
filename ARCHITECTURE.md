@@ -221,3 +221,4 @@ textSecondary:#757575
 | Tarih | Değişiklik | Detay |
 |-------|-----------|-------|
 | 2026-03-28 | İlk versiyon | ARCHITECTURE.md oluşturuldu. Wireframe + DB v2 şeması baz alındı. |
+| 2026-05-19 | DRF API Genişletme | SensorDataViewSet, SensorReadingViewSet, SoilAnalysisViewSet eklendi. /sensors/data/ ve /sensors/latest/ özel action'ları. TokenVerifyView, SensorDataFilter, SensorReadingFilter eklendi. Postman koleksiyonu ve API dokümantasyonu oluşturuldu. |

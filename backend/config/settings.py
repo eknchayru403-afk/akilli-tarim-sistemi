@@ -42,7 +42,9 @@ THIRD_PARTY_APPS = [
     'channels',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',  # Logout token geçersiz kılma
     'django_filters',
+    'corsheaders',  # Mobil istemci CORS desteği
 ]
 
 LOCAL_APPS = [
@@ -60,6 +62,8 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',         # CORS — SecurityMiddleware'den hemen sonra
+    'apps.api.v1.middleware.RequireHTTPSMiddleware', # API HTTPS zorunluluğu (prod)
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -191,15 +195,51 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ),
+    # Rate Limiting — Brute-force koruması
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '30/hour',           # Anonim: saatte 30 istek
+        'user': '1000/day',          # Kayıtlı: günde 1000 istek
+        'auth_login': '5/minute',    # Login: dakikada 5 deneme (brute-force)
+        'auth_register': '3/hour',   # Kayıt: saatte 3 deneme
+        'token_refresh': '10/minute', # Token yenile: dakikada 10
+        'password_change': '5/hour', # Şifre değiştir: saatte 5
+    },
+    # Hata yanıt formatı
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.openapi.AutoSchema',
 }
 
 # JWT Ayarları
 from datetime import timedelta
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
+    # Token süreleri
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=env.int('JWT_ACCESS_LIFETIME_MINUTES', default=60)),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=env.int('JWT_REFRESH_LIFETIME_DAYS', default=7)),
+
+    # Güvenlik davranışları
+    'ROTATE_REFRESH_TOKENS': True,      # Her refresh'te yeni refresh token ver
+    'BLACKLIST_AFTER_ROTATION': True,   # Eski refresh token'ı geçersiz kıl
+    'UPDATE_LAST_LOGIN': True,          # Son giriş zamanını güncelle
+
+    # İmzalama algoritması (HS256 — SECRET_KEY ile)
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': env('SECRET_KEY'),
+    'VERIFYING_KEY': None,
+
+    # Header yapılandırması
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+
+    # Token tipi doğrulama
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+
+    # Özel claim'ler (CustomTokenObtainPairSerializer tarafından doldurulur)
+    'TOKEN_OBTAIN_SERIALIZER': 'apps.accounts.token_serializers.CustomTokenObtainPairSerializer',
 }
 
 # Cache — LocMemCache (geliştirme), Redis'e geçiş için django-redis ekleyin
@@ -234,6 +274,35 @@ import os
 os.makedirs(LOGS_DIR, exist_ok=True)
 
 # Logging Konfigürasyonu
+import sys
+
+# QueueHandler 'handlers' parametresi Python 3.12+ gerektirir
+_use_queue_handler = sys.version_info >= (3, 12)
+
+_handlers = {
+    'console': {
+        'class': 'logging.StreamHandler',
+        'formatter': 'simple',
+    },
+    'file': {
+        'class': 'logging.handlers.RotatingFileHandler',
+        'filename': LOGS_DIR / 'atys.log',
+        'maxBytes': 1024 * 1024 * 5,  # 5 MB
+        'backupCount': 5,
+        'formatter': 'verbose',
+        'encoding': 'utf-8',
+    },
+}
+
+if _use_queue_handler:
+    _handlers['queue'] = {
+        'class': 'logging.handlers.QueueHandler',
+        'handlers': ['console', 'file'],
+        'respect_handler_level': True,
+    }
+
+_default_handler = ['queue'] if _use_queue_handler else ['console', 'file']
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -247,50 +316,100 @@ LOGGING = {
             'style': '{',
         },
     },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': LOGS_DIR / 'atys.log',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-            'encoding': 'utf-8',
-        },
-        'queue': {
-            'class': 'logging.handlers.QueueHandler',
-            'handlers': ['console', 'file'],
-            'respect_handler_level': True,
-        },
-    },
+    'handlers': _handlers,
     'loggers': {
         'django': {
-            'handlers': ['queue'],
+            'handlers': _default_handler,
             'level': 'INFO',
             'propagate': False,
         },
         'django.server': {
-            'handlers': ['queue'],
+            'handlers': _default_handler,
             'level': 'WARNING',  # Filtre: 200 OK HTTP loglarını gizle
             'propagate': False,
         },
         'django.db.backends': {
-            'handlers': ['queue'],
+            'handlers': _default_handler,
             'level': 'WARNING',  # Filtre: Gereksiz SQL sorgu loglarını gizle
             'propagate': False,
         },
         'apps': {
-            'handlers': ['queue'],
+            'handlers': _default_handler,
             'level': 'INFO',
             'propagate': False,
         },
         'ml': {
-            'handlers': ['queue'],
+            'handlers': _default_handler,
             'level': 'INFO',
             'propagate': False,
         },
     },
 }
+
+# ---------------------------------------------------------------------------
+# HTTPS & Güvenlik Başlıkları
+# ---------------------------------------------------------------------------
+# Üretim ortamında .env'de SECURE_SSL_REDIRECT=True olarak ayarlayın.
+# Geliştirme ortamında tüm bu ayarlar False'dır.
+
+# HTTPS yönlendirme (prod'da True)
+SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=False)
+
+# HSTS — tarayıcıya HTTPS zorunu bildir (prod'da aktif edilir)
+SECURE_HSTS_SECONDS = env.int('SECURE_HSTS_SECONDS', default=0)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool('SECURE_HSTS_INCLUDE_SUBDOMAINS', default=False)
+SECURE_HSTS_PRELOAD = env.bool('SECURE_HSTS_PRELOAD', default=False)
+
+# Güvenli Cookie'ler (prod'da True — HTTPS gerektirir)
+SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)
+CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', default=False)
+
+# HTTP Güvenlik Başlıkları
+X_FRAME_OPTIONS = 'DENY'                     # Clickjacking koruması
+SECURE_CONTENT_TYPE_NOSNIFF = True           # MIME sniffing koruması
+SECURE_BROWSER_XSS_FILTER = True             # XSS filtresi (eski tarayıcılar)
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+# Proxy arkasında çalışıyorsa (nginx, load balancer)
+USE_X_FORWARDED_HOST = env.bool('USE_X_FORWARDED_HOST', default=False)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') if env.bool('BEHIND_PROXY', default=False) else None
+
+# ---------------------------------------------------------------------------
+# CORS — Mobil İstemci Cross-Origin Desteği
+# ---------------------------------------------------------------------------
+# Geliştirme: CORS_ALLOW_ALL_ORIGINS=True (sadece dev!)
+# Üretim:     CORS_ALLOWED_ORIGINS listesine domain ekleyin.
+
+CORS_ALLOW_ALL_ORIGINS = env.bool('CORS_ALLOW_ALL_ORIGINS', default=False)
+
+CORS_ALLOWED_ORIGINS = env.list(
+    'CORS_ALLOWED_ORIGINS',
+    default=[
+        'http://localhost:3000',
+        'http://localhost:8080',
+        'http://127.0.0.1:3000',
+    ],
+)
+
+CORS_ALLOW_CREDENTIALS = True  # Cookie/Authorization header ile istek
+
+CORS_ALLOWED_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+CORS_ALLOWED_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]

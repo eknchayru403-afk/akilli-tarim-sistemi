@@ -1,0 +1,726 @@
+{
+  "info": {
+    "name": "ATYS — Akıllı Tarım Yönetim Sistemi API v1",
+    "_postman_id": "atys-api-v1-collection",
+    "description": "Akıllı Tarım Yönetim Sistemi REST API endpoint'leri.\n\nKullanım:\n1. Environment'ta BASE_URL ve TOKEN değişkenlerini ayarlayın.\n2. Önce 'Token Al (Login)' isteğini gönderin — token otomatik environment'a kaydedilir.\n3. Diğer istekleri JWT Bearer token ile gönderin.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "TOKEN",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "REFRESH_TOKEN",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{TOKEN}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "🔐 Kimlik Doğrulama (Auth)",
+      "item": [
+        {
+          "name": "Token Al (Login)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('TOKEN', body.access);",
+                  "    pm.collectionVariables.set('REFRESH_TOKEN', body.refresh);",
+                  "    pm.test('Token alındı', () => pm.expect(body.access).to.be.a('string'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/token/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "token", ""]
+            },
+            "description": "Kullanıcı adı ve şifre ile JWT access + refresh token alır.\n\nBaşarılı yanıt:\n```json\n{\n  \"access\": \"eyJ...\",\n  \"refresh\": \"eyJ...\"\n}\n```"
+          },
+          "response": []
+        },
+        {
+          "name": "Token Yenile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('TOKEN', body.access);",
+                  "    pm.test('Token yenilendi', () => pm.expect(body.access).to.be.a('string'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{REFRESH_TOKEN}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/token/refresh/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "token", "refresh", ""]
+            },
+            "description": "Refresh token ile yeni access token alır."
+          },
+          "response": []
+        },
+        {
+          "name": "Token Doğrula",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{TOKEN}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/token/verify/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "token", "verify", ""]
+            },
+            "description": "Bir token'ın geçerli olup olmadığını doğrular. Geçerliyse 200, değilse 401 döner."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🌾 Tarla Yönetimi (Fields)",
+      "item": [
+        {
+          "name": "Tarla Listesi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Durum 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Sayfalı yanıt', () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body).to.have.property('results');",
+                  "    pm.expect(body).to.have.property('count');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/fields/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "fields", ""],
+              "query": [
+                { "key": "status", "value": "planted", "disabled": true },
+                { "key": "soil_type", "value": "killi", "disabled": true },
+                { "key": "name", "value": "kuzey", "disabled": true },
+                { "key": "page", "value": "1", "disabled": true },
+                { "key": "page_size", "value": "10", "disabled": true }
+              ]
+            },
+            "description": "Kullanıcının tüm tarlalarını listeler.\n\nFiltreler:\n- `status`: empty | planted\n- `soil_type`: killi | kumlu | tinli | killi_tinli | kumlu_tinli | limolu\n- `name`: Kısmi arama\n- `page`, `page_size`: Sayfalama"
+          },
+          "response": []
+        },
+        {
+          "name": "Tarla Oluştur",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Durum 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('FIELD_ID', body.id);",
+                  "    pm.test('ID mevcut', () => pm.expect(body.id).to.be.a('number'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Kuzey Tarla\",\n  \"location\": \"Konya, Türkiye\",\n  \"area_decar\": 50.00,\n  \"soil_type\": \"tinli\",\n  \"status\": \"empty\",\n  \"current_crop\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/fields/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "fields", ""]
+            },
+            "description": "Yeni tarla oluşturur. Kullanıcı otomatik atanır."
+          },
+          "response": []
+        },
+        {
+          "name": "Tarla Detayı",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/fields/1/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "fields", "1", ""]
+            },
+            "description": "Belirli bir tarlanın detay bilgisini döner."
+          },
+          "response": []
+        },
+        {
+          "name": "Tarla Güncelle (Kısmi)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"planted\",\n  \"current_crop\": \"bugday\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/fields/1/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "fields", "1", ""]
+            },
+            "description": "Tarlanın seçili alanlarını günceller."
+          },
+          "response": []
+        },
+        {
+          "name": "Tarla Sil",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Durum 204', () => pm.response.to.have.status(204));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/fields/1/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "fields", "1", ""]
+            },
+            "description": "Belirtilen tarlayı siler."
+          },
+          "response": []
+        },
+        {
+          "name": "Tarlaya Ait Toprak Analizleri",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/fields/1/analyses/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "fields", "1", "analyses", ""]
+            },
+            "description": "Belirtilen tarlaya ait tüm toprak analizlerini listeler."
+          },
+          "response": []
+        },
+        {
+          "name": "Tarlaya Ait Sensör Verileri",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/fields/1/sensors/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "fields", "1", "sensors", ""]
+            },
+            "description": "Belirtilen tarlaya ait sensör verilerini listeler."
+          },
+          "response": []
+        },
+        {
+          "name": "Tarlaya Ait Tahmin Sonuçları",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/fields/1/predictions/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "fields", "1", "predictions", ""]
+            },
+            "description": "Belirtilen tarlaya ait ürün tahmin sonuçlarını listeler."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📡 Sensör Verileri (Sensors)",
+      "item": [
+        {
+          "name": "Sensör Verisi Listesi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Durum 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Sayfalı yanıt', () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body).to.have.property('results');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/sensors/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "sensors", ""],
+              "query": [
+                { "key": "field_id", "value": "1", "disabled": true },
+                { "key": "min_humidity", "value": "40", "disabled": true },
+                { "key": "max_temperature", "value": "35", "disabled": true },
+                { "key": "date_from", "value": "2025-01-01", "disabled": true },
+                { "key": "ordering", "value": "-created_at", "disabled": true }
+              ]
+            },
+            "description": "Kullanıcının tüm sensör verilerini listeler.\n\nFiltreler:\n- `field_id`: Tarla ID'sine göre filtrele\n- `min_humidity`, `max_humidity`: Nem aralığı\n- `min_temperature`, `max_temperature`: Sıcaklık aralığı\n- `min_soil_ph`, `max_soil_ph`: pH aralığı\n- `date_from`, `date_to`: Tarih aralığı\n- `ordering`: created_at, temperature, humidity, soil_ph"
+          },
+          "response": []
+        },
+        {
+          "name": "Sensör Verisi Gönder (POST /sensors/data/)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Durum 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Nem alanı mevcut', () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body).to.have.property('humidity');",
+                  "    pm.expect(body).to.have.property('temperature');",
+                  "    pm.expect(body).to.have.property('soil_ph');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": 1,\n  \"humidity\": 65.5,\n  \"temperature\": 22.3,\n  \"soil_moisture\": 40.0,\n  \"plant_water_consumption\": 3.5,\n  \"soil_ph\": 6.8,\n  \"light_intensity\": 12000\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/sensors/data/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "sensors", "data", ""]
+            },
+            "description": "Sensörden gelen veriyi kaydeder.\n\nGerekli alanlar:\n- `field`: Tarla ID\n- `humidity`: 0-100 arası nem (%)\n- `temperature`: -50 ile 60 arası sıcaklık (°C)\n- `soil_moisture`: Toprak nemi (%)\n- `plant_water_consumption`: Bitki su tüketimi (mm/gün)\n- `soil_ph`: 0-14 arası pH\n- `light_intensity`: Işık yoğunluğu (Lux)"
+          },
+          "response": []
+        },
+        {
+          "name": "En Son Sensör Verileri",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Durum 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Sonuçlar dizisi', () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.results).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/sensors/latest/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "sensors", "latest", ""]
+            },
+            "description": "Her tarladan en son sensör verisini döner. Dashboard için kullanışlıdır."
+          },
+          "response": []
+        },
+        {
+          "name": "Sensör Verisi Detayı",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/sensors/1/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "sensors", "1", ""]
+            },
+            "description": "Belirli bir sensör verisinin detayını döner."
+          },
+          "response": []
+        },
+        {
+          "name": "Sensör Verisi Sil",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/sensors/1/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "sensors", "1", ""]
+            },
+            "description": "Belirtilen sensör verisini siler."
+          },
+          "response": []
+        },
+        {
+          "name": "Ham Sensör Okumaları (MQTT)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/sensors/readings/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "sensors", "readings", ""],
+              "query": [
+                { "key": "field_id", "value": "1", "disabled": true },
+                { "key": "sensor_type", "value": "humidity", "disabled": true },
+                { "key": "is_valid", "value": "true", "disabled": true }
+              ]
+            },
+            "description": "MQTT üzerinden gelen ham sensör okumalarını listeler."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🧪 Toprak Analizi (Soil Analyses)",
+      "item": [
+        {
+          "name": "Toprak Analizi Listesi",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/soil-analyses/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "soil-analyses", ""],
+              "query": [
+                { "key": "field_id", "value": "1", "disabled": true },
+                { "key": "source", "value": "manual", "disabled": true },
+                { "key": "date_from", "value": "2025-01-01", "disabled": true }
+              ]
+            },
+            "description": "Toprak analiz verilerini listeler.\n\nFiltreler:\n- `field_id`: Tarla ID\n- `source`: manual | simulation | mqtt\n- `date_from`, `date_to`: Tarih aralığı"
+          },
+          "response": []
+        },
+        {
+          "name": "Yeni Toprak Analizi Oluştur",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Durum 201', () => pm.response.to.have.status(201));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": 1,\n  \"nitrogen\": 85.0,\n  \"phosphorus\": 42.0,\n  \"potassium\": 43.0,\n  \"temperature\": 21.5,\n  \"humidity\": 72.0,\n  \"ph\": 6.5,\n  \"rainfall\": 202.0,\n  \"source\": \"manual\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/soil-analyses/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "soil-analyses", ""]
+            },
+            "description": "Toprak analizi verisi oluşturur (manuel veya simülasyon)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🌱 Tahmin Sonuçları (Predictions)",
+      "item": [
+        {
+          "name": "Tahmin Listesi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Durum 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Sayfalı yanıt', () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body).to.have.property('results');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/predictions/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "predictions", ""],
+              "query": [
+                { "key": "field_id", "value": "1", "disabled": true },
+                { "key": "min_confidence", "value": "70", "disabled": true },
+                { "key": "crop_name", "value": "rice", "disabled": true },
+                { "key": "ordering", "value": "-confidence", "disabled": true }
+              ]
+            },
+            "description": "ML model tarafından üretilen ürün tahmin sonuçlarını listeler.\n\nFiltreler:\n- `field_id`: Tarla ID\n- `analysis_id`: Analiz ID\n- `crop_name`: Ürün adı (kısmi arama)\n- `min_confidence`: Minimum güven skoru (%)\n- `date_from`, `date_to`: Tarih aralığı\n- `ordering`: created_at, confidence, rank"
+          },
+          "response": []
+        },
+        {
+          "name": "Tahmin Detayı",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/predictions/1/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "predictions", "1", ""]
+            },
+            "description": "Belirli bir tahmin sonucunun detayını döner."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🩺 Bakım Tavsiyeleri (Care)",
+      "item": [
+        {
+          "name": "Bakım Tavsiyesi Listesi",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/care/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "care", ""],
+              "query": [
+                { "key": "ordering", "value": "-created_at", "disabled": true }
+              ]
+            },
+            "description": "Kullanıcının tarlalarına ait bakım tavsiyelerini listeler."
+          },
+          "response": []
+        },
+        {
+          "name": "Tavsiyeyi Tamamlandı İşaretle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Durum 200', () => pm.response.to.have.status(200));",
+                  "pm.test('is_done true', () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.is_done).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_done\": true\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/care/1/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "care", "1", ""]
+            },
+            "description": "Bir bakım tavsiyesini tamamlandı olarak işaretler."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🛡️ Hata Senaryoları (Error Cases)",
+      "item": [
+        {
+          "name": "Yetkisiz Erişim (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Durum 401', () => pm.response.to.have.status(401));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/sensors/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "sensors", ""]
+            },
+            "description": "Token olmadan istek gönderildiğinde 401 Unauthorized döner."
+          },
+          "response": []
+        },
+        {
+          "name": "Geçersiz Sensör Verisi (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Durum 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Hata mesajı mevcut', () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(Object.keys(body).length).to.be.greaterThan(0);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"field\": 1,\n  \"humidity\": 150,\n  \"temperature\": 22.3,\n  \"soil_moisture\": 40.0,\n  \"plant_water_consumption\": 3.5,\n  \"soil_ph\": 15.0,\n  \"light_intensity\": 12000\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/sensors/data/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "sensors", "data", ""]
+            },
+            "description": "Geçersiz nem (>100) ve pH (>14) değerleri ile istek. Validasyon hatası dönmeli."
+          },
+          "response": []
+        },
+        {
+          "name": "Bulunamadı (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Durum 404', () => pm.response.to.have.status(404));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/fields/99999/",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "fields", "99999", ""]
+            },
+            "description": "Olmayan bir tarla ID'si sorgulandığında 404 Not Found döner."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
