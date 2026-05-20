@@ -1,7 +1,7 @@
 """
 Rapor filtreleme formu.
 
-Tarih aralığı ve tarla seçimi ile rapor oluşturma formu.
+Rapor tipi, tarih aralığı, tarla seçimi ve export formatı.
 """
 
 from django import forms
@@ -9,9 +9,30 @@ from django import forms
 from apps.fields.models import Field
 
 
-class ReportFilterForm(forms.Form):
-    """Rapor filtre formu — tarih aralığı ve tarla seçimi."""
+REPORT_TYPE_CHOICES = [
+    ('general', 'Genel Rapor'),
+    ('irrigation', 'Sulama Raporu'),
+    ('fertilization', 'Gübreleme Raporu'),
+    ('yield', 'Verim Analizi'),
+    ('sensor', 'Sensör Özeti'),
+]
 
+EXPORT_FORMAT_CHOICES = [
+    ('pdf', 'PDF'),
+    ('excel', 'Excel (.xlsx)'),
+    ('csv', 'CSV'),
+]
+
+
+class ReportFilterForm(forms.Form):
+    """Rapor filtre formu — rapor tipi, tarih aralığı, tarla ve format seçimi."""
+
+    report_type = forms.ChoiceField(
+        choices=REPORT_TYPE_CHOICES,
+        initial='general',
+        label='Rapor Tipi',
+        widget=forms.Select(attrs={'class': 'form-select'}),
+    )
     field = forms.ModelChoiceField(
         queryset=Field.objects.none(),
         required=False,
@@ -34,6 +55,12 @@ class ReportFilterForm(forms.Form):
             'type': 'date',
             'class': 'form-control',
         }),
+    )
+    export_format = forms.ChoiceField(
+        choices=EXPORT_FORMAT_CHOICES,
+        initial='pdf',
+        label='İndirme Formatı',
+        widget=forms.Select(attrs={'class': 'form-select'}),
     )
 
     def __init__(self, user, *args, **kwargs):

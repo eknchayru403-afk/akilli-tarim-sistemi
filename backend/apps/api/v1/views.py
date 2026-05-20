@@ -396,3 +396,132 @@ class FertilizerOptimizationAPIView(APIView):
             return Response(res_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# ---------------------------------------------------------------------------
+# Raporlama ve Analiz (Reports & Analysis)
+# ---------------------------------------------------------------------------
+
+class ReportViewSet(viewsets.ViewSet):
+    """
+    Raporlama ve Analiz API ViewSet.
+
+    GET /api/v1/reports/preview/   → Rapor önizleme verisi (JSON)
+    GET /api/v1/reports/download/  → Raporu PDF, Excel veya CSV formatında indir
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=False, methods=['get'])
+    def preview(self, request):
+        """Rapor verisi önizleme."""
+        from apps.reports.services import ReportService
+        from datetime import datetime
+
+        field_id = request.query_params.get('field')
+        date_from_str = request.query_params.get('date_from')
+        date_to_str = request.query_params.get('date_to')
+        report_type = request.query_params.get('report_type', 'general')
+
+        date_from = None
+        date_to = None
+
+        if date_from_str:
+            try:
+                date_from = datetime.strptime(date_from_str, '%Y-%m-%d').date()
+            except ValueError:
+                pass
+        if date_to_str:
+            try:
+                date_to = datetime.strptime(date_to_str, '%Y-%m-%d').date()
+            except ValueError:
+                pass
+
+        if field_id:
+            try:
+                field_id = int(field_id)
+            except ValueError:
+                field_id = None
+
+        report_data = ReportService.get_report_data(
+            user=request.user,
+            field_id=field_id,
+            date_from=date_from,
+            date_to=date_to,
+            report_type=report_type,
+        )
+        return Response(report_data)
+
+    @action(detail=False, methods=['get'])
+    def download(self, request):
+        """Rapor indirme."""
+        from apps.reports.services import ReportService
+        from apps.reports.generators.pdf_generator import generate_pdf_report
+        from apps.reports.generators.excel_generator import generate_excel_report
+        from apps.reports.generators.csv_generator import generate_csv_report
+        from datetime import datetime
+        from django.http import HttpResponse
+
+        field_id = request.query_params.get('field')
+        date_from_str = request.query_params.get('date_from')
+        date_to_str = request.query_params.get('date_to')
+        report_type = request.query_params.get('report_type', 'general')
+        export_format = request.query_params.get('export_format', 'pdf')
+
+        date_from = None
+        date_to = None
+
+        if date_from_str:
+            try:
+                date_from = datetime.strptime(date_from_str, '%Y-%m-%d').date()
+            except ValueError:
+                pass
+        if date_to_str:
+            try:
+                date_to = datetime.strptime(date_to_str, '%Y-%m-%d').date()
+            except ValueError:
+                pass
+
+        if field_id:
+            try:
+                field_id = int(field_id)
+            except ValueError:
+                field_id = None
+
+        report_data = ReportService.get_report_data(
+            user=request.user,
+            field_id=field_id,
+            date_from=date_from,
+            date_to=date_to,
+            report_type=report_type,
+        )
+
+        filename_prefix = {
+            'general': 'Genel_Rapor',
+            'irrigation': 'Sulama_Raporu',
+            'fertilization': 'Gubreleme_Raporu',
+            'yield': 'Verim_Analizi',
+            'sensor': 'Sensor_Ozeti',
+        }.get(report_type, 'Tarimsal_Rapor')
+
+        if export_format == 'pdf':
+            pdf_buffer = generate_pdf_report(report_data)
+            response = HttpResponse(pdf_buffer.read(), content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="ATYS_{filename_prefix}.pdf"'
+            return response
+
+        elif export_format == 'excel':
+            excel_buffer = generate_excel_report(report_data)
+            response = HttpResponse(
+                excel_buffer.read(),
+                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            )
+            response['Content-Disposition'] = f'attachment; filename="ATYS_{filename_prefix}.xlsx"'
+            return response
+
+        elif export_format == 'csv':
+            csv_buffer = generate_csv_report(report_data)
+            response = HttpResponse(csv_buffer.read(), content_type='text/csv')
+            response['Content-Disposition'] = f'attachment; filename="ATYS_{filename_prefix}.csv"'
+            return response
+
+        return Response({"detail": "Gecersiz format"}, status=400)

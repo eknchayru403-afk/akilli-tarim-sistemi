@@ -60,6 +60,7 @@ router.register(r'fields', views.FieldViewSet, basename='field')
 # Tahmin ve tavsiyeler
 router.register(r'predictions', views.PredictionViewSet, basename='prediction')
 router.register(r'care', views.CareRecommendationViewSet, basename='care')
+router.register(r'reports', views.ReportViewSet, basename='report')
 
 # ---------------------------------------------------------------------------
 # ML Custom Endpoint'leri

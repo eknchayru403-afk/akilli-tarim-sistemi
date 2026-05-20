@@ -6,6 +6,8 @@ app_name = 'reports'
 
 urlpatterns = [
     path('', views.report_index, name='index'),
-    path('pdf/', views.download_pdf, name='download_pdf'),
-    path('excel/', views.download_excel, name='download_excel'),
+    path('download/', views.download_report, name='download'),
+    path('preview/', views.report_preview, name='preview'),
+    path('pdf/', views.download_report, name='download_pdf'),  # legacy support
+    path('excel/', views.download_report, name='download_excel'),  # legacy support
 ]

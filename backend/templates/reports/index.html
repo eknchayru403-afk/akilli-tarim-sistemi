@@ -1,83 +1,128 @@
 {% extends 'base.html' %}
 
-{% block title %}Raporlar{% endblock %}
-{% block page_title %}Tarımsal Raporlar{% endblock %}
+{% block title %}Raporlama ve Analiz{% endblock %}
+{% block page_title %}Raporlama ve Analiz Modülü{% endblock %}
 
 {% block content %}
 <div class="row">
-    <div class="col-lg-8">
-        <div class="card shadow-sm mb-4">
-            <div class="card-header bg-white">
+    <!-- Filtreleme Paneli -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 mb-4 bg-white">
+            <div class="card-header bg-success text-white py-3">
                 <h5 class="card-title mb-0">
-                    <i class="bi bi-file-earmark-bar-graph me-2"></i>Rapor Oluştur
+                    <i class="bi bi-sliders me-2"></i>Rapor Parametreleri
                 </h5>
             </div>
-            <div class="card-body">
-                <p class="text-muted mb-4">
-                    Sulama, gübreleme ve ilaçlama geçmişinizi içeren raporları PDF veya Excel formatında indirin.
-                    Tarih aralığı ve tarla seçerek raporu filtreleyebilirsiniz.
-                </p>
+            <div class="card-body py-4">
+                <form id="reportForm" action="{% url 'reports:download' %}" method="get">
+                    <div class="mb-3">
+                        <label for="id_report_type" class="form-label fw-bold text-success">
+                            <i class="bi bi-file-earmark-bar-graph me-1"></i>Rapor Türü
+                        </label>
+                        {{ form.report_type }}
+                    </div>
 
-                <form id="reportForm">
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <label for="id_field" class="form-label fw-semibold">Tarla</label>
-                            {{ form.field }}
-                        </div>
-                        <div class="col-md-4">
-                            <label for="id_date_from" class="form-label fw-semibold">Başlangıç Tarihi</label>
+                    <div class="mb-3">
+                        <label for="id_field" class="form-label fw-bold text-success">
+                            <i class="bi bi-geo me-1"></i>Tarla Seçimi
+                        </label>
+                        {{ form.field }}
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label for="id_date_from" class="form-label fw-bold text-success">Başlangıç</label>
                             {{ form.date_from }}
                         </div>
-                        <div class="col-md-4">
-                            <label for="id_date_to" class="form-label fw-semibold">Bitiş Tarihi</label>
+                        <div class="col-6">
+                            <label for="id_date_to" class="form-label fw-bold text-success">Bitiş</label>
                             {{ form.date_to }}
                         </div>
                     </div>
 
-                    <div class="d-flex gap-3">
-                        <a id="pdfBtn" href="{% url 'reports:download_pdf' %}" class="btn btn-danger btn-lg">
-                            <i class="bi bi-file-earmark-pdf me-2"></i>PDF İndir
-                        </a>
-                        <a id="excelBtn" href="{% url 'reports:download_excel' %}" class="btn btn-success btn-lg">
-                            <i class="bi bi-file-earmark-excel me-2"></i>Excel İndir
-                        </a>
+                    <div class="mb-4">
+                        <label for="id_export_format" class="form-label fw-bold text-success">
+                            <i class="bi bi-download me-1"></i>İndirme Formatı
+                        </label>
+                        {{ form.export_format }}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="button" id="previewBtn" class="btn btn-outline-success btn-lg">
+                            <i class="bi bi-eye me-2"></i>Rapor Önizle
+                        </button>
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-download me-2"></i>Raporu İndir
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
-    </div>
 
-    <div class="col-lg-4">
-        <div class="card shadow-sm mb-4">
-            <div class="card-header bg-white">
-                <h6 class="card-title mb-0">
-                    <i class="bi bi-info-circle me-2"></i>Rapor İçeriği
-                </h6>
-            </div>
+        <div class="card shadow-sm border-0 mb-4 bg-light">
             <div class="card-body">
-                <ul class="list-unstyled">
-                    <li class="mb-2"><i class="bi bi-droplet text-primary me-2"></i> Sulama geçmişi</li>
-                    <li class="mb-2"><i class="bi bi-flower1 text-success me-2"></i> Gübreleme geçmişi</li>
-                    <li class="mb-2"><i class="bi bi-bug text-warning me-2"></i> İlaçlama geçmişi</li>
-                    <li class="mb-2"><i class="bi bi-clipboard-data text-info me-2"></i> Toprak analizi özeti</li>
-                    <li class="mb-2"><i class="bi bi-graph-up text-danger me-2"></i> Ürün önerileri</li>
-                </ul>
+                <h6 class="fw-bold text-success mb-3">
+                    <i class="bi bi-info-circle-fill me-2"></i>Rapor Detayları
+                </h6>
+                <div class="small text-muted" id="reportInfoText">
+                    Seçilen rapor türüne göre aşağıdaki bilgiler analiz edilir ve görselleştirilir:
+                    <ul class="mt-2 ps-3">
+                        <li><strong>Sulama Raporu:</strong> Toprak nemi trendleri, gerçekleşen sulama miktarları ve sulama tavsiyeleri.</li>
+                        <li><strong>Gübreleme Raporu:</strong> NPK besin değerleri dağılımı, pH değişimleri ve gübreleme planları.</li>
+                        <li><strong>Verim Analizi:</strong> ML modeli verim tahminleri, pazar kazanç öngörüleri ve önerilen ürünler.</li>
+                        <li><strong>Sensör Özeti:</strong> Ortam sıcaklığı, nem, ışık yoğunluğu zaman serisi analizleri.</li>
+                    </ul>
+                </div>
             </div>
         </div>
+    </div>
 
-        <div class="card shadow-sm">
-            <div class="card-header bg-white">
-                <h6 class="card-title mb-0">
-                    <i class="bi bi-question-circle me-2"></i>Kullanım
-                </h6>
+    <!-- Önizleme ve Analiz Paneli -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 bg-white" style="min-height: 500px;">
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0 text-success fw-bold">
+                    <i class="bi bi-graph-up me-2"></i>Rapor Önizlemesi & Analiz
+                </h5>
+                <span id="previewBadge" class="badge bg-secondary">Veri Bekleniyor</span>
             </div>
-            <div class="card-body">
-                <ol class="small">
-                    <li>Tarla seçin (opsiyonel)</li>
-                    <li>Tarih aralığı belirleyin (opsiyonel)</li>
-                    <li>PDF veya Excel formatını seçin</li>
-                    <li>Rapor otomatik indirilecektir</li>
-                </ol>
+            <div class="card-body d-flex flex-column justify-content-center align-items-center" id="previewPlaceholder">
+                <i class="bi bi-bar-chart-line text-muted" style="font-size: 4rem;"></i>
+                <p class="text-muted mt-3">Rapor önizlemesini ve grafikleri görüntülemek için soldaki <strong>Rapor Önizle</strong> butonuna tıklayın.</p>
+            </div>
+
+            <div class="card-body d-none" id="previewContent">
+                <!-- Özet Kartları -->
+                <div class="row g-3 mb-4" id="summaryCards">
+                    <!-- Dinamik olarak doldurulacak -->
+                </div>
+
+                <!-- Grafik Alanı -->
+                <div class="card border mb-4 bg-light">
+                    <div class="card-body">
+                        <h6 class="fw-bold text-success mb-3" id="chartTitle">Trend Grafiği</h6>
+                        <div style="position: relative; height:300px; width:100%">
+                            <canvas id="previewChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tablo Alanı -->
+                <div class="card border bg-white">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                        <span class="fw-bold text-success" id="tableTitle">Rapor Detay Tablosu</span>
+                    </div>
+                    <div class="table-responsive" style="max-height: 300px;">
+                        <table class="table table-hover table-striped align-middle mb-0 small" id="previewTable">
+                            <thead class="table-success text-white">
+                                <!-- Dinamik başlıklar -->
+                            </thead>
+                            <tbody>
+                                <!-- Dinamik satırlar -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -85,27 +130,434 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-// Form değiştiğinde download linklerini güncelle
-document.getElementById('reportForm').addEventListener('change', function() {
-    const form = this;
+let currentChart = null;
+
+document.getElementById('previewBtn').addEventListener('click', function() {
+    const form = document.getElementById('reportForm');
+    const previewContent = document.getElementById('previewContent');
+    const previewPlaceholder = document.getElementById('previewPlaceholder');
+    const previewBadge = document.getElementById('previewBadge');
+
+    // Loading State
+    previewPlaceholder.innerHTML = `
+        <div class="spinner-border text-success" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Yükleniyor...</span>
+        </div>
+        <p class="text-muted mt-3">Rapor verileri analiz ediliyor, grafikler çiziliyor...</p>
+    `;
+    previewPlaceholder.classList.remove('d-none');
+    previewContent.classList.add('d-none');
+
+    // Params build
     const params = new URLSearchParams();
+    const reportType = form.querySelector('#id_report_type').value;
+    const field = form.querySelector('#id_field').value;
+    const dateFrom = form.querySelector('#id_date_from').value;
+    const dateTo = form.querySelector('#id_date_to').value;
 
-    const field = form.querySelector('#id_field');
-    if (field && field.value) params.set('field', field.value);
+    params.set('report_type', reportType);
+    if (field) params.set('field', field);
+    if (dateFrom) params.set('date_from', dateFrom);
+    if (dateTo) params.set('date_to', dateTo);
 
-    const dateFrom = form.querySelector('#id_date_from');
-    if (dateFrom && dateFrom.value) params.set('date_from', dateFrom.value);
+    fetch(`{% url "reports:preview" %}?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+            previewPlaceholder.classList.add('d-none');
+            previewContent.classList.remove('d-none');
+            previewBadge.className = "badge bg-success";
+            previewBadge.textContent = "Aktif Rapor: " + document.getElementById('id_report_type').options[document.getElementById('id_report_type').selectedIndex].text;
 
-    const dateTo = form.querySelector('#id_date_to');
-    if (dateTo && dateTo.value) params.set('date_to', dateTo.value);
-
-    const queryString = params.toString();
-    const pdfBase = "{% url 'reports:download_pdf' %}";
-    const excelBase = "{% url 'reports:download_excel' %}";
-
-    document.getElementById('pdfBtn').href = queryString ? `${pdfBase}?${queryString}` : pdfBase;
-    document.getElementById('excelBtn').href = queryString ? `${excelBase}?${queryString}` : excelBase;
+            renderReport(reportType, data);
+        })
+        .catch(err => {
+            console.error(err);
+            previewPlaceholder.innerHTML = `
+                <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                <p class="text-danger mt-3">Veri yüklenirken hata oluştu. Lütfen filtreleri kontrol edin.</p>
+            `;
+        });
 });
+
+function renderReport(type, data) {
+    renderSummaryCards(type, data);
+    renderChart(type, data);
+    renderTable(type, data);
+}
+
+function renderSummaryCards(type, data) {
+    const container = document.getElementById('summaryCards');
+    container.innerHTML = '';
+
+    let cards = [];
+
+    if (type === 'irrigation') {
+        const sensorCount = data.sensor_data ? data.sensor_data.length : 0;
+        const avgMoisture = sensorCount > 0 ? (data.sensor_data.reduce((sum, item) => sum + item.soil_moisture, 0) / sensorCount).toFixed(1) : '-';
+        const totalIrrigation = data.irrigation_logs ? data.irrigation_logs.reduce((sum, item) => sum + item.amount, 0) : 0;
+
+        cards = [
+            { title: 'Ort. Toprak Nemi', value: `%${avgMoisture}`, icon: 'bi-droplet-half', color: 'primary' },
+            { title: 'Toplam Sulama Hacmi', value: `${totalIrrigation} L`, icon: 'bi-droplet-fill', color: 'info' },
+            { title: 'Öneri / Uyarılar', value: data.care_records.length, icon: 'bi-bell', color: 'warning' }
+        ];
+    } else if (type === 'fertilization') {
+        const soilCount = data.soil_analyses ? data.soil_analyses.length : 0;
+        const avgPH = soilCount > 0 ? (data.soil_analyses.reduce((sum, item) => sum + item.ph, 0) / soilCount).toFixed(2) : '-';
+        const totalFertilization = data.irrigation_logs ? data.irrigation_logs.reduce((sum, item) => sum + item.amount, 0) : 0;
+
+        cards = [
+            { title: 'Ortalama pH', value: avgPH, icon: 'bi-activity', color: 'success' },
+            { title: 'Toplam Gübreleme', value: `${totalFertilization} kg`, icon: 'bi-egg-fill', color: 'primary' },
+            { title: 'Toprak Analizi', value: soilCount, icon: 'bi-clipboard2-data', color: 'info' }
+        ];
+    } else if (type === 'yield') {
+        const bestCrop = data.recommendations && data.recommendations.length > 0 ? data.recommendations[0].crop_name_tr : 'Veri Yok';
+        const estRevenue = data.recommendations && data.recommendations.length > 0 ? data.recommendations.reduce((sum, item) => sum + item.revenue_tl, 0) : 0;
+
+        cards = [
+            { title: 'En Uygun Ürün', value: bestCrop, icon: 'bi-patch-check', color: 'success' },
+            { title: 'Top. Tahmini Kazanç', value: `${estRevenue.toLocaleString('tr-TR')} TL`, icon: 'bi-cash-coin', color: 'warning' },
+            { title: 'Analiz Sayısı', value: data.soil_analyses.length, icon: 'bi-calculator', color: 'info' }
+        ];
+    } else if (type === 'sensor') {
+        const sensorCount = data.sensor_data ? data.sensor_data.length : 0;
+        const avgTemp = sensorCount > 0 ? (data.sensor_data.reduce((sum, item) => sum + item.temperature, 0) / sensorCount).toFixed(1) : '-';
+        const avgHum = sensorCount > 0 ? (data.sensor_data.reduce((sum, item) => sum + item.humidity, 0) / sensorCount).toFixed(1) : '-';
+
+        cards = [
+            { title: 'Ort. Sıcaklık', value: `${avgTemp} °C`, icon: 'bi-thermometer-half', color: 'danger' },
+            { title: 'Ort. Hava Nemi', value: `%${avgHum}`, icon: 'bi-cloud-sun', color: 'primary' },
+            { title: 'Toplam Ölçüm', value: sensorCount, icon: 'bi-broadcast', color: 'success' }
+        ];
+    } else {
+        // General
+        cards = [
+            { title: 'Toplam Tarla', value: data.field_name !== 'Tüm Tarlalar' ? '1' : '-', icon: 'bi-geo-alt', color: 'success' },
+            { title: 'Bekleyen Görevler', value: data.care_records.filter(r => !r.is_done).length, icon: 'bi-list-task', color: 'warning' },
+            { title: 'Toprak Analiz Kaydı', value: data.soil_analyses.length, icon: 'bi-clipboard-data', color: 'info' }
+        ];
+    }
+
+    cards.forEach(card => {
+        container.innerHTML += `
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 bg-${card.color} text-white">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle mb-1 small opacity-75">${card.title}</h6>
+                            <h4 class="card-title mb-0 fw-bold">${card.value}</h4>
+                        </div>
+                        <i class="bi ${card.icon}" style="font-size: 2.2rem; opacity: 0.6;"></i>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function renderChart(type, data) {
+    const ctx = document.getElementById('previewChart').getContext('2d');
+    const chartTitle = document.getElementById('chartTitle');
+
+    if (currentChart) {
+        currentChart.destroy();
+    }
+
+    let chartConfig = {
+        type: 'line',
+        data: { labels: [], datasets: [] },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            scales: { y: { beginAtZero: false } }
+        }
+    };
+
+    if (type === 'irrigation') {
+        chartTitle.textContent = "Toprak Nemi Değişim Trendi";
+        const sensorData = data.sensor_data ? [...data.sensor_data].reverse().slice(-15) : [];
+        chartConfig.data.labels = sensorData.map(d => d.date.split(' ')[1] || d.date);
+        chartConfig.data.datasets = [
+            {
+                label: 'Toprak Nemi (%)',
+                data: sensorData.map(d => d.soil_moisture),
+                borderColor: '#1d3557',
+                backgroundColor: 'rgba(29, 53, 87, 0.1)',
+                fill: true,
+                tension: 0.3
+            }
+        ];
+    } else if (type === 'fertilization') {
+        chartTitle.textContent = "Toprak Besin Maddesi (NPK) Değerleri";
+        const soilData = data.soil_analyses ? [...data.soil_analyses].slice(0, 5).reverse() : [];
+        chartConfig.type = 'bar';
+        chartConfig.data.labels = soilData.map(d => d.date.split(' ')[0] || d.date);
+        chartConfig.data.datasets = [
+            { label: 'Azot (N)', data: soilData.map(d => d.nitrogen), backgroundColor: '#2a9d8f' },
+            { label: 'Fosfor (P)', data: soilData.map(d => d.phosphorus), backgroundColor: '#e9c46a' },
+            { label: 'Potasyum (K)', data: soilData.map(d => d.potassium), backgroundColor: '#e76f51' }
+        ];
+    } else if (type === 'yield') {
+        chartTitle.textContent = "Önerilen Ürünlerin Uygunluk Dağılımı";
+        chartConfig.type = 'doughnut';
+        const recs = data.recommendations ? data.recommendations.slice(0, 5) : [];
+        chartConfig.data.labels = recs.map(r => r.crop_name_tr);
+        chartConfig.data.datasets = [{
+            data: recs.map(r => r.confidence),
+            backgroundColor: ['#2d6a4f', '#40916c', '#52b788', '#74c69d', '#95d5b2']
+        }];
+        delete chartConfig.options.scales; // doughnut has no scales
+    } else if (type === 'sensor') {
+        chartTitle.textContent = "Hava Sıcaklığı ve Nem İstatistiği";
+        const sensorData = data.sensor_data ? [...data.sensor_data].reverse().slice(-15) : [];
+        chartConfig.data.labels = sensorData.map(d => d.date.split(' ')[1] || d.date);
+        chartConfig.data.datasets = [
+            {
+                label: 'Sıcaklık (°C)',
+                data: sensorData.map(d => d.temperature),
+                borderColor: '#e76f51',
+                tension: 0.2,
+                yAxisID: 'y'
+            },
+            {
+                label: 'Hava Nemi (%)',
+                data: sensorData.map(d => d.humidity),
+                borderColor: '#2a9d8f',
+                borderDash: [5, 5],
+                tension: 0.2,
+                yAxisID: 'y1'
+            }
+        ];
+        chartConfig.options.scales = {
+            y: { type: 'linear', display: true, position: 'left' },
+            y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false } }
+        };
+    } else {
+        // General
+        chartTitle.textContent = "Nem ve Sıcaklık Genel Görünüm";
+        const sensorData = data.sensor_data ? [...data.sensor_data].reverse().slice(-15) : [];
+        chartConfig.data.labels = sensorData.map(d => d.date.split(' ')[1] || d.date);
+        chartConfig.data.datasets = [
+            {
+                label: 'Toprak Nemi (%)',
+                data: sensorData.map(d => d.soil_moisture),
+                borderColor: '#2b2d42',
+                tension: 0.2
+            },
+            {
+                label: 'Sıcaklık (°C)',
+                data: sensorData.map(d => d.temperature),
+                borderColor: '#e29578',
+                tension: 0.2
+            }
+        ];
+    }
+
+    currentChart = new Chart(ctx, chartConfig);
+}
+
+function renderTable(type, data) {
+    const tableTitle = document.getElementById('tableTitle');
+    const tableHead = document.querySelector('#previewTable thead');
+    const tableBody = document.querySelector('#previewTable tbody');
+
+    tableHead.innerHTML = '';
+    tableBody.innerHTML = '';
+
+    if (type === 'irrigation') {
+        tableTitle.textContent = "Sulama Uygulamaları & Tavsiyeleri";
+        tableHead.innerHTML = `
+            <tr>
+                <th>Tarla</th>
+                <th>Tipi</th>
+                <th>Miktar / Mesaj</th>
+                <th>Öncelik / Not</th>
+                <th>Tarih</th>
+            </tr>
+        `;
+
+        // Merge logs and care recommendations for viewing
+        const items = [];
+        if (data.irrigation_logs) {
+            data.irrigation_logs.forEach(l => items.push({
+                field: l.field_name,
+                type: 'Uygulama',
+                desc: `${l.amount} Litre uygulandı.`,
+                badge: l.details || 'Kayıt',
+                badgeClass: 'bg-success',
+                date: l.date
+            }));
+        }
+        if (data.care_records) {
+            data.care_records.forEach(r => items.push({
+                field: r.field_name,
+                type: 'Öneri',
+                desc: r.message,
+                badge: r.priority,
+                badgeClass: r.priority === 'Kritik' ? 'bg-danger' : 'bg-warning text-dark',
+                date: r.date
+            }));
+        }
+
+        // Sort items by date desc
+        items.sort((a,b) => b.date.localeCompare(a.date));
+
+        if (items.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Kayıt bulunamadı.</td></tr>`;
+        } else {
+            items.slice(0, 15).forEach(item => {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td><strong>${item.field}</strong></td>
+                        <td>${item.type}</td>
+                        <td>${item.desc}</td>
+                        <td><span class="badge ${item.badgeClass}">${item.badge}</span></td>
+                        <td>${item.date}</td>
+                    </tr>
+                `;
+            });
+        }
+    } else if (type === 'fertilization') {
+        tableTitle.textContent = "Toprak Analiz Kayıtları";
+        tableHead.innerHTML = `
+            <tr>
+                <th>Tarla</th>
+                <th>N</th>
+                <th>P</th>
+                <th>K</th>
+                <th>pH</th>
+                <th>Nem %</th>
+                <th>Sıcaklık</th>
+                <th>Tarih</th>
+            </tr>
+        `;
+
+        if (!data.soil_analyses || data.soil_analyses.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Kayıt bulunamadı.</td></tr>`;
+        } else {
+            data.soil_analyses.slice(0, 15).forEach(sa => {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td><strong>${sa.field_name}</strong></td>
+                        <td>${sa.nitrogen}</td>
+                        <td>${sa.phosphorus}</td>
+                        <td>${sa.potassium}</td>
+                        <td>${sa.ph}</td>
+                        <td>%${sa.humidity}</td>
+                        <td>${sa.temperature} °C</td>
+                        <td>${sa.date}</td>
+                    </tr>
+                `;
+            });
+        }
+    } else if (type === 'yield') {
+        tableTitle.textContent = "Tahmini Ürün Verimi ve Güven Skoru";
+        tableHead.innerHTML = `
+            <tr>
+                <th>Tarla</th>
+                <th>Önerilen Ürün</th>
+                <th>Güven Skoru</th>
+                <th>Tahmini Verim</th>
+                <th>Tahmini Kazanç</th>
+                <th>Sıra</th>
+                <th>Tarih</th>
+            </tr>
+        `;
+
+        if (!data.recommendations || data.recommendations.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">Kayıt bulunamadı.</td></tr>`;
+        } else {
+            data.recommendations.slice(0, 15).forEach(rec => {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td><strong>${rec.field_name}</strong></td>
+                        <td class="text-success fw-bold">${rec.crop_name_tr}</td>
+                        <td>%${rec.confidence}</td>
+                        <td>${rec.yield_kg.toLocaleString('tr-TR')} kg</td>
+                        <td class="fw-bold">${rec.revenue_tl.toLocaleString('tr-TR')} TL</td>
+                        <td><span class="badge bg-secondary">${rec.rank}</span></td>
+                        <td>${rec.date}</td>
+                    </tr>
+                `;
+            });
+        }
+    } else if (type === 'sensor') {
+        tableTitle.textContent = "Anlık Sensör Ölçümleri";
+        tableHead.innerHTML = `
+            <tr>
+                <th>Tarla</th>
+                <th>Sıcaklık</th>
+                <th>Hava Nemi</th>
+                <th>Toprak Nemi</th>
+                <th>Su Tüketimi</th>
+                <th>pH</th>
+                <th>Işık</th>
+                <th>Tarih</th>
+            </tr>
+        `;
+
+        if (!data.sensor_data || data.sensor_data.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Kayıt bulunamadı.</td></tr>`;
+        } else {
+            data.sensor_data.slice(0, 15).forEach(sd => {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td><strong>${sd.field_name}</strong></td>
+                        <td>${sd.temperature} °C</td>
+                        <td>%${sd.humidity}</td>
+                        <td>%${sd.soil_moisture}</td>
+                        <td>${sd.plant_water_consumption} mm/g</td>
+                        <td>${sd.soil_ph}</td>
+                        <td>${sd.light_intensity} Lux</td>
+                        <td>${sd.date}</td>
+                    </tr>
+                `;
+            });
+        }
+    } else {
+        // General
+        tableTitle.textContent = "Bakım Önerileri & Uyarılar";
+        tableHead.innerHTML = `
+            <tr>
+                <th>Tarla</th>
+                <th>Tür</th>
+                <th>Mesaj</th>
+                <th>Öncelik</th>
+                <th>Durum</th>
+                <th>Tarih</th>
+            </tr>
+        `;
+
+        if (!data.care_records || data.care_records.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">Aktif öneri bulunmamaktadır.</td></tr>`;
+        } else {
+            data.care_records.slice(0, 15).forEach(c => {
+                const priorityClass = {
+                    'Kritik': 'bg-danger',
+                    'Yüksek': 'bg-warning text-dark',
+                    'Orta': 'bg-info text-dark',
+                    'Düşük': 'bg-secondary'
+                }[c.priority] || 'bg-secondary';
+
+                tableBody.innerHTML += `
+                    <tr>
+                        <td><strong>${c.field_name}</strong></td>
+                        <td>${c.type_display}</td>
+                        <td>${c.message}</td>
+                        <td><span class="badge ${priorityClass}">${c.priority}</span></td>
+                        <td>${c.is_done ? '<span class="text-success"><i class="bi bi-check-circle-fill"></i> Yapıldı</span>' : '<span class="text-warning"><i class="bi bi-clock-history"></i> Bekliyor</span>'}</td>
+                        <td>${c.date}</td>
+                    </tr>
+                `;
+            });
+        }
+    }
+}
 </script>
 {% endblock %}
