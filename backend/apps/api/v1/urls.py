@@ -62,6 +62,13 @@ router.register(r'predictions', views.PredictionViewSet, basename='prediction')
 router.register(r'care', views.CareRecommendationViewSet, basename='care')
 
 # ---------------------------------------------------------------------------
+# ML Custom Endpoint'leri
+# ---------------------------------------------------------------------------
+ml_urlpatterns = [
+    path('fertilizer-optimization/', views.FertilizerOptimizationAPIView.as_view(), name='fertilizer-optimization'),
+]
+
+# ---------------------------------------------------------------------------
 # Auth URL'leri
 # ---------------------------------------------------------------------------
 auth_urlpatterns = [
@@ -94,4 +101,7 @@ urlpatterns = [
 
     # Router URL'leri (tüm ViewSet'ler)
     path('', include(router.urls)),
+
+    # Custom ML Endpoint'leri
+    path('', include(ml_urlpatterns)),
 ]

@@ -11,9 +11,11 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from apps.analysis.models import CareRecommendation, CropRecommendation, SoilAnalysis
 from apps.fields.models import Field, SensorData, SensorReading
+from ml.fertilizer_optimizer import FertilizerOptimizer
 
 from .filters import (
     CropRecommendationFilter,
@@ -34,6 +36,8 @@ from .serializers import (
     SensorReadingSerializer,
     SoilAnalysisCreateSerializer,
     SoilAnalysisSerializer,
+    FertilizerOptimizationRequestSerializer,
+    FertilizerOptimizationResponseSerializer,
 )
 
 logger = logging.getLogger(__name__)
@@ -350,3 +354,45 @@ class CareRecommendationViewSet(viewsets.ModelViewSet):
         return CareRecommendation.objects.filter(
             field__user=self.request.user,
         ).select_related('field')
+
+
+# ---------------------------------------------------------------------------
+# Gübreleme Optimizasyon (Fertilizer Optimization)
+# ---------------------------------------------------------------------------
+
+class FertilizerOptimizationAPIView(APIView):
+    """
+    Gübreleme optimizasyon API endpoint'i.
+
+    POST /api/v1/fertilizer-optimization/
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = FertilizerOptimizationRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            
+            optimizer = FertilizerOptimizer()
+            if not optimizer.is_ready:
+                # Modeller henüz eğitilmemişse veya yüklenmemişse hata ver
+                logger.error("FertilizerOptimizer hazır değil!")
+                return Response(
+                    {"detail": "Optimizasyon modeli şu an hizmet veremiyor."},
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE
+                )
+                
+            prediction = optimizer.predict(
+                nitrogen=data['nitrogen'],
+                phosphorus=data['phosphorus'],
+                potassium=data['potassium'],
+                crop_type=data['crop_type'],
+                growth_stage=data['growth_stage']
+            )
+
+            res_serializer = FertilizerOptimizationResponseSerializer(data=prediction)
+            if res_serializer.is_valid():
+                return Response(res_serializer.data, status=status.HTTP_200_OK)
+            return Response(res_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

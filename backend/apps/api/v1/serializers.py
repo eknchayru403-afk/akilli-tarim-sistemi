@@ -254,3 +254,23 @@ class CareRecommendationSerializer(serializers.ModelSerializer):
             'is_done', 'created_at',
         )
         read_only_fields = ('id', 'field', 'created_at')
+
+
+# ---------------------------------------------------------------------------
+# Gübreleme Optimizasyon (Fertilizer Optimization)
+# ---------------------------------------------------------------------------
+
+class FertilizerOptimizationRequestSerializer(serializers.Serializer):
+    """Gübreleme tahmini istek şeması."""
+    nitrogen = serializers.FloatField(min_value=0)
+    phosphorus = serializers.FloatField(min_value=0)
+    potassium = serializers.FloatField(min_value=0)
+    crop_type = serializers.CharField(max_length=100)
+    growth_stage = serializers.CharField(max_length=100)
+
+
+class FertilizerOptimizationResponseSerializer(serializers.Serializer):
+    """Gübreleme tahmini yanıt şeması."""
+    fertilizer_type = serializers.CharField(max_length=100)
+    amount_kg_per_decare = serializers.FloatField()
+    application_timing = serializers.CharField(max_length=100)
