@@ -105,12 +105,12 @@ Bu bölümde projenin 6 haftalık sürecindeki detaylı görev dağılımı, üy
 ### 📅 1. Hafta (Başlangıç ve Altyapı)
 | Üye | Görev Başlığı | Durum | Tahmini Süre | Gerçekleşen |
 | :--- | :--- | :--- | :---: | :---: |
-| **Hayrunnisa Ekinci** | Sistem Mimarisi ve Gereksinim Analizi Dokümanının Hazırlanması | Tamamlandı | - | - |
-| **Betül Bilhan** | MQTT Broker Kurulumu ve Sensör Veri Akışı Protokolünün Belirlenmesi | Tamamlandı | - | - |
-| **İrfan Duman** | Django Proje Yapısı ve Geliştirme Ortamının Kurulumu | Tamamlandı | - | - |
-| **İsmet Mert Uysal** | TensorFlow Ortamının Kurulumu ve Tarımsal Veri Seti Araştırması | Tamamlandı | - | - |
-| **Wessam Alhamidi** | API Endpoint Planlaması ve Django REST Framework Kurulumu | Tamamlandı | - | - |
-| **Ahmed Osman Alsotef** | PostgreSQL Veritabanı Şeması ve Bağlantı Konfigürasyonu | Tamamlandı | - | - |
+| **Hayrunnisa Ekinci** | Sistem Mimarisi ve Gereksinim Analizi Dokümanının Hazırlanması | 
+| **Betül Bilhan** | MQTT Broker Kurulumu ve Sensör Veri Akışı Protokolünün Belirlenmesi | 
+| **İrfan Duman** | Django Proje Yapısı ve Geliştirme Ortamının Kurulumu | 
+| **İsmet Mert Uysal** | TensorFlow Ortamının Kurulumu ve Tarımsal Veri Seti Araştırması |
+| **Wessam Alhamidi** | API Endpoint Planlaması ve Django REST Framework Kurulumu |
+| **Ahmed Osman Alsotef** | PostgreSQL Veritabanı Şeması ve Bağlantı Konfigürasyonu |
 
 ### 📅 2. Hafta (Optimizasyon ve Performans)
 | Üye | Görev Başlığı | Durum | Tahmini Süre | Gerçekleşen |
