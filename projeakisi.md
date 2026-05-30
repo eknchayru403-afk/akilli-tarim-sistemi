@@ -96,3 +96,68 @@ Antigravity, `ANTIGRAVITY_PROMPT.md` dosyasını referans alarak `YOL_HARITASI.m
 - Analiz sayfaları (form, sonuç kartları, geçmiş tablosu)
 - Fiyat tablosu, hava durumu sayfası
 - Responsive tasarım (mobil sidebar toggle)
+
+---
+## 6 Haftalık Görev Dağılım Tabloları
+
+Bu bölümde projenin 6 haftalık sürecindeki detaylı görev dağılımı, üye sorumlulukları ve iş durumları tablolar halinde sunulmuştur.
+
+### 📅 1. Hafta (Başlangıç ve Altyapı)
+| Üye | Görev Başlığı | Durum | Tahmini Süre | Gerçekleşen |
+| :--- | :--- | :--- | :---: | :---: |
+| **Hayrunnisa Ekinci** | Sistem Mimarisi ve Gereksinim Analizi Dokümanının Hazırlanması | Tamamlandı | - | - |
+| **Betül Bilhan** | MQTT Broker Kurulumu ve Sensör Veri Akışı Protokolünün Belirlenmesi | Tamamlandı | - | - |
+| **İrfan Duman** | Django Proje Yapısı ve Geliştirme Ortamının Kurulumu | Tamamlandı | - | - |
+| **İsmet Mert Uysal** | TensorFlow Ortamının Kurulumu ve Tarımsal Veri Seti Araştırması | Tamamlandı | - | - |
+| **Wessam Alhamidi** | API Endpoint Planlaması ve Django REST Framework Kurulumu | Tamamlandı | - | - |
+| **Ahmed Osman Alsotef** | PostgreSQL Veritabanı Şeması ve Bağlantı Konfigürasyonu | Tamamlandı | - | - |
+
+### 📅 2. Hafta (Optimizasyon ve Performans)
+| Üye | Görev Başlığı | Durum | Tahmini Süre | Gerçekleşen |
+| :--- | :--- | :--- | :---: | :---: |
+| **Hayrunnisa Ekinci** | Hızlı Veri Seri Hale Getirme/Seri Halden Çıkarma Kütüphanesini Entegre Et | Tamamlandı | - | - |
+| **Betül Bilhan** | Veritabanı Bağlantı Havuzu Testlerini Gerçekleştir | Tamamlandı | - | - |
+| **İrfan Duman** | Veri Erişim Katmanını Optimize Et | Tamamlandı | - | - |
+| **İsmet Mert Uysal** | Önbellek Tutarlılığı Mekanizmasını Test Et | Tamamlandı | - | - |
+| **Wessam Alhamidi** | Günlükleme (Logging) Mekanizmasını İyileştir | Tamamlandı | - | - |
+| **Ahmed Osman Alsotef** | Bellek Yönetimi Optimizasyonlarını Uygula | Tamamlandı | - | - |
+
+### 📅 3. Hafta (Tasarım ve Modelleme)
+| Üye | Görev Başlığı | Durum | Tahmini Süre | Gerçekleşen |
+| :--- | :--- | :--- | :---: | :---: |
+| **Hayrunnisa Ekinci** | Mobil Uygulama Arayüz Tasarımı | Tamamlandı | - | - |
+| **Betül Bilhan** | Tahminleme Algoritması Tasarımı | Tamamlandı | - | - |
+| **İrfan Duman** | Veritabanı Şema Tasarımı | Tamamlandı | - | - |
+| **İsmet Mert Uysal** | MQTT Entegrasyon Mimarisi Tasarımı | Tamamlandı | - | - |
+| **Wessam Alhamidi** | Raporlama ve Analiz Modülü Tasarımı | Tamamlandı | - | - |
+| **Ahmed Osman Alsotef** | Web Arayüzü Wireframe Tasarımı | Tamamlandı | - | - |
+
+### 📅 4. Hafta (Geliştirme ve Entegrasyon)
+| Üye | Görev Başlığı | Durum | Tahmini Süre | Gerçekleşen |
+| :--- | :--- | :--- | :---: | :---: |
+| **Hayrunnisa Ekinci** | Tarla Yönetim Dashboard'u ve Gerçek Zamanlı Veri Görselleştirme | Tamamlandı | - | - |
+| **Betül Bilhan** | Django REST Framework ile Sensör ve Tahmin API Endpoint'leri | Tamamlandı | - | - |
+| **İrfan Duman** | MQTT Broker Entegrasyonu ve Gerçek Zamanlı Sensör Veri Akışı | Tamamlandı | - | - |
+| **İsmet Mert Uysal** | PostgreSQL Zaman Serisi Veri Yapısı ve Sorgu Optimizasyonu | Tamamlandı | - | - |
+| **Wessam Alhamidi** | Python Tabanlı Gübreleme Optimizasyon Algoritması Geliştirme | Tamamlandı | - | - |
+| **Ahmed Osman Alsotef** | TensorFlow ile LSTM Tabanlı Sulama İhtiyacı Tahmin Modeli | Tamamlandı | - | - |
+
+### 📅 5. Hafta (Gelişmiş Özellikler ve Güvenlik)
+| Üye | Görev Başlığı | Durum | Tahmini Süre | Gerçekleşen |
+| :--- | :--- | :--- | :---: | :---: |
+| **Hayrunnisa Ekinci** | Gerçek Zamanlı Sensör Verisi Görselleştirme Dashboard'u Geliştirme | Tamamlandı | - | - |
+| **Betül Bilhan** | Django ile PDF ve Excel Formatında Tarımsal Raporlama Modülü | Tamamlandı | - | - |
+| **İrfan Duman** | TensorFlow Sulama Tahmin Modelinde Hiperparametre Optimizasyonu | Tamamlandı | - | - |
+| **İsmet Mert Uysal** | PostgreSQL Zaman Serisi Verileri İçin Tablo Partitioning ve Index Optimizasyonu | Tamamlandı | - | - |
+| **Wessam Alhamidi** | Mobil Uygulama Entegrasyonu için JWT Tabanlı API Güvenlik Katmanı | Tamamlandı | - | - |
+| **Ahmed Osman Alsotef** | MQTT Sensör Akışında Çok Kanallı Anomali Tespiti | Tamamlandı | - | - |
+
+### 📅 6. Hafta (Test, Dokümantasyon ve Kapanış)
+| Üye | Görev Başlığı | Durum | Tahmini Süre | Gerçekleşen |
+| :--- | :--- | :--- | :---: | :---: |
+| **Hayrunnisa Ekinci** | Raporlama Araçları Veri Doğruluğu Kontrolü ve Kapanış Sunumu Tasarımı | Tamamlandı | - | - |
+| **Betül Bilhan** | Tahminleme Algoritmaları Performans Optimizasyonu ve Dokümantasyonu | Tamamlandı | - | - |
+| **İrfan Duman** | Veri Toplama Modülü Son Test ve Kapanış Dokümantasyonu | Tamamlandı | - | - |
+| **İsmet Mert Uysal** | Mobil Uygulama Entegrasyonu Son Testleri ve Kullanıcı Kılavuzu Hazırlama | Tamamlandı | - | - |
+| **Wessam Alhamidi** | Proje Genel Dokümantasyonunun Tamamlanması ve Son Kontroller | Tamamlandı | - | - |
+| **Ahmed Osman Alsotef** | Web Arayüzü Kullanıcı Deneyimi (UX) Testleri ve Kapanış Raporu | Tamamlandı | - | - |
