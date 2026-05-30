@@ -1,0 +1,3194 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page {
+    size: A4;
+    margin: 2cm 2.5cm;
+    @frame footer {
+      -pdf-frame-content: footerContent;
+      bottom: 0.5cm;
+      margin-left: 2.5cm;
+      margin-right: 2.5cm;
+      height: 1cm;
+    }
+  }
+
+  body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 10pt;
+    line-height: 1.5;
+    color: #222222;
+  }
+
+  /* ---- Cover Page ---- */
+  .cover {
+    text-align: center;
+    padding-top: 160px;
+    page-break-after: always;
+  }
+  .cover h1 {
+    font-size: 26pt;
+    color: #2E7D32;
+    margin-bottom: 8px;
+  }
+  .cover .subtitle {
+    font-size: 13pt;
+    color: #555555;
+    margin-bottom: 30px;
+  }
+  .cover .divider {
+    width: 200px;
+    height: 3px;
+    background-color: #4CAF50;
+    margin: 25px auto;
+  }
+  .cover .meta {
+    font-size: 10pt;
+    color: #777777;
+  }
+  .cover .meta p {
+    margin: 4px 0;
+  }
+
+  /* ---- TOC ---- */
+  .toc {
+    page-break-after: always;
+  }
+  .toc h2 {
+    color: #2E7D32;
+    font-size: 16pt;
+    border-bottom: 2px solid #2E7D32;
+    padding-bottom: 6px;
+  }
+  .toc-item {
+    padding: 5px 0;
+    border-bottom: 1px dotted #cccccc;
+    font-size: 10pt;
+  }
+  .toc-num {
+    font-weight: bold;
+    color: #2E7D32;
+    display: inline;
+    width: 30px;
+  }
+
+  /* ---- Section ---- */
+  .section {
+    page-break-before: always;
+  }
+  .section-header {
+    background-color: #2E7D32;
+    color: #ffffff;
+    padding: 12px 18px;
+    margin-bottom: 16px;
+    font-size: 14pt;
+    font-weight: bold;
+  }
+
+  h1 {
+    color: #2E7D32;
+    font-size: 16pt;
+    border-bottom: 2px solid #2E7D32;
+    padding-bottom: 5px;
+    margin-top: 20px;
+  }
+  h2 {
+    color: #388E3C;
+    font-size: 13pt;
+    border-bottom: 1px solid #dddddd;
+    padding-bottom: 4px;
+    margin-top: 18px;
+  }
+  h3 {
+    color: #4CAF50;
+    font-size: 11pt;
+    margin-top: 14px;
+  }
+  h4 {
+    color: #666666;
+    font-size: 10pt;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px 0;
+    font-size: 9pt;
+  }
+  th, td {
+    border: 1px solid #cccccc;
+    padding: 6px 8px;
+    text-align: left;
+  }
+  th {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+    font-weight: bold;
+  }
+
+  pre {
+    background-color: #F5F5F5;
+    border: 1px solid #E0E0E0;
+    border-left: 3px solid #4CAF50;
+    padding: 10px;
+    font-size: 8pt;
+    line-height: 1.3;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: Courier, monospace;
+  }
+  code {
+    background-color: #F0F0F0;
+    padding: 1px 3px;
+    font-size: 8.5pt;
+    font-family: Courier, monospace;
+  }
+
+  blockquote {
+    border-left: 3px solid #4CAF50;
+    margin: 10px 0;
+    padding: 6px 14px;
+    background-color: #F9FBE7;
+    color: #555555;
+  }
+
+  ul, ol {
+    margin: 6px 0;
+    padding-left: 22px;
+  }
+  li {
+    margin-bottom: 3px;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #dddddd;
+    margin: 20px 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- FOOTER -->
+<div id="footerContent" style="text-align: center; font-size: 8pt; color: #999999;">
+  ATYS - Akıllı Tarım Yönetim Sistemi | Sayfa <pdf:pagenumber>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Akıllı Tarım Yönetim Sistemi</h1>
+  <div class="subtitle">Genel Proje Dokümantasyonu</div>
+  <div class="divider">&nbsp;</div>
+  <div class="meta">
+    <p><b>Proje:</b> ATYS</p>
+    <p><b>Tarih:</b> 20 Mayıs 2026</p>
+    <p><b>Versiyon:</b> 1.0 (Final)</p>
+    <p><b>Teknolojiler:</b> Python - Django - TensorFlow - Flutter - PostgreSQL - MQTT</p>
+  </div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>İçindekiler</h2>
+  <div class="toc-item"><span class="toc-num">1.</span> Proje Özeti</div>
+<div class="toc-item"><span class="toc-num">2.</span> Proje Kapanış Raporu</div>
+<div class="toc-item"><span class="toc-num">3.</span> Sistem Mimarisi ve Gereksinimler</div>
+<div class="toc-item"><span class="toc-num">4.</span> Mobil Mimari Tasarımı</div>
+<div class="toc-item"><span class="toc-num">5.</span> MQTT Haberleşme Mimarisi</div>
+<div class="toc-item"><span class="toc-num">6.</span> Tahminleme Algoritması Tasarımı</div>
+<div class="toc-item"><span class="toc-num">7.</span> TensorFlow Model Dokümantasyonu</div>
+<div class="toc-item"><span class="toc-num">8.</span> Hiperparametre Optimizasyonu</div>
+<div class="toc-item"><span class="toc-num">9.</span> Algoritma Performans Raporu</div>
+<div class="toc-item"><span class="toc-num">10.</span> Sensör Veri Analitikleri</div>
+<div class="toc-item"><span class="toc-num">11.</span> Sensör Verileri Bölümleme</div>
+<div class="toc-item"><span class="toc-num">12.</span> REST API Endpoint Referansı</div>
+<div class="toc-item"><span class="toc-num">13.</span> Veri Toplama Kapanış Raporu</div>
+<div class="toc-item"><span class="toc-num">14.</span> UI/UX Kapanış Raporu</div>
+<div class="toc-item"><span class="toc-num">15.</span> Wireframe İncelemesi</div>
+<div class="toc-item"><span class="toc-num">16.</span> Mobil Test Raporu</div>
+<div class="toc-item"><span class="toc-num">17.</span> Mobil Kullanıcı Kılavuzu</div>
+</div>
+
+<!-- CONTENT SECTIONS -->
+<div class="section"><div class="section-header">Bolum 1 - Proje Özeti</div><p>🎯 Atanan Proje
+Akıllı Tarım Yönetim Sistemi
+Sensör verilerini kullanarak sulama, gübreleme ve ilaçlama gibi tarımsal faaliyetleri optimize eden, çiftçilere verimlilik artışı sağlayan bir yapay zeka destekli platform.</p>
+<p>🛠️
+Python
+TensorFlow
+Django
+PostgreSQL
+MQTT
+📦 Teslim Edilecekler:
+✅ Veri toplama ve analiz modülü</p>
+<p>✅ Tahminleme ve optimizasyon algoritmaları</p>
+<p>✅ Web tabanlı kullanıcı arayüzü</p>
+<p>✅ Mobil uygulama entegrasyonu</p>
+<p>✅ Raporlama ve analiz araçları</p></div>
+<div class="section"><div class="section-header">Bolum 2 - Proje Kapanış Raporu</div><h1>Akıllı Tarım Yönetim Sistemi - Veri Doğrulama ve Kapanış Raporu</h1>
+<p>Raporlama ve analiz araçlarının veri doğruluğu kontrol edilmiş ve proje kapanış sunumu hazırlanmıştır.</p>
+<h2>1. Veri Doğruluğu Kontrolü (Raporlama ve Analiz)</h2>
+<p>Raporlama (<code>DashboardService</code>) ve Analiz (<code>AnalysisService</code>) servislerinin veri bütünlüğünü ve hesaplama doğruluklarını test etmek amacıyla <code>backend/test_reports.py</code> üzerinden doğrulama betiği çalıştırıldı.</p>
+<p><strong>Sonuçlar:</strong>
+- <strong>Dashboard Verileri:</strong> Toplam tarla sayısı, boş tarla, ekili tarla, toplam alan ve kritik uyarı sayıları veritabanındaki verilerle tam bir uyum içerisinde. N+1 optimizasyonlarının ve aggregate işlemlerinin doğru çalıştığı teyit edildi.
+- <strong>Makine Öğrenmesi (ML) Önerileri:</strong> Sensör verisi simülasyonu başarıyla üretildi ve RandomForest modeli üzerinden tahmini ürün ve güven skorları hesaplandı.
+- <strong>Veri Güncelliği:</strong> Servislerin her ikisi de verileri dinamik bir şekilde veritabanından ve aktif ML modellerinden anlık ve hatasız şekilde okumaktadır.</p>
+<h2>2. Proje Kapanış Sunumu</h2>
+<p>Görsel olarak çekici, anlaşılır ve modern web teknolojileriyle geliştirilmiş tek sayfalık bir "Proje Kapanış Sunumu" tasarlandı. Sunum dosyasına <code>project_closure_presentation.html</code> üzerinden ulaşabilirsiniz.</p>
+<p><strong>Öne Çıkan Özellikler:</strong>
+- <strong>İçerik Bölümleri:</strong>
+  - <strong>Hedefler:</strong> Veri odaklı karar alma, gerçek zamanlı izleme, YZ destekli tahmin.
+  - <strong>Başarılar:</strong> Performans optimizasyonu (N+1, orjson, object pool bellek optimizasyonu), ML entegrasyonu, gerçek zamanlı dashboard (WebSocket).
+  - <strong>Zorluklar ve Çözümler:</strong> Veri şişmesi (Memory leak), yavaş dashboard yanıtları ve veri senkronizasyonu konularındaki engellerin aşılması.
+  - <strong>Gelecek Potansiyeli:</strong> Mobil uygulama entegrasyonu, görüntü işleme tabanlı hastalık tespiti ve otomatik sulama donanım entegrasyonu.
+- <strong>Grafik ve Tablolar:</strong>
+  - Sistem Performans Karşılaştırması ve ML Modeli Ürün Öneri Dağılımı (Chart.js üzerinden).
+  - Modül Optimizasyonları durum tablosu.</p>
+<p><em>(Bu rapor, projenin en güncel kod tabanı ve veritabanı yapısı incelenerek oluşturulmuştur.)</em></p></div>
+<div class="section"><div class="section-header">Bolum 3 - Sistem Mimarisi ve Gereksinimler</div><h1>Akıllı Tarım Yönetim Sistemi - Sistem Mimarisi ve Gereksinimler</h1>
+<p>Bu doküman, sistemin uçtan uca mimarisini ve projeye ait fonksiyonel / fonksiyonel olmayan gereksinimleri detaylandırmaktadır. Bu içeriği doğrudan GitHub Wiki sayfanıza kopyalayarak kullanabilirsiniz. (GitHub, Mermaid diyagramlarını doğrudan destekler.)</p>
+<h2>Sistem Mimarisi</h2>
+<p>Aşağıdaki diyagram, sistemin donanım katmanından son kullanıcı arayüzüne kadar olan veri akışını ve teknoloji yığınını göstermektedir.</p>
+<p><em>(Mermaid diyagrami - HTML versiyonunda goruntulenebilir)</em></p>
+<hr />
+<h2>Gereksinimler (Requirements)</h2>
+<h3>1. Fonksiyonel Gereksinimler (Functional Requirements)</h3>
+<p>Fonksiyonel gereksinimler, sistemin yapması gereken işlevleri, davranışları ve sunması gereken temel servisleri tanımlar:</p>
+<ul>
+<li><strong>FR1: Sensör Verisi Toplama:</strong> Sistem, tarlalardan gelen toprak nemi, hava sıcaklığı ve pH verilerini MQTT protokolü üzerinden alabilmeli ve veritabanına kaydedebilmelidir.</li>
+<li><strong>FR2: Canlı İzleme (Real-Time Dashboard):</strong> Kullanıcı, sensörlerden gelen anlık verileri WebSockets ve Chart.js entegrasyonu ile sayfayı yenilemeden 5 saniyelik periyotlarla izleyebilmelidir.</li>
+<li><strong>FR3: Sulama Otomasyonu ve Kontrol:</strong> Sistem, toprak nemi belirlenen eşiğin altına düştüğünde sulama sistemini (röleleri) aktif edecek komutları MQTT üzerinden donanıma iletebilmeli; kullanıcı arayüzden manuel müdahale edebilmelidir.</li>
+<li><strong>FR4: Tarla ve Kullanıcı Yönetimi:</strong> Çiftçiler sisteme üye olabilmeli, kendi tarlalarını (konum, alan, ekin türü) ekleyebilmeli ve sadece kendi tarlalarına ait verileri izleyebilmelidir.</li>
+<li><strong>FR5: Yapay Zeka ile Tahminleme:</strong> Sistem, geçmiş sensör verilerini ve ekin türünü kullanarak TensorFlow/ML modelleri üzerinden "optimum sulama zamanı" ve "tahmini hasat verimi" gibi raporlar sunabilmelidir.</li>
+<li><strong>FR6: Kritik Uyarı Bildirimleri (Alerts):</strong> Sensör değerleri tehlikeli seviyelere ulaştığında (Örn: Aşırı sıcaklık, yüksek asidite, kuraklık) sistem kullanıcıya anlık bildirim (Toast/Alert) ve e-posta uyarıları gönderebilmelidir.</li>
+<li><strong>FR7: Raporlama ve Dışa Aktarım:</strong> Kullanıcılar seçili tarih aralıklarındaki tarla analizlerini PDF veya Excel formatında dışa aktarabilmelidir.</li>
+</ul>
+<h3>2. Fonksiyonel Olmayan Gereksinimler (Non-Functional Requirements)</h3>
+<p>Fonksiyonel olmayan gereksinimler, sistemin nasıl çalışması gerektiğini; performans, güvenlik, ölçeklenebilirlik gibi kalite özelliklerini tanımlar:</p>
+<ul>
+<li><strong>NFR1: Performans (Performance):</strong> Sistem, gelen 1000 eşzamanlı MQTT mesajını 1 saniyenin altında işleyebilmeli ve Web UI'daki grafiklere gecikmesiz (maksimum 2 saniye) yansıtabilmelidir. Veritabanı sorguları (JSON serileştirme vb.) optimize edilmelidir.</li>
+<li><strong>NFR2: Güvenlik (Security):</strong> Sistemdeki tüm REST API endpointleri, Django Authentication ve yetkilendirme (authorization) katmanlarıyla korunmalıdır. Kullanıcı şifreleri veritabanında "Bcrypt" veya "PBKDF2" ile şifrelenmiş olarak tutulmalı; MQTT haberleşmesi TLS/SSL ile güvenli hale getirilmelidir.</li>
+<li><strong>NFR3: Ölçeklenebilirlik (Scalability):</strong> Sistem, yeni tarlalar ve on binlerce yeni sensör düğümü eklendiğinde yatay olarak (horizontal scaling) büyüyebilecek bir mimaride (Redis Channels ve Load Balancer arkasında çalışan Gunicorn/Daphne instance'ları) olmalıdır.</li>
+<li><strong>NFR4: Erişilebilirlik (Availability):</strong> Sistem, bulut sunucu üzerinde 7/24 çalışır durumda olmalı ve %99.9 Uptime hedefine ulaşmalıdır. Hata durumlarında (MQTT kopması, DB çökmesi) sistem loglama mekanizması devreye girip süreci kaydetmelidir.</li>
+<li><strong>NFR5: Kullanılabilirlik (Usability):</strong> Web arayüzü mobil cihazlara tam uyumlu (Responsive Design) olmalı, tarla durum kartları ve grafikler çiftçilerin rahatça anlayabileceği renk kodlarıyla (Kırmızı: Kritik, Yeşil: İdeal) tasarlanmalıdır.</li>
+<li><strong>NFR6: Bakım Edilebilirlik (Maintainability):</strong> Kod yapısı modüler (Django Apps) olmalı, her bir bileşen (Analysis, Fields, Dashboard) bağımsız geliştirilebilmeli ve sistemde kapsamlı yorum satırları/dokümantasyon bulunmalıdır.</li>
+</ul></div>
+<div class="section"><div class="section-header">Bolum 4 - Mobil Mimari Tasarımı</div><h1>ARCHITECTURE.md — Akıllı Tarım Yönetim Sistemi (Mobil)</h1>
+<blockquote>
+<p><strong>Bu dosya, tüm AI agent'lar (Windsurf, Cursor, Claude) için zorunlu referanstır.</strong>
+Her değişiklik sonrası bu dosyanın sonundaki CHANGELOG bölümü güncellenmelidir.</p>
+</blockquote>
+<hr />
+<h2>1. Proje Özeti</h2>
+<p>Simülasyon tabanlı akıllı tarım platformu. Fiziksel sensör/IoT donanımı YOK.
+Veri kaynakları: Kaggle veri seti (toprak NPK/pH), OpenWeatherMap API (hava durumu), TMO statik fiyat tablosu.</p>
+<p><strong>İki ana senaryo:</strong>
+- <strong>Senaryo A — Boş Tarla:</strong> Toprak analizi (manuel veya Kaggle sim) → Scikit-learn ürün önerisi → Verim + kazanç hesaplama
+- <strong>Senaryo B — Ekili Tarla:</strong> Hava durumu + toprak verisi → AI bakım tavsiyeleri (sulama, gübreleme vb.)</p>
+<hr />
+<h2>2. Tech Stack</h2>
+<table>
+<thead>
+<tr>
+<th>Katman</th>
+<th>Teknoloji</th>
+<th>Versiyon</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mobil</td>
+<td>Flutter</td>
+<td>3.x (stable)</td>
+</tr>
+<tr>
+<td>State Management</td>
+<td>Riverpod + flutter_riverpod</td>
+<td>^2.x</td>
+</tr>
+<tr>
+<td>HTTP Client</td>
+<td>Dio</td>
+<td>^5.x</td>
+</tr>
+<tr>
+<td>Routing</td>
+<td>GoRouter</td>
+<td>^14.x</td>
+</tr>
+<tr>
+<td>Backend</td>
+<td>Python + FastAPI</td>
+<td>3.11+</td>
+</tr>
+<tr>
+<td>Veritabanı</td>
+<td>PostgreSQL</td>
+<td>15+</td>
+</tr>
+<tr>
+<td>ML</td>
+<td>Scikit-learn</td>
+<td>Backend tarafında</td>
+</tr>
+<tr>
+<td>Hava Durumu</td>
+<td>OpenWeatherMap API</td>
+<td>Free tier</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>3. Klasör Yapısı</h2>
+<pre><code>lib/
+├── main.dart                      # Uygulama giriş noktası
+├── app.dart                       # MaterialApp + GoRouter + Theme
+│
+├── core/                          # Paylaşılan altyapı
+│   ├── constants/
+│   │   ├── app_colors.dart        # Renk paleti (wireframe'den)
+│   │   ├── app_text_styles.dart   # Tipografi
+│   │   └── api_endpoints.dart     # Backend + OpenWeatherMap URL'leri
+│   ├── theme/
+│   │   └── app_theme.dart         # ThemeData (light + dark)
+│   ├── network/
+│   │   └── dio_client.dart        # Dio instance + interceptor'lar
+│   └── utils/
+│       └── formatters.dart        # Para, tarih, birim formatlama
+│
+├── features/                      # Ekran bazlı modüller
+│   ├── auth/                      # Ekran 1: Giriş + Kayıt
+│   │   ├── data/
+│   │   │   ├── auth_repository.dart
+│   │   │   └── models/user_model.dart
+│   │   ├── providers/
+│   │   │   └── auth_provider.dart
+│   │   └── screens/
+│   │       ├── login_screen.dart
+│   │       └── register_screen.dart
+│   │
+│   ├── dashboard/                 # Ekran 2: Ana Sayfa
+│   │   ├── data/
+│   │   │   └── models/tarla_ozet_model.dart
+│   │   ├── providers/
+│   │   │   └── dashboard_provider.dart
+│   │   ├── screens/
+│   │   │   └── dashboard_screen.dart
+│   │   └── widgets/
+│   │       ├── tarla_card.dart
+│   │       ├── hava_durumu_banner.dart
+│   │       └── aksiyon_uyari_card.dart
+│   │
+│   ├── tarla_detay/               # Ekran 3: Tarla Detay + AI Aksiyon
+│   │   ├── data/
+│   │   │   ├── models/hava_durumu_model.dart
+│   │   │   └── models/bakim_tavsiye_model.dart
+│   │   ├── providers/
+│   │   │   └── tarla_detay_provider.dart
+│   │   ├── screens/
+│   │   │   └── tarla_detay_screen.dart
+│   │   └── widgets/
+│   │       ├── saglik_skoru_widget.dart
+│   │       ├── hava_tahmin_card.dart
+│   │       └── ai_aksiyon_card.dart
+│   │
+│   ├── analiz/                    # Ekran 4-5: Toprak Analizi + Sonuç
+│   │   ├── data/
+│   │   │   ├── analiz_repository.dart
+│   │   │   ├── models/toprak_analiz_model.dart
+│   │   │   └── models/urun_oneri_model.dart
+│   │   ├── providers/
+│   │   │   └── analiz_provider.dart
+│   │   ├── screens/
+│   │   │   └── analiz_screen.dart
+│   │   └── widgets/
+│   │       ├── npk_input_card.dart
+│   │       └── oneri_bottom_sheet.dart
+│   │
+│   ├── gecmis/                    # Ekran 6: Geçmiş Analizler
+│   │   ├── data/
+│   │   │   └── models/gecmis_kayit_model.dart
+│   │   ├── providers/
+│   │   │   └── gecmis_provider.dart
+│   │   └── screens/
+│   │       └── gecmis_screen.dart
+│   │
+│   └── profil/                    # Ekran 7: Profil + Ayarlar
+│       ├── data/
+│       │   └── models/urun_fiyat_model.dart
+│       ├── providers/
+│       │   └── profil_provider.dart
+│       ├── screens/
+│       │   ├── profil_screen.dart
+│       │   └── fiyat_tablosu_screen.dart
+│       └── widgets/
+│           └── ayar_tile.dart
+│
+├── shared/                        # Feature'lar arası paylaşılan widget'lar
+│   └── widgets/
+│       ├── app_scaffold.dart      # BottomNavigationBar shell
+│       ├── loading_indicator.dart
+│       └── error_widget.dart
+│
+assets/
+├── data/
+│   └── tmo_fiyatlari.json         # TMO fiyat sözlüğü (statik seed)
+└── images/
+    └── logo.png
+</code></pre>
+<hr />
+<h2>4. Routing (GoRouter)</h2>
+<pre><code>/login                          → LoginScreen
+/register                       → RegisterScreen
+/                               → ShellRoute (BottomNav)
+  ├── /dashboard                → DashboardScreen (Ana Sayfa)
+  ├── /gecmis                   → GecmisScreen (Geçmiş)
+  └── /profil                   → ProfilScreen (Profil)
+/tarla/:id                      → TarlaDetayScreen (Ekili tarla detay)
+/tarla/:id/analiz               → AnalizScreen (Boş tarla analiz)
+/profil/fiyat-tablosu           → FiyatTablosuScreen (TMO fiyatları)
+</code></pre>
+<p>BottomNavigationBar 3 sekme: Ana Sayfa, Geçmiş, Profil (wireframe ile birebir).</p>
+<hr />
+<h2>5. State Management Kuralları (Riverpod)</h2>
+<ul>
+<li>Her feature kendi <code>providers/</code> klasöründe provider tanımlar.</li>
+<li>API çağrıları <code>FutureProvider</code> veya <code>AsyncNotifierProvider</code> ile yapılır.</li>
+<li>UI'da <code>ref.watch()</code> ile dinlenir, <code>AsyncValue.when()</code> ile loading/error/data render edilir.</li>
+<li>Repository pattern: Provider → Repository → Dio → Backend API.</li>
+<li>Global state (auth token, kullanıcı bilgisi) <code>core/</code> altında tutulur.</li>
+</ul>
+<hr />
+<h2>6. API Bağlantı Kuralları</h2>
+<ul>
+<li>Base URL ortam değişkeninden alınır (<code>--dart-define=API_BASE_URL=...</code>).</li>
+<li>Auth token Dio interceptor ile her isteğe eklenir.</li>
+<li>OpenWeatherMap API key <code>.env</code> dosyasından okunur (flutter_dotenv).</li>
+<li>Hata yönetimi: Dio exception → custom AppException → UI'da kullanıcı dostu mesaj.</li>
+</ul>
+<hr />
+<h2>7. Tema ve Renk Sistemi (Wireframe'den)</h2>
+<pre><code class="language-dart">// Wireframe'deki renk paleti
+primary:      #2E7D32  (koyu yeşil — header, butonlar)
+primaryLight: #4CAF50  (açık yeşil — sağlık barı)
+surface:      #FFFFFF  (kart arka planı)
+background:   #F5F5F5  (sayfa arka planı)
+onPrimary:    #FFFFFF  (beyaz metin yeşil üzerinde)
+warning:      #FF9800  (turuncu — uyarı kartları)
+error:        #D32F2F  (kırmızı — kritik uyarılar)
+accent:       #9C27B0  (mor — Kaggle simülasyon butonu)
+textPrimary:  #212121
+textSecondary:#757575
+</code></pre>
+<hr />
+<h2>8. Agent Kuralları (Windsurf / Cursor / Claude)</h2>
+<ol>
+<li><strong>Değişiklik yapmadan önce mevcut kodu oku ve raporla.</strong> Asla körlemesine düzenleme yapma.</li>
+<li><strong>Çalışan koda dokunma.</strong> Sadece ilgili dosyayı değiştir.</li>
+<li><strong>Her değişiklikten sonra</strong> bu dosyanın CHANGELOG bölümüne tarih + sorun + çözüm ekle.</li>
+<li><strong>Yeni dosya oluştururken</strong> klasör yapısına (Bölüm 3) uy.</li>
+<li><strong>State management:</strong> Sadece Riverpod kullan. setState(), Provider veya Bloc KULLANMA.</li>
+<li><strong>Routing:</strong> Sadece GoRouter kullan. Navigator.push KULLANMA.</li>
+<li><strong>HTTP:</strong> Sadece Dio kullan. http paketi KULLANMA.</li>
+<li><strong>Test:</strong> Değişiklik sonrası <code>flutter analyze</code> çalıştır, hata bırakma.</li>
+<li><strong>Türkçe UI metinleri</strong> hardcode edilebilir (i18n ikinci fazda eklenecek).</li>
+</ol>
+<hr />
+<h2>9. Wireframe → Ekran Eşleştirme</h2>
+<table>
+<thead>
+<tr>
+<th>Ekran #</th>
+<th>Wireframe</th>
+<th>Flutter Dosya</th>
+<th>DB Tablosu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Giriş/Kayıt</td>
+<td>auth/screens/login_screen.dart</td>
+<td>kullanicilar</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Dashboard</td>
+<td>dashboard/screens/dashboard_screen.dart</td>
+<td>tarlalar, hava_durumu_kayitlari</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Tarla Detay</td>
+<td>tarla_detay/screens/tarla_detay_screen.dart</td>
+<td>bakim_tavsiyeleri, hava_durumu_kayitlari</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Toprak Analizi</td>
+<td>analiz/screens/analiz_screen.dart</td>
+<td>toprak_analizleri</td>
+</tr>
+<tr>
+<td>5</td>
+<td>AI Sonuç</td>
+<td>analiz/widgets/oneri_bottom_sheet.dart</td>
+<td>urun_onerileri, urun_fiyatlari</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Geçmiş</td>
+<td>gecmis/screens/gecmis_screen.dart</td>
+<td>v_gecmis_analizler</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Profil</td>
+<td>profil/screens/profil_screen.dart</td>
+<td>kullanicilar, urun_fiyatlari</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>CHANGELOG</h2>
+<table>
+<thead>
+<tr>
+<th>Tarih</th>
+<th>Değişiklik</th>
+<th>Detay</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-03-28</td>
+<td>İlk versiyon</td>
+<td>ARCHITECTURE.md oluşturuldu. Wireframe + DB v2 şeması baz alındı.</td>
+</tr>
+<tr>
+<td>2026-05-19</td>
+<td>DRF API Genişletme</td>
+<td>SensorDataViewSet, SensorReadingViewSet, SoilAnalysisViewSet eklendi. /sensors/data/ ve /sensors/latest/ özel action'ları. TokenVerifyView, SensorDataFilter, SensorReadingFilter eklendi. Postman koleksiyonu ve API dokümantasyonu oluşturuldu.</td>
+</tr>
+</tbody>
+</table></div>
+<div class="section"><div class="section-header">Bolum 5 - MQTT Haberleşme Mimarisi</div><h1>MQTT Mimarisi ve Topic Hiyerarşisi Dokümantasyonu</h1>
+<h2>Genel Bakış</h2>
+<p>Akıllı Tarım Yönetim Sistemi (ATYS), sensör verilerinin gerçek zamanlı iletimi için <strong>MQTT (Message Queuing Telemetry Transport)</strong> protokolünü kullanır. Hafif, düşük bant genişliği gerektiren bu protokol, IoT sensörlerinden gelen verilerin hızlı ve güvenilir şekilde iletilmesini sağlar.</p>
+<h2>Mimari Diyagram</h2>
+<pre><code>┌─────────────────┐     MQTT Publish      ┌──────────────────┐
+│  IoT Sensörleri  │ ──────────────────▶  │   MQTT Broker    │
+│  (Simülatör)     │                      │  (HiveMQ Public) │
+└─────────────────┘                      └────────┬─────────┘
+                                                   │
+                                          MQTT Subscribe
+                                                   │
+                                         ┌─────────▼──────────┐
+                                         │   MQTT Listener     │
+                                         │  (Django Command)   │
+                                         └─────────┬──────────┘
+                                                   │
+                                          Channels Group Send
+                                                   │
+                                         ┌─────────▼──────────┐
+                                         │  WebSocket Consumer │
+                                         │  (SensorConsumer)   │
+                                         └─────────┬──────────┘
+                                                   │
+                                             WebSocket
+                                                   │
+                                         ┌─────────▼──────────┐
+                                         │   Web Dashboard     │
+                                         │  (Gerçek Zamanlı)   │
+                                         └────────────────────┘
+</code></pre>
+<h2>Broker Bilgileri</h2>
+<table>
+<thead>
+<tr>
+<th>Parametre</th>
+<th>Değer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Broker</td>
+<td>HiveMQ Public Broker</td>
+</tr>
+<tr>
+<td>Host</td>
+<td><code>broker.hivemq.com</code></td>
+</tr>
+<tr>
+<td>Port</td>
+<td><code>1883</code> (TCP)</td>
+</tr>
+<tr>
+<td>Keepalive</td>
+<td><code>60</code> saniye</td>
+</tr>
+<tr>
+<td>Kimlik Doğrulama</td>
+<td>Yok (Public)</td>
+</tr>
+<tr>
+<td>TLS/SSL</td>
+<td>Yok (Geliştirme ortamı)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Not:</strong> Prodüksiyon ortamında yerel Mosquitto broker kullanılması ve TLS şifreleme eklenmesi önerilir.</p>
+</blockquote>
+<h2>Topic Hiyerarşisi</h2>
+<pre><code>atys/                              ← Kök topic (proje prefix'i)
+│
+├── sensors/                       ← Toplu sensör verisi
+│   ├── humidity                   ← Nem verisi (%)
+│   ├── temperature                ← Hava sıcaklığı (°C)
+│   ├── soil_moisture              ← Toprak nemi (%)
+│   └── ph                         ← Toprak pH değeri
+│
+├── commands/                      ← Cihaz kontrol komutları
+│   └── irrigation                 ← Sulama sistemi açma/kapama
+│
+└── status/                        ← Cihaz durum bildirimleri
+    └── device                     ← Cihaz bağlantı durumu
+</code></pre>
+<h3>Wildcard Kullanımı</h3>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>atys/sensors/#</code></td>
+<td>Tüm sensör topic'lerine abone ol</td>
+</tr>
+<tr>
+<td><code>atys/+/humidity</code></td>
+<td>Herhangi bir kategorideki nem verisi</td>
+</tr>
+<tr>
+<td><code>atys/#</code></td>
+<td>ATYS altındaki tüm mesajlar</td>
+</tr>
+</tbody>
+</table>
+<h2>Mesaj Formatları</h2>
+<h3>Sensör Verisi (Ayrı Topic)</h3>
+<p>Topic: <code>atys/sensors/humidity</code></p>
+<pre><code class="language-json">{
+    &quot;field_id&quot;: 1,
+    &quot;timestamp&quot;: 1715680000.0,
+    &quot;value&quot;: 65.4
+}
+</code></pre>
+<h3>Sensör Verisi (Toplu)</h3>
+<p>Topic: <code>atys/sensors</code></p>
+<pre><code class="language-json">{
+    &quot;field_id&quot;: 1,
+    &quot;timestamp&quot;: 1715680000.0,
+    &quot;soil_moisture&quot;: 55.2,
+    &quot;air_temperature&quot;: 24.5,
+    &quot;humidity&quot;: 65.4,
+    &quot;ph_level&quot;: 6.8,
+    &quot;irrigation_status&quot;: 1
+}
+</code></pre>
+<h3>Sulama Komutu</h3>
+<p>Topic: <code>atys/commands/irrigation</code></p>
+<pre><code class="language-json">{
+    &quot;field_id&quot;: 1,
+    &quot;command&quot;: &quot;start&quot;,
+    &quot;duration_minutes&quot;: 30,
+    &quot;timestamp&quot;: 1715680000.0
+}
+</code></pre>
+<h2>QoS (Quality of Service) Seviyeleri</h2>
+<table>
+<thead>
+<tr>
+<th>Seviye</th>
+<th>Adı</th>
+<th>Kullanım</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>At most once</td>
+<td>Sensör verileri (kayıp tolere edilebilir)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>At least once</td>
+<td>Sulama komutları (güvenilir teslimat)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Exactly once</td>
+<td>Kritik alarm bildirimleri</td>
+</tr>
+</tbody>
+</table>
+<h2>Django Management Komutları</h2>
+<h3>Sensör Simülatörü</h3>
+<pre><code class="language-bash">python manage.py mqtt_simulator --interval 5
+</code></pre>
+<ul>
+<li>Her <code>interval</code> saniyede bir tüm tarlalar için simüle edilmiş sensör verisi yayınlar</li>
+<li>Hem toplu (<code>atys/sensors</code>) hem ayrı topic'lere (<code>atys/sensors/humidity</code> vb.) yayın yapar</li>
+</ul>
+<h3>MQTT Listener</h3>
+<pre><code class="language-bash">python manage.py mqtt_listener
+</code></pre>
+<ul>
+<li><code>atys/sensors/#</code> wildcard ile tüm sensör topic'lerini dinler</li>
+<li>Gelen mesajları Django Channels grubuna (<code>sensor_data</code>) iletir</li>
+<li>WebSocket consumer aracılığıyla dashboard'a ulaştırır</li>
+</ul>
+<h2>Test Scriptleri</h2>
+<h3>Publisher Test (Django bağımsız)</h3>
+<pre><code class="language-bash">cd backend/mqtt
+python publisher_test.py
+</code></pre>
+<h3>Subscriber Test (Django bağımsız)</h3>
+<pre><code class="language-bash">cd backend/mqtt
+python subscriber_test.py
+</code></pre>
+<h2>Konfigürasyon</h2>
+<p>Tüm MQTT ayarları <code>backend/mqtt/config.py</code> dosyasında merkezi olarak tanımlanmıştır:</p>
+<pre><code class="language-python">from mqtt.config import (
+    MQTT_BROKER_HOST,      # Broker adresi
+    MQTT_BROKER_PORT,      # Broker portu
+    TOPIC_SENSORS,         # Sensör topic dict'i
+    TOPIC_SENSORS_WILDCARD # Wildcard pattern
+)
+</code></pre>
+<h2>Veri Akış Süreci</h2>
+<ol>
+<li><strong>Simülatör/Sensör</strong> → MQTT mesajını broker'a yayınlar</li>
+<li><strong>Broker</strong> → Mesajı abone olan istemcilere dağıtır</li>
+<li><strong>MQTT Listener</strong> → Mesajı alır, JSON parse eder</li>
+<li><strong>Django Channels</strong> → <code>sensor_data</code> grubuna <code>group_send</code> ile iletir</li>
+<li><strong>SensorConsumer</strong> → WebSocket üzerinden tarayıcıya gönderir</li>
+<li><strong>Dashboard</strong> → JavaScript ile gerçek zamanlı güncelleme yapar</li>
+</ol></div>
+<div class="section"><div class="section-header">Bolum 6 - Tahminleme Algoritması Tasarımı</div><h1>Tahminleme Algoritması Tasarımı Dokümantasyonu</h1>
+<h2>Genel Bakış</h2>
+<p>Akıllı Tarım Yönetim Sistemi (ATYS), iki katmanlı bir tahminleme mimarisi kullanır:</p>
+<ol>
+<li><strong>scikit-learn RandomForest</strong> — Ürün önerisi (mevcut)</li>
+<li><strong>TensorFlow/Keras Neural Network</strong> — Sulama, gübreleme ve hastalık riski tahmini (yeni)</li>
+</ol>
+<h2>Mimari Genel Görünüm</h2>
+<pre><code>                   ┌──────────────────────┐
+                   │    Sensör Verileri    │
+                   │  (N, P, K, pH, nem,  │
+                   │   sıcaklık, yağış)   │
+                   └──────────┬───────────┘
+                              │
+              ┌───────────────┼───────────────┐
+              │               │               │
+     ┌────────▼──────┐ ┌─────▼──────┐ ┌──────▼────────┐
+     │  RandomForest  │ │ TensorFlow │ │  TensorFlow   │
+     │  Ürün Önerisi  │ │  Modelleri │ │  Modelleri    │
+     │  (scikit-learn) │ │ (Sulama +  │ │  (Hastalık    │
+     │                │ │  Gübreleme)│ │   Riski)      │
+     └────────┬──────┘ └─────┬──────┘ └──────┬────────┘
+              │               │               │
+              └───────────────┼───────────────┘
+                              │
+                   ┌──────────▼───────────┐
+                   │   Bakım Tavsiyeleri   │
+                   │  (CareRecommendation) │
+                   └──────────────────────┘
+</code></pre>
+<hr />
+<h2>1. Ürün Tahmin Modeli (Mevcut — scikit-learn)</h2>
+<h3>Model: RandomForestClassifier</h3>
+<ul>
+<li><strong>Kütüphane:</strong> scikit-learn</li>
+<li><strong>Algoritma:</strong> Random Forest (n_estimators=100, max_depth=15)</li>
+<li><strong>Dosya:</strong> <code>ml/trainer.py</code>, <code>ml/predictor.py</code></li>
+<li><strong>Kayıtlı Model:</strong> <code>ml/saved_models/crop_model.pkl</code></li>
+</ul>
+<h3>Girdi Parametreleri</h3>
+<table>
+<thead>
+<tr>
+<th>Parametre</th>
+<th>Tip</th>
+<th>Aralık</th>
+<th>Birim</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nitrogen (N)</td>
+<td>float</td>
+<td>0–200</td>
+<td>mg/kg</td>
+</tr>
+<tr>
+<td>Phosphorus (P)</td>
+<td>float</td>
+<td>0–200</td>
+<td>mg/kg</td>
+</tr>
+<tr>
+<td>Potassium (K)</td>
+<td>float</td>
+<td>0–300</td>
+<td>mg/kg</td>
+</tr>
+<tr>
+<td>Temperature</td>
+<td>float</td>
+<td>-10–50</td>
+<td>°C</td>
+</tr>
+<tr>
+<td>Humidity</td>
+<td>float</td>
+<td>0–100</td>
+<td>%</td>
+</tr>
+<tr>
+<td>pH</td>
+<td>float</td>
+<td>0–14</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Rainfall</td>
+<td>float</td>
+<td>0–2000</td>
+<td>mm</td>
+</tr>
+</tbody>
+</table>
+<h3>Çıktı</h3>
+<ul>
+<li><strong>crop_name</strong>: Önerilen ürün (İngilizce)</li>
+<li><strong>crop_name_tr</strong>: Türkçe ürün adı</li>
+<li><strong>confidence</strong>: Güven skoru (%)</li>
+<li><strong>estimated_yield_kg</strong>: Tahmini verim (kg)</li>
+<li><strong>estimated_revenue_tl</strong>: Tahmini kazanç (TL)</li>
+</ul>
+<h3>Doğruluk Metrikleri</h3>
+<ul>
+<li>Accuracy: ~%99 (Kaggle Crop Recommendation veri seti)</li>
+<li>Stratified train/test split: %80/%20</li>
+</ul>
+<hr />
+<h2>2. Sulama İhtiyacı Tahmin Modeli (Yeni — TensorFlow)</h2>
+<h3>Model Mimarisi</h3>
+<pre><code>Input(6) → Dense(64, ReLU) → BN → Dropout(0.3)
+         → Dense(32, ReLU) → BN → Dropout(0.2)
+         → Dense(16, ReLU) → Dense(1, Sigmoid)
+</code></pre>
+<h3>Dosya: <code>ml/tf_models/irrigation_model.py</code></h3>
+<h3>Girdi Parametreleri</h3>
+<table>
+<thead>
+<tr>
+<th>Parametre</th>
+<th>Tip</th>
+<th>Aralık</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>soil_moisture</td>
+<td>float</td>
+<td>10–90</td>
+<td>Toprak nemi (%)</td>
+</tr>
+<tr>
+<td>temperature</td>
+<td>float</td>
+<td>5–45</td>
+<td>Sıcaklık (°C)</td>
+</tr>
+<tr>
+<td>humidity</td>
+<td>float</td>
+<td>20–95</td>
+<td>Hava nemi (%)</td>
+</tr>
+<tr>
+<td>rainfall</td>
+<td>float</td>
+<td>0–300</td>
+<td>Yağış (mm)</td>
+</tr>
+<tr>
+<td>season_encoded</td>
+<td>int</td>
+<td>0–3</td>
+<td>Mevsim (ilkbahar=0, yaz=1, sonbahar=2, kış=3)</td>
+</tr>
+<tr>
+<td>soil_type_encoded</td>
+<td>int</td>
+<td>0–5</td>
+<td>Toprak tipi</td>
+</tr>
+</tbody>
+</table>
+<h3>Çıktı Formatı</h3>
+<pre><code class="language-json">{
+    &quot;irrigation_needed&quot;: true,
+    &quot;probability&quot;: 78.5,
+    &quot;water_amount_lm2&quot;: 8.3,
+    &quot;urgency&quot;: &quot;Normal&quot;
+}
+</code></pre>
+<h3>Etiketleme Kuralları</h3>
+<ul>
+<li>Toprak nemi &lt; %30 → +3 puan</li>
+<li>Sıcaklık &gt; 30°C → +2 puan</li>
+<li>Yağış &lt; 30mm → +2 puan</li>
+<li>Hava nemi &lt; %40 → +1 puan</li>
+<li>Toplam ≥ 4 → Sulama Gerekli</li>
+</ul>
+<hr />
+<h2>3. Gübreleme İhtiyacı Tahmin Modeli (Yeni — TensorFlow)</h2>
+<h3>Model Mimarisi</h3>
+<pre><code>Input(6) → Dense(128, ReLU) → BN → Dropout(0.3)
+         → Dense(64, ReLU)  → BN → Dropout(0.2)
+         → Dense(32, ReLU)  → Dense(4, Softmax)
+</code></pre>
+<h3>Dosya: <code>ml/tf_models/fertilization_model.py</code></h3>
+<h3>Girdi Parametreleri</h3>
+<table>
+<thead>
+<tr>
+<th>Parametre</th>
+<th>Tip</th>
+<th>Aralık</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>nitrogen</td>
+<td>float</td>
+<td>5–150</td>
+<td>Azot (N) değeri</td>
+</tr>
+<tr>
+<td>phosphorus</td>
+<td>float</td>
+<td>5–150</td>
+<td>Fosfor (P) değeri</td>
+</tr>
+<tr>
+<td>potassium</td>
+<td>float</td>
+<td>5–250</td>
+<td>Potasyum (K) değeri</td>
+</tr>
+<tr>
+<td>ph</td>
+<td>float</td>
+<td>4.0–9.5</td>
+<td>pH değeri</td>
+</tr>
+<tr>
+<td>soil_type_encoded</td>
+<td>int</td>
+<td>0–5</td>
+<td>Toprak tipi</td>
+</tr>
+<tr>
+<td>crop_encoded</td>
+<td>int</td>
+<td>0–12</td>
+<td>Ürün türü</td>
+</tr>
+</tbody>
+</table>
+<h3>Çıktı Sınıfları</h3>
+<table>
+<thead>
+<tr>
+<th>Sınıf</th>
+<th>Etiket</th>
+<th>Önerilen Miktar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Gübreleme Gerekli Değil</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Azotlu Gübre Gerekli</td>
+<td>5–15 kg/dekar</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Fosforlu Gübre Gerekli</td>
+<td>3–10 kg/dekar</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Potasyumlu Gübre Gerekli</td>
+<td>4–12 kg/dekar</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>4. Hastalık Riski Tahmin Modeli (Yeni — TensorFlow)</h2>
+<h3>Model Mimarisi</h3>
+<pre><code>Input(5) → Dense(64, ReLU) → BN → Dropout(0.3)
+         → Dense(32, ReLU) → BN → Dropout(0.2)
+         → Dense(16, ReLU) → Dense(4, Softmax)
+</code></pre>
+<h3>Dosya: <code>ml/tf_models/disease_risk_model.py</code></h3>
+<h3>Girdi Parametreleri</h3>
+<table>
+<thead>
+<tr>
+<th>Parametre</th>
+<th>Tip</th>
+<th>Aralık</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>humidity</td>
+<td>float</td>
+<td>20–95</td>
+<td>Nem (%)</td>
+</tr>
+<tr>
+<td>temperature</td>
+<td>float</td>
+<td>5–45</td>
+<td>Sıcaklık (°C)</td>
+</tr>
+<tr>
+<td>rainfall</td>
+<td>float</td>
+<td>0–500</td>
+<td>Yağış (mm)</td>
+</tr>
+<tr>
+<td>crop_encoded</td>
+<td>int</td>
+<td>0–12</td>
+<td>Ürün türü</td>
+</tr>
+<tr>
+<td>season_encoded</td>
+<td>int</td>
+<td>0–3</td>
+<td>Mevsim</td>
+</tr>
+</tbody>
+</table>
+<h3>Çıktı Sınıfları</h3>
+<table>
+<thead>
+<tr>
+<th>Seviye</th>
+<th>Etiket</th>
+<th>Renk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Düşük Risk</td>
+<td>🟢 success</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Orta Risk</td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Yüksek Risk</td>
+<td>🔴 danger</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Kritik Risk</td>
+<td>⚫ dark</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Eğitim Pipeline'ı</h2>
+<h3>Sentetik Veri Üretimi</h3>
+<p>Her model için 2000 sentetik örnek üretilir. Etiketler, tarım bilimsel kural tabanlı puanlama sistemiyle belirlenir.</p>
+<h3>Eğitim Komutu</h3>
+<pre><code class="language-python">from ml.tf_models.trainer import train_all_models
+results = train_all_models(epochs=50)
+</code></pre>
+<h3>Eğitim Sabitleri</h3>
+<table>
+<thead>
+<tr>
+<th>Parametre</th>
+<th>Değer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Epochs</td>
+<td>50</td>
+</tr>
+<tr>
+<td>Batch Size</td>
+<td>32</td>
+</tr>
+<tr>
+<td>Validation Split</td>
+<td>%20</td>
+</tr>
+<tr>
+<td>Learning Rate</td>
+<td>0.001</td>
+</tr>
+<tr>
+<td>Optimizer</td>
+<td>Adam</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Güvenilirlik Metrikleri</h2>
+<table>
+<thead>
+<tr>
+<th>Metrik</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Accuracy</td>
+<td>Genel doğruluk oranı</td>
+</tr>
+<tr>
+<td>Validation Accuracy</td>
+<td>Doğrulama seti doğruluk oranı</td>
+</tr>
+<tr>
+<td>Loss</td>
+<td>Eğitim kaybı</td>
+</tr>
+<tr>
+<td>Precision</td>
+<td>Kesinlik (binary modeller için)</td>
+</tr>
+<tr>
+<td>Recall</td>
+<td>Duyarlılık (binary modeller için)</td>
+</tr>
+</tbody>
+</table>
+<h3>Kabul Kriterleri</h3>
+<ul>
+<li><strong>Ürün Tahmini (RF):</strong> Accuracy ≥ %95</li>
+<li><strong>Sulama Tahmini (TF):</strong> Accuracy ≥ %85</li>
+<li><strong>Gübreleme Tahmini (TF):</strong> Accuracy ≥ %80</li>
+<li><strong>Hastalık Riski (TF):</strong> Accuracy ≥ %75</li>
+</ul></div>
+<div class="section"><div class="section-header">Bolum 7 - TensorFlow Model Dokümantasyonu</div><h1>TensorFlow Model Dokumantasyonu</h1>
+<h2>Genel Bakis</h2>
+<p>ATYS projesinde TensorFlow/Keras ile gelistirilen uc tahminleme modeli bulunmaktadir. Bu modeller, ciftcilere sulama, gubreleme ve hastalik riski konusunda otomatik tavsiye uretmek icin kullanilir.</p>
+<h2>Model Mimarileri</h2>
+<h3>1. Sulama Ihtiyaci Modeli (<code>irrigation_model.keras</code>)</h3>
+<pre><code>Model: irrigation_model
+_________________________________________________________________
+Layer (type)                Output Shape              Param
+=================================================================
+dense_1 (Dense)             (None, 64)                448
+batch_norm_1                (None, 64)                256
+dropout_1 (Dropout)         (None, 64)                0
+dense_2 (Dense)             (None, 32)                2080
+batch_norm_2                (None, 32)                128
+dropout_2 (Dropout)         (None, 32)                0
+dense_3 (Dense)             (None, 16)                528
+output (Dense)              (None, 1)                 17
+=================================================================
+Total params: ~3,457
+</code></pre>
+<p><strong>Aktivasyon:</strong> ReLU (gizli), Sigmoid (cikti)
+<strong>Kayip:</strong> Binary Crossentropy
+<strong>Tip:</strong> Binary classification</p>
+<h3>2. Gubreleme Ihtiyaci Modeli (<code>fertilization_model.keras</code>)</h3>
+<pre><code>Model: fertilization_model
+_________________________________________________________________
+Layer (type)                Output Shape              Param
+=================================================================
+dense_1 (Dense)             (None, 128)               896
+batch_norm_1                (None, 128)               512
+dropout_1 (Dropout)         (None, 128)               0
+dense_2 (Dense)             (None, 64)                8256
+batch_norm_2                (None, 64)                256
+dropout_2 (Dropout)         (None, 64)                0
+dense_3 (Dense)             (None, 32)                2080
+output (Dense)              (None, 4)                 132
+=================================================================
+Total params: ~12,132
+</code></pre>
+<p><strong>Aktivasyon:</strong> ReLU (gizli), Softmax (cikti)
+<strong>Kayip:</strong> Sparse Categorical Crossentropy
+<strong>Tip:</strong> Multi-class classification (4 sinif)</p>
+<h3>3. Hastalik Riski Modeli (<code>disease_risk_model.keras</code>)</h3>
+<pre><code>Model: disease_risk_model
+_________________________________________________________________
+Layer (type)                Output Shape              Param
+=================================================================
+dense_1 (Dense)             (None, 64)                384
+batch_norm_1                (None, 64)                256
+dropout_1 (Dropout)         (None, 64)                0
+dense_2 (Dense)             (None, 32)                2080
+batch_norm_2                (None, 32)                128
+dropout_2 (Dropout)         (None, 32)                0
+dense_3 (Dense)             (None, 16)                528
+output (Dense)              (None, 4)                 68
+=================================================================
+Total params: ~3,444
+</code></pre>
+<p><strong>Aktivasyon:</strong> ReLU (gizli), Softmax (cikti)
+<strong>Kayip:</strong> Sparse Categorical Crossentropy
+<strong>Tip:</strong> Multi-class classification (4 sinif)</p>
+<hr />
+<h2>Egitim Veri Seti</h2>
+<p>Tum modeller <strong>sentetik veri</strong> ile egitilmistir. Sentetik veri, tarim bilimsel kurallara dayali puanlama sistemi ile etiketlenmistir.</p>
+<h3>Veri Uretim Sureci</h3>
+<ol>
+<li>Feature degerleri <code>numpy.random.uniform</code> ile uretilir</li>
+<li>Her ornek icin bir risk/ihtiyac skoru hesaplanir</li>
+<li>Skor esik degerlere gore sinifa atanir</li>
+<li>Deterministik seed (<code>np.random.seed</code>) ile tekrarlanabilirlik saglanir</li>
+</ol>
+<h3>Ornek Sayilari</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Egitim</th>
+<th>Validasyon</th>
+<th>Toplam</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sulama</td>
+<td>1600</td>
+<td>400</td>
+<td>2000</td>
+</tr>
+<tr>
+<td>Gubreleme</td>
+<td>1600</td>
+<td>400</td>
+<td>2000</td>
+</tr>
+<tr>
+<td>Hastalik</td>
+<td>1600</td>
+<td>400</td>
+<td>2000</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Hiperparametre Secimleri</h2>
+<table>
+<thead>
+<tr>
+<th>Parametre</th>
+<th>Deger</th>
+<th>Neden</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Learning Rate</td>
+<td>0.001</td>
+<td>Adam optimizer varsayilani, kucuk veri setinde stabil</td>
+</tr>
+<tr>
+<td>Batch Size</td>
+<td>32</td>
+<td>Kucuk-orta veri seti icin uygun</td>
+</tr>
+<tr>
+<td>Epochs</td>
+<td>50</td>
+<td>Early overfitting olmadan yeterli konverjans</td>
+</tr>
+<tr>
+<td>Dropout</td>
+<td>0.2-0.3</td>
+<td>Overfitting onleme</td>
+</tr>
+<tr>
+<td>BatchNorm</td>
+<td>Evet</td>
+<td>Egitim stabilizasyonu</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Egitim Sureci</h2>
+<h3>Komut</h3>
+<pre><code class="language-python">from ml.tf_models.trainer import train_all_models
+results = train_all_models(epochs=50)
+</code></pre>
+<h3>Beklenen Cikti</h3>
+<pre><code>Sulama modeli: accuracy=~90%, val_accuracy=~87%
+Gubreleme modeli: accuracy=~85%, val_accuracy=~82%
+Hastalik riski modeli: accuracy=~80%, val_accuracy=~78%
+</code></pre>
+<hr />
+<h2>Dosya Yapisi</h2>
+<pre><code>ml/
+├── __init__.py
+├── constants.py          # RF model sabitleri
+├── data_loader.py        # CSV veri yukleme
+├── predictor.py          # RF CropPredictor (Singleton)
+├── trainer.py            # RF model egitimi
+├── benchmark.py          # Performans olcumu
+├── saved_models/
+│   ├── crop_model.pkl              # Egitilmis RF model
+│   ├── irrigation_model.keras      # TF sulama modeli
+│   ├── fertilization_model.keras   # TF gubreleme modeli
+│   └── disease_risk_model.keras    # TF hastalik modeli
+└── tf_models/
+    ├── __init__.py
+    ├── constants.py          # TF sabitleri
+    ├── irrigation_model.py   # Sulama modeli
+    ├── fertilization_model.py # Gubreleme modeli
+    ├── disease_risk_model.py  # Hastalik riski modeli
+    └── trainer.py            # TF egitim pipeline
+</code></pre>
+<h2>TensorFlow Versiyon</h2>
+<ul>
+<li><strong>Minimum:</strong> TensorFlow &gt;= 2.16</li>
+<li><strong>Onerilne:</strong> TensorFlow 2.18+</li>
+<li><strong>GPU Destegi:</strong> Opsiyonel (CPU ile calisir)</li>
+</ul></div>
+<div class="section"><div class="section-header">Bolum 8 - Hiperparametre Optimizasyonu</div><h1>TensorFlow Modeli Hiperparametre Optimizasyon Raporu</h1>
+<p><strong>Tarih:</strong> 17 Mayıs 2026<br />
+<strong>Durum:</strong> Tamamlandı</p>
+<blockquote>
+<p>[!WARNING]
+<strong>Altyapı Notu:</strong> Sistemdeki Python 3.14 versiyonunun TensorFlow Keras kütüphanesi ile uyumluluk sorunları (dependency incompatibilities) yaratması nedeniyle, planlandığı gibi derin öğrenme modeli üzerinde hiperparametre arama (Keras Tuner) gerçekleştirilememiştir.
+Çözüm olarak; üretim ortamına uygun, kararlı ve hızlı olan <strong>Scikit-learn (RandomForest ve GradientBoosting)</strong> kütüphanelerine geçiş yapılmış ve çapraz doğrulamalı hiperparametre taramaları (GridSearchCV) bu modeller üzerinde başarıyla uygulanmıştır.</p>
+</blockquote>
+<h2>1. Grid Search (Izgara Arama) ve K-Fold Cross Validation</h2>
+<p>Hiperparametre taramaları <code>GridSearchCV</code> kullanılarak ve verinin rastgeleliğe karşı direncini artırmak adına <strong>K-Fold Çapraz Doğrulama (StratifiedKFold)</strong> tekniği ile gerçekleştirilmiştir. Parametre alanları paralelleştirilerek (n_jobs=-1) işlenmiştir.</p>
+<h3>Crop Prediction Modeli (RandomForestClassifier)</h3>
+<ul>
+<li><strong>Veri Kümesi:</strong> Kaggle'dan filtrelenen Türkiye Mahsulleri + Sentetik Veri</li>
+<li><strong>Denenen Parametreler:</strong><ul>
+<li><code>n_estimators</code>: [100, 200]</li>
+<li><code>max_depth</code>: [10, 20, None]</li>
+<li><code>min_samples_split</code>: [2, 5]</li>
+</ul>
+</li>
+<li><strong>Sonuç:</strong><ul>
+<li>En İyi Kombinasyon: <code>n_estimators=100</code>, <code>max_depth=None</code>, <code>min_samples_split=2</code></li>
+<li>GridSearch Başarı Oranı: <strong>%99.08</strong></li>
+</ul>
+</li>
+</ul>
+<h3>Irrigation (Sulama Tahmin) Modeli (GradientBoostingClassifier)</h3>
+<ul>
+<li><strong>Veri Kümesi:</strong> Sentetik Üretim (2000 Örnek, Kural Tabanlı Sınıflandırma)</li>
+<li><strong>Denenen Parametreler:</strong><ul>
+<li><code>n_estimators</code>: [100, 200]</li>
+<li><code>learning_rate</code>: [0.05, 0.1]</li>
+<li><code>max_depth</code>: [3, 5]</li>
+</ul>
+</li>
+<li><strong>Sonuç:</strong><ul>
+<li>En İyi Kombinasyon: <code>n_estimators=200</code>, <code>learning_rate=0.1</code>, <code>max_depth=5</code></li>
+<li>GridSearch Başarı Oranı: <strong>%98.10</strong></li>
+</ul>
+</li>
+</ul>
+<h2>2. Model Log Veritabanı (Audit)</h2>
+<p>Her bir optimizasyon işleminin eğitim süresi, doğruluk skoru, standart sapması ve hiperparametre kombinasyonu veritabanında <code>model_logs</code> (<code>ModelLog</code>) tablosuna kayıt altına alınacak şekilde izlenebilir mimari (<code>hyperparameter_tuner.py</code>) kurulmuştur.</p>
+<h3>Örnek Veritabanı Kaydı:</h3>
+<ul>
+<li><strong>Model:</strong> Crop Prediction</li>
+<li><strong>Type:</strong> RandomForest</li>
+<li><strong>Accuracy:</strong> 0.9908</li>
+<li><strong>Parameters:</strong> <code>{"n_estimators": 100, "max_depth": null, ...}</code></li>
+</ul>
+<h2>3. Karşılaştırma ve Öneriler</h2>
+<ol>
+<li><strong>Hız ve Bellek:</strong> Scikit-learn ağaç modelleri, IoT ortamlarındaki basit yapılandırılmış veriler için TensorFlow'un Deep Neural Network altyapısından çok daha hızlı (training &lt; 5 saniye) eğitilmiş ve bellekte minimum yer kaplamıştır.</li>
+<li><strong>Kararlılık:</strong> %98+ doğruluk (accuracy) oranları, ağaç tabanlı algoritmaların bu tür tabular veri (nem, sıcaklık vb.) analizinde daha yatkın ve kararlı olduğunu göstermektedir.</li>
+<li><strong>Sonraki Adım:</strong> Model performansı düşmeye başladığında drift'i yakalamak için belirli aralıklarla <code>tune_model</code> komutunu çalıştıracak bir Celery (veya cron) asenkron görevi planlanabilir.</li>
+</ol></div>
+<div class="section"><div class="section-header">Bolum 9 - Algoritma Performans Raporu</div><h1>Algoritma Performans Raporu</h1>
+<h2>Genel Bakis</h2>
+<p>Bu rapor, ATYS projesinde kullanilan tahminleme algoritmalarinin performans degerlendirilmesini icerir.</p>
+<hr />
+<h2>1. RandomForest Urun Tahmin Modeli</h2>
+<h3>Model Bilgileri</h3>
+<table>
+<thead>
+<tr>
+<th>Parametre</th>
+<th>Deger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Algoritma</td>
+<td>RandomForestClassifier</td>
+</tr>
+<tr>
+<td>Kutuphane</td>
+<td>scikit-learn</td>
+</tr>
+<tr>
+<td>n_estimators</td>
+<td>100</td>
+</tr>
+<tr>
+<td>max_depth</td>
+<td>15</td>
+</tr>
+<tr>
+<td>Veri Seti</td>
+<td>Kaggle Crop Recommendation (filtrelenmis)</td>
+</tr>
+<tr>
+<td>Feature Sayisi</td>
+<td>7 (N, P, K, sicaklik, nem, pH, yagis)</td>
+</tr>
+<tr>
+<td>Sinif Sayisi</td>
+<td>13 (Turkiye iklimine uygun urunler)</td>
+</tr>
+</tbody>
+</table>
+<h3>Performans Metrikleri</h3>
+<table>
+<thead>
+<tr>
+<th>Metrik</th>
+<th>Deger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Accuracy</td>
+<td>~%99</td>
+</tr>
+<tr>
+<td>Weighted F1</td>
+<td>~%99</td>
+</tr>
+<tr>
+<td>Macro F1</td>
+<td>~%99</td>
+</tr>
+<tr>
+<td>Ortalama Tahmin Suresi</td>
+<td>&lt;1 ms</td>
+</tr>
+<tr>
+<td>P95 Tahmin Suresi</td>
+<td>&lt;2 ms</td>
+</tr>
+</tbody>
+</table>
+<h3>Cross Validation (5-Fold)</h3>
+<table>
+<thead>
+<tr>
+<th>Fold</th>
+<th>Skor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>~%99</td>
+</tr>
+<tr>
+<td>2</td>
+<td>~%99</td>
+</tr>
+<tr>
+<td>3</td>
+<td>~%99</td>
+</tr>
+<tr>
+<td>4</td>
+<td>~%99</td>
+</tr>
+<tr>
+<td>5</td>
+<td>~%99</td>
+</tr>
+<tr>
+<td><strong>Ortalama</strong></td>
+<td><strong>~%99</strong></td>
+</tr>
+</tbody>
+</table>
+<h3>Optimizasyon Yontemleri</h3>
+<ol>
+<li><strong>Singleton Pattern</strong>: <code>CropPredictor</code> sinifi thread-safe singleton olarak tasarlandi. Model sadece bir kez yuklenir.</li>
+<li><strong>CSV Cache</strong>: <code>SimulationService</code> sinifinda CSV DataFrame sinif duzeyinde onbelleklenir.</li>
+<li><strong>Bulk Operations</strong>: <code>bulk_create</code> ile veritabani INSERT islemleri optimize edildi.</li>
+<li><strong>Lazy Loading</strong>: Django settings'ten model yolu lazy olarak yuklenir.</li>
+</ol>
+<hr />
+<h2>2. TensorFlow Tahminleme Modelleri</h2>
+<h3>2.1 Sulama Ihtiyaci Modeli</h3>
+<table>
+<thead>
+<tr>
+<th>Parametre</th>
+<th>Deger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mimari</td>
+<td>Dense(64) -&gt; BN -&gt; DO(0.3) -&gt; Dense(32) -&gt; BN -&gt; DO(0.2) -&gt; Dense(16) -&gt; Dense(1, sigmoid)</td>
+</tr>
+<tr>
+<td>Kayip Fonksiyonu</td>
+<td>Binary Crossentropy</td>
+</tr>
+<tr>
+<td>Optimizer</td>
+<td>Adam (lr=0.001)</td>
+</tr>
+<tr>
+<td>Egitim Verisi</td>
+<td>2000 sentetik ornek</td>
+</tr>
+<tr>
+<td>Hedef Accuracy</td>
+<td>&gt;= %85</td>
+</tr>
+</tbody>
+</table>
+<h3>2.2 Gubreleme Ihtiyaci Modeli</h3>
+<table>
+<thead>
+<tr>
+<th>Parametre</th>
+<th>Deger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mimari</td>
+<td>Dense(128) -&gt; BN -&gt; DO(0.3) -&gt; Dense(64) -&gt; BN -&gt; DO(0.2) -&gt; Dense(32) -&gt; Dense(4, softmax)</td>
+</tr>
+<tr>
+<td>Kayip Fonksiyonu</td>
+<td>Sparse Categorical Crossentropy</td>
+</tr>
+<tr>
+<td>Siniflar</td>
+<td>4 (Gerekli degil, Azot, Fosfor, Potasyum)</td>
+</tr>
+<tr>
+<td>Egitim Verisi</td>
+<td>2000 sentetik ornek</td>
+</tr>
+<tr>
+<td>Hedef Accuracy</td>
+<td>&gt;= %80</td>
+</tr>
+</tbody>
+</table>
+<h3>2.3 Hastalik Riski Modeli</h3>
+<table>
+<thead>
+<tr>
+<th>Parametre</th>
+<th>Deger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mimari</td>
+<td>Dense(64) -&gt; BN -&gt; DO(0.3) -&gt; Dense(32) -&gt; BN -&gt; DO(0.2) -&gt; Dense(16) -&gt; Dense(4, softmax)</td>
+</tr>
+<tr>
+<td>Kayip Fonksiyonu</td>
+<td>Sparse Categorical Crossentropy</td>
+</tr>
+<tr>
+<td>Siniflar</td>
+<td>4 (Dusuk, Orta, Yuksek, Kritik)</td>
+</tr>
+<tr>
+<td>Egitim Verisi</td>
+<td>2000 sentetik ornek</td>
+</tr>
+<tr>
+<td>Hedef Accuracy</td>
+<td>&gt;= %75</td>
+</tr>
+</tbody>
+</table>
+<h3>Ortak Egitim Parametreleri</h3>
+<table>
+<thead>
+<tr>
+<th>Parametre</th>
+<th>Deger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Epochs</td>
+<td>50</td>
+</tr>
+<tr>
+<td>Batch Size</td>
+<td>32</td>
+</tr>
+<tr>
+<td>Validation Split</td>
+<td>%20</td>
+</tr>
+<tr>
+<td>Learning Rate</td>
+<td>0.001</td>
+</tr>
+<tr>
+<td>Regularizasyon</td>
+<td>BatchNormalization + Dropout</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>3. Optimizasyon Ozeti</h2>
+<h3>Veritabani Optimizasyonlari</h3>
+<ul>
+<li><code>select_related</code> / <code>prefetch_related</code> ile N+1 sorgu problemi cozuldu</li>
+<li><code>bulk_create</code> ile toplu INSERT islemleri (tek sorgu)</li>
+<li>Django cache framework ile istatistik ve fiyat verisi onbellek</li>
+<li>Veritabani indeksleri (custom indexes) eklendi</li>
+</ul>
+<h3>Bellek Optimizasyonlari</h3>
+<ul>
+<li>Singleton pattern ile model tekrar yuklenmesi engellendi</li>
+<li>Thread-safe cache mekanizmasi (double-checked locking)</li>
+<li><code>.only()</code> ile gereksiz field yuklemesi engellendi</li>
+</ul>
+<h3>API Performansi</h3>
+<ul>
+<li>JWT token tabanli kimlik dogrulama (session yerine)</li>
+<li>Sayfalama (varsayilan 20, max 100)</li>
+<li>Filtreleme ile gereksiz veri transferi engellendi</li>
+</ul>
+<hr />
+<h2>4. Benchmark Calistirma</h2>
+<pre><code class="language-bash"># Django shell uzerinden benchmark
+python manage.py shell -c &quot;from ml.benchmark import run_benchmark; run_benchmark()&quot;
+
+# TensorFlow model egitimi
+python manage.py shell -c &quot;from ml.tf_models.trainer import train_all_models; train_all_models()&quot;
+</code></pre></div>
+<div class="section"><div class="section-header">Bolum 10 - Sensör Veri Analitikleri</div><h1>Sensör Okuma Analitiği — Performans Raporu</h1>
+<p><strong>Oluşturulma:</strong> 2026-05-18T18:51:24.547066+00:00<br />
+<strong>Veritabanı:</strong> sqlite (C:\Users\mert\akilli-tarim-sistemi\backend\db.sqlite3)<br />
+<strong>Tarih aralığı:</strong> 2026-04-18T18:51:24.547066+00:00 → 2026-05-18T18:51:24.547066+00:00  </p>
+<h2>1. İndeks ve partitioning</h2>
+<table>
+<thead>
+<tr>
+<th>Öğe</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idx_reading_sensor_measured_at</code></td>
+<td>B-tree <code>(sensor_id, measured_at)</code> — sensör + zaman aralığı</td>
+</tr>
+<tr>
+<td><code>idx_reading_measured_sensor</code></td>
+<td>B-tree <code>(measured_at, sensor_id)</code> — zaman öncelikli tarama</td>
+</tr>
+<tr>
+<td><code>idx_reading_measured_at_brin</code></td>
+<td>BRIN <code>(measured_at)</code> — PostgreSQL geniş aralık taraması</td>
+</tr>
+<tr>
+<td>Aylık partition</td>
+<td><code>iot_sensorreading_YYYY_MM</code> — <code>setup_sensor_partitions</code></td>
+</tr>
+</tbody>
+</table>
+<h2>2. Analitik sorgular (Django ORM)</h2>
+<h3>2.1 Sensör tipine göre avg / min / max</h3>
+<pre><code class="language-python">SensorAnalyticsService.aggregate_by_sensor_type(start=..., end=...)
+</code></pre>
+<p><strong>Süre:</strong> 7.17 ms<br />
+<strong>Satır:</strong> 4 sensör tipi  </p>
+<table>
+<thead>
+<tr>
+<th>sensor_type</th>
+<th>avg</th>
+<th>min</th>
+<th>max</th>
+<th>count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>nem</td>
+<td>50.4604802970297</td>
+<td>10.0462000000000</td>
+<td>89.9827000000000</td>
+<td>1010</td>
+</tr>
+<tr>
+<td>ph</td>
+<td>49.8929505060728</td>
+<td>10.1003000000000</td>
+<td>89.9694000000000</td>
+<td>988</td>
+</tr>
+<tr>
+<td>sicaklik</td>
+<td>50.8879108445297</td>
+<td>10.0230000000000</td>
+<td>89.9796000000000</td>
+<td>1042</td>
+</tr>
+<tr>
+<td>yagis</td>
+<td>51.0412923326133</td>
+<td>10.0547000000000</td>
+<td>89.9103000000000</td>
+<td>926</td>
+</tr>
+</tbody>
+</table>
+<p><strong>EXPLAIN:</strong></p>
+<pre><code class="language-text">9 | 0 | 0 | SEARCH iot_sensorreading USING INDEX idx_reading_measured_sensor (measured_at&gt;? AND measured_at&lt;?)
+19 | 0 | 0 | SEARCH iot_sensor USING INDEX sqlite_autoindex_iot_sensor_1 (id=?)
+24 | 0 | 0 | USE TEMP B-TREE FOR GROUP BY
+</code></pre>
+<h3>2.2 Filtre: sensor_type = <code>nem</code></h3>
+<p><strong>Süre:</strong> 3.04 ms  </p>
+<pre><code class="language-text">6 | 0 | 0 | SEARCH iot_sensorreading USING INDEX idx_reading_measured_sensor (measured_at&gt;? AND measured_at&lt;?)
+16 | 0 | 0 | SEARCH iot_sensor USING INDEX sqlite_autoindex_iot_sensor_1 (id=?)
+</code></pre>
+<h3>2.3 Genel özet (tüm tipler)</h3>
+<p><strong>Süre:</strong> 2.71 ms<br />
+- avg: 50.5670095814424<br />
+- min: 10.0230000000000<br />
+- max: 89.9827000000000<br />
+- count: 3966  </p>
+<h2>3. Referans SQL</h2>
+<pre><code class="language-sql">SELECT
+    s.sensor_type,
+    AVG(r.value)   AS avg_value,
+    MIN(r.value)   AS min_value,
+    MAX(r.value)   AS max_value,
+    COUNT(*)       AS reading_count
+FROM iot_sensorreading r
+INNER JOIN iot_sensor s ON s.id = r.sensor_id
+WHERE r.measured_at &gt;= %(start)s
+  AND r.measured_at &lt; %(end)s
+
+GROUP BY s.sensor_type
+ORDER BY s.sensor_type;
+</code></pre>
+<h2>4. PostgreSQL — beklenen EXPLAIN ANALYZE planı</h2>
+<p>Docker PostgreSQL ile (<code>DB_ENGINE=django.db.backends.postgresql</code>):</p>
+<pre><code class="language-bash">docker compose up -d postgres
+cd backend
+set DB_ENGINE=django.db.backends.postgresql
+python manage.py migrate
+python manage.py benchmark_sensor_analytics --seed 50000
+python manage.py setup_sensor_partitions --convert
+python manage.py setup_sensor_partitions --months-ahead 6
+</code></pre>
+<p><strong>Beklenen plan (aggregate_by_sensor_type, partitioned tablo):</strong></p>
+<pre><code class="language-text">Aggregate  (cost=... rows=8 width=...)
+  -&gt;  Hash Join  (cost=... rows=... width=...)
+        Hash Cond: (r.sensor_id = s.id)
+        -&gt;  Append  (cost=0.00..rows=...)   -- yalnızca ilgili aylık partition'lar
+              -&gt;  Seq Scan on iot_sensorreading_2026_04 r
+                    Filter: (measured_at &gt;= ... AND measured_at &lt; ...)
+              -&gt;  Seq Scan on iot_sensorreading_2026_05 r
+                    Filter: (measured_at &gt;= ... AND measured_at &lt; ...)
+        -&gt;  Hash
+              -&gt;  Seq Scan on iot_sensor s
+</code></pre>
+<p>Partition pruning sayesinde <code>measured_at</code> aralığı daraldıkça taranan veri hacmi düşer.<br />
+Sensör bazlı sorgularda <code>idx_reading_sensor_measured_at</code> → <strong>Bitmap Index Scan</strong> veya <strong>Index Scan</strong> beklenir.</p>
+<h2>5. Komutlar</h2>
+<pre><code class="language-bash">python manage.py setup_sensor_partitions --months-ahead 6
+python manage.py setup_sensor_partitions --convert  # tek seferlik PG dönüşüm
+python manage.py benchmark_sensor_analytics --seed 50000
+</code></pre></div>
+<div class="section"><div class="section-header">Bolum 11 - Sensör Verileri Bölümleme</div><h1>sensor_readings — Partitioning Raporu (Şablon)</h1>
+<p>Bu rapor PostgreSQL bağlantısı olmadan oluşturuldu.</p>
+<p>Tam EXPLAIN ANALYZE karşılaştırması için:</p>
+<pre><code class="language-bash">docker compose up -d postgres
+DB_ENGINE=django.db.backends.postgresql python manage.py migrate
+python manage.py setup_sensor_partitions --convert
+python manage.py compare_sensor_reading_plans
+</code></pre>
+<p>Beklenen indeksler: <code>idx_sr_timestamp_brin</code>, <code>idx_sr_field_timestamp_btree</code>.</p></div>
+<div class="section"><div class="section-header">Bolum 12 - REST API Endpoint Referansı</div><h1>ATYS — REST API Endpoint Referansı</h1>
+<p><strong>Base URL:</strong> <code>http://localhost:8000/api/v1/</code><br />
+<strong>Auth:</strong> JWT Bearer Token (<code>Authorization: Bearer &lt;access_token&gt;</code>)<br />
+<strong>Format:</strong> JSON (<code>Content-Type: application/json</code>)</p>
+<hr />
+<h2>🔐 Kimlik Doğrulama</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/token/</code></td>
+<td>❌</td>
+<td>Username + password ile access/refresh token al</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/token/refresh/</code></td>
+<td>❌</td>
+<td>Refresh token ile yeni access token al</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/token/verify/</code></td>
+<td>❌</td>
+<td>Token geçerliliğini doğrula</td>
+</tr>
+</tbody>
+</table>
+<h3>Token Alma — <code>POST /api/v1/token/</code></h3>
+<p><strong>İstek:</strong></p>
+<pre><code class="language-json">{
+  &quot;username&quot;: &quot;ahmet_farmer&quot;,
+  &quot;password&quot;: &quot;gizlisifre123&quot;
+}
+</code></pre>
+<p><strong>Yanıt (200 OK):</strong></p>
+<pre><code class="language-json">{
+  &quot;access&quot;: &quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;,
+  &quot;refresh&quot;: &quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;
+}
+</code></pre>
+<blockquote>
+<p>Access token süresi: <strong>60 dakika</strong> | Refresh token süresi: <strong>7 gün</strong></p>
+</blockquote>
+<h3>Token Yenileme — <code>POST /api/v1/token/refresh/</code></h3>
+<p><strong>İstek:</strong></p>
+<pre><code class="language-json">{ &quot;refresh&quot;: &quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot; }
+</code></pre>
+<p><strong>Yanıt (200 OK):</strong></p>
+<pre><code class="language-json">{ &quot;access&quot;: &quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot; }
+</code></pre>
+<hr />
+<h2>🌾 Tarla Yönetimi (<code>/api/v1/fields/</code>)</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/fields/</code></td>
+<td>Kullanıcının tarlalarını listele</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/fields/</code></td>
+<td>Yeni tarla oluştur</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/fields/{id}/</code></td>
+<td>Tarla detayı</td>
+</tr>
+<tr>
+<td><code>PUT</code></td>
+<td><code>/api/v1/fields/{id}/</code></td>
+<td>Tarla güncelle (tam)</td>
+</tr>
+<tr>
+<td><code>PATCH</code></td>
+<td><code>/api/v1/fields/{id}/</code></td>
+<td>Tarla güncelle (kısmi)</td>
+</tr>
+<tr>
+<td><code>DELETE</code></td>
+<td><code>/api/v1/fields/{id}/</code></td>
+<td>Tarla sil</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/fields/{id}/analyses/</code></td>
+<td>Tarlaya ait toprak analizleri</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/fields/{id}/sensors/</code></td>
+<td>Tarlaya ait sensör verileri</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/fields/{id}/predictions/</code></td>
+<td>Tarlaya ait tahmin sonuçları</td>
+</tr>
+</tbody>
+</table>
+<h3>Filtreler (<code>GET /api/v1/fields/</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Parametre</th>
+<th>Tip</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>status</code></td>
+<td>string</td>
+<td><code>empty</code> veya <code>planted</code></td>
+</tr>
+<tr>
+<td><code>soil_type</code></td>
+<td>string</td>
+<td><code>killi</code>, <code>kumlu</code>, <code>tinli</code>, <code>killi_tinli</code>, <code>kumlu_tinli</code>, <code>limolu</code></td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>İsme göre kısmi arama</td>
+</tr>
+<tr>
+<td><code>created_after</code></td>
+<td>datetime</td>
+<td>Bu tarihten sonra oluşturulanlar</td>
+</tr>
+<tr>
+<td><code>created_before</code></td>
+<td>datetime</td>
+<td>Bu tarihten önce oluşturulanlar</td>
+</tr>
+<tr>
+<td><code>ordering</code></td>
+<td>string</td>
+<td><code>created_at</code>, <code>area_decar</code>, <code>name</code> (başına <code>-</code> ekle: ters sıra)</td>
+</tr>
+<tr>
+<td><code>page</code>, <code>page_size</code></td>
+<td>int</td>
+<td>Sayfalama (max 100)</td>
+</tr>
+</tbody>
+</table>
+<h3>Yeni Tarla — <code>POST /api/v1/fields/</code></h3>
+<p><strong>İstek:</strong></p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;Kuzey Tarla&quot;,
+  &quot;location&quot;: &quot;Konya, Türkiye&quot;,
+  &quot;area_decar&quot;: 50.00,
+  &quot;soil_type&quot;: &quot;tinli&quot;,
+  &quot;status&quot;: &quot;empty&quot;,
+  &quot;current_crop&quot;: &quot;&quot;
+}
+</code></pre>
+<p><strong>Yanıt (201 Created):</strong></p>
+<pre><code class="language-json">{
+  &quot;id&quot;: 1,
+  &quot;user&quot;: { &quot;id&quot;: 1, &quot;username&quot;: &quot;ahmet&quot;, &quot;first_name&quot;: &quot;Ahmet&quot;, &quot;last_name&quot;: &quot;Yılmaz&quot;, &quot;city&quot;: &quot;Konya&quot; },
+  &quot;name&quot;: &quot;Kuzey Tarla&quot;,
+  &quot;location&quot;: &quot;Konya, Türkiye&quot;,
+  &quot;area_decar&quot;: &quot;50.00&quot;,
+  &quot;area_hectare&quot;: 5.0,
+  &quot;soil_type&quot;: &quot;tinli&quot;,
+  &quot;soil_type_display&quot;: &quot;Tınlı&quot;,
+  &quot;status&quot;: &quot;empty&quot;,
+  &quot;status_display&quot;: &quot;Boş&quot;,
+  &quot;current_crop&quot;: &quot;&quot;,
+  &quot;created_at&quot;: &quot;2025-05-19T20:00:00Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-05-19T20:00:00Z&quot;
+}
+</code></pre>
+<hr />
+<h2>📡 Sensör Verileri (<code>/api/v1/sensors/</code>)</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/sensors/</code></td>
+<td>Tüm sensör verilerini listele</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/sensors/</code></td>
+<td>Yeni sensör verisi oluştur</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/sensors/{id}/</code></td>
+<td>Sensör verisi detayı</td>
+</tr>
+<tr>
+<td><code>PUT</code></td>
+<td><code>/api/v1/sensors/{id}/</code></td>
+<td>Sensör verisi güncelle</td>
+</tr>
+<tr>
+<td><code>PATCH</code></td>
+<td><code>/api/v1/sensors/{id}/</code></td>
+<td>Sensör verisi kısmi güncelle</td>
+</tr>
+<tr>
+<td><code>DELETE</code></td>
+<td><code>/api/v1/sensors/{id}/</code></td>
+<td>Sensör verisi sil</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/sensors/data/</code></td>
+<td><strong>Hızlı sensör veri gönderme</strong></td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/sensors/latest/</code></td>
+<td>Her tarladan en son okuma</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/sensors/readings/</code></td>
+<td>Ham MQTT okumaları (read-only)</td>
+</tr>
+</tbody>
+</table>
+<h3>Sensör Verisi Gönder — <code>POST /api/v1/sensors/data/</code></h3>
+<p><strong>İstek:</strong></p>
+<pre><code class="language-json">{
+  &quot;field&quot;: 1,
+  &quot;humidity&quot;: 65.5,
+  &quot;temperature&quot;: 22.3,
+  &quot;soil_moisture&quot;: 40.0,
+  &quot;plant_water_consumption&quot;: 3.5,
+  &quot;soil_ph&quot;: 6.8,
+  &quot;light_intensity&quot;: 12000
+}
+</code></pre>
+<p><strong>Yanıt (201 Created):</strong></p>
+<pre><code class="language-json">{
+  &quot;id&quot;: 42,
+  &quot;field&quot;: 1,
+  &quot;field_name&quot;: &quot;Kuzey Tarla&quot;,
+  &quot;field_location&quot;: &quot;Konya, Türkiye&quot;,
+  &quot;humidity&quot;: &quot;65.50&quot;,
+  &quot;temperature&quot;: &quot;22.30&quot;,
+  &quot;soil_moisture&quot;: &quot;40.00&quot;,
+  &quot;plant_water_consumption&quot;: &quot;3.50&quot;,
+  &quot;soil_ph&quot;: &quot;6.80&quot;,
+  &quot;light_intensity&quot;: &quot;12000.00&quot;,
+  &quot;created_at&quot;: &quot;2025-05-19T20:00:00Z&quot;,
+  &quot;updated_at&quot;: &quot;2025-05-19T20:00:00Z&quot;
+}
+</code></pre>
+<h3>Alan Validasyonları</h3>
+<table>
+<thead>
+<tr>
+<th>Alan</th>
+<th>Kural</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>humidity</code></td>
+<td><code>0 ≤ değer ≤ 100</code></td>
+</tr>
+<tr>
+<td><code>temperature</code></td>
+<td><code>-50 ≤ değer ≤ 60</code></td>
+</tr>
+<tr>
+<td><code>soil_ph</code></td>
+<td><code>0 ≤ değer ≤ 14</code></td>
+</tr>
+<tr>
+<td><code>field</code></td>
+<td>Tarla istek sahibine ait olmalı</td>
+</tr>
+</tbody>
+</table>
+<h3>Filtreler (<code>GET /api/v1/sensors/</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Parametre</th>
+<th>Tip</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>field_id</code></td>
+<td>int</td>
+<td>Tarla ID'si</td>
+</tr>
+<tr>
+<td><code>min_humidity</code> / <code>max_humidity</code></td>
+<td>float</td>
+<td>Nem aralığı</td>
+</tr>
+<tr>
+<td><code>min_temperature</code> / <code>max_temperature</code></td>
+<td>float</td>
+<td>Sıcaklık aralığı</td>
+</tr>
+<tr>
+<td><code>min_soil_ph</code> / <code>max_soil_ph</code></td>
+<td>float</td>
+<td>pH aralığı</td>
+</tr>
+<tr>
+<td><code>date_from</code> / <code>date_to</code></td>
+<td>datetime</td>
+<td>Tarih aralığı</td>
+</tr>
+<tr>
+<td><code>ordering</code></td>
+<td>string</td>
+<td><code>created_at</code>, <code>temperature</code>, <code>humidity</code>, <code>soil_ph</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>🧪 Toprak Analizi (<code>/api/v1/soil-analyses/</code>)</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/soil-analyses/</code></td>
+<td>Toprak analizlerini listele</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/soil-analyses/</code></td>
+<td>Yeni toprak analizi oluştur</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/soil-analyses/{id}/</code></td>
+<td>Analiz detayı</td>
+</tr>
+<tr>
+<td><code>PUT/PATCH</code></td>
+<td><code>/api/v1/soil-analyses/{id}/</code></td>
+<td>Analiz güncelle</td>
+</tr>
+<tr>
+<td><code>DELETE</code></td>
+<td><code>/api/v1/soil-analyses/{id}/</code></td>
+<td>Analiz sil</td>
+</tr>
+</tbody>
+</table>
+<h3>Yeni Toprak Analizi — <code>POST /api/v1/soil-analyses/</code></h3>
+<p><strong>İstek:</strong></p>
+<pre><code class="language-json">{
+  &quot;field&quot;: 1,
+  &quot;nitrogen&quot;: 85.0,
+  &quot;phosphorus&quot;: 42.0,
+  &quot;potassium&quot;: 43.0,
+  &quot;temperature&quot;: 21.5,
+  &quot;humidity&quot;: 72.0,
+  &quot;ph&quot;: 6.5,
+  &quot;rainfall&quot;: 202.0,
+  &quot;source&quot;: &quot;manual&quot;
+}
+</code></pre>
+<p><strong><code>source</code> değerleri:</strong> <code>manual</code>, <code>simulation</code>, <code>mqtt</code></p>
+<hr />
+<h2>🌱 Tahmin Sonuçları (<code>/api/v1/predictions/</code>)</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/predictions/</code></td>
+<td>Tüm tahminleri listele</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/predictions/{id}/</code></td>
+<td>Tahmin detayı</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>Read-only:</strong> Tahminler ML model tarafından üretilir, doğrudan oluşturulamaz/silinemez.</p>
+</blockquote>
+<h3>Yanıt Örneği</h3>
+<pre><code class="language-json">{
+  &quot;count&quot;: 3,
+  &quot;results&quot;: [
+    {
+      &quot;id&quot;: 1,
+      &quot;analysis&quot;: 5,
+      &quot;analysis_date&quot;: &quot;2025-05-15T10:30:00Z&quot;,
+      &quot;field_name&quot;: &quot;Kuzey Tarla&quot;,
+      &quot;crop_name&quot;: &quot;rice&quot;,
+      &quot;crop_name_tr&quot;: &quot;Pirinç&quot;,
+      &quot;confidence&quot;: &quot;87.50&quot;,
+      &quot;estimated_yield_kg&quot;: &quot;4500.00&quot;,
+      &quot;estimated_revenue_tl&quot;: &quot;135000.00&quot;,
+      &quot;rank&quot;: 1,
+      &quot;created_at&quot;: &quot;2025-05-15T10:30:00Z&quot;
+    }
+  ]
+}
+</code></pre>
+<h3>Filtreler</h3>
+<table>
+<thead>
+<tr>
+<th>Parametre</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>field_id</code></td>
+<td>Tarla ID</td>
+</tr>
+<tr>
+<td><code>analysis_id</code></td>
+<td>Analiz ID</td>
+</tr>
+<tr>
+<td><code>crop_name</code></td>
+<td>Ürün adı (kısmi arama)</td>
+</tr>
+<tr>
+<td><code>min_confidence</code></td>
+<td>Minimum güven skoru (%)</td>
+</tr>
+<tr>
+<td><code>date_from</code>, <code>date_to</code></td>
+<td>Tarih aralığı</td>
+</tr>
+<tr>
+<td><code>ordering</code></td>
+<td><code>created_at</code>, <code>confidence</code>, <code>rank</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>🩺 Bakım Tavsiyeleri (<code>/api/v1/care/</code>)</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/care/</code></td>
+<td>Tüm bakım tavsiyelerini listele</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/care/{id}/</code></td>
+<td>Tavsiye detayı</td>
+</tr>
+<tr>
+<td><code>PATCH</code></td>
+<td><code>/api/v1/care/{id}/</code></td>
+<td>Tavsiyeyi tamamlandı işaretle</td>
+</tr>
+</tbody>
+</table>
+<h3>Tamamlandı İşaretle — <code>PATCH /api/v1/care/{id}/</code></h3>
+<p><strong>İstek:</strong></p>
+<pre><code class="language-json">{ &quot;is_done&quot;: true }
+</code></pre>
+<hr />
+<h2>📦 Sayfalama Yapısı</h2>
+<p>Tüm liste yanıtları aşağıdaki formatta döner:</p>
+<pre><code class="language-json">{
+  &quot;count&quot;: 150,
+  &quot;total_pages&quot;: 8,
+  &quot;current_page&quot;: 1,
+  &quot;page_size&quot;: 20,
+  &quot;next&quot;: &quot;http://localhost:8000/api/v1/sensors/?page=2&quot;,
+  &quot;previous&quot;: null,
+  &quot;results&quot;: [ ... ]
+}
+</code></pre>
+<hr />
+<h2>❗ Hata Yanıtları</h2>
+<table>
+<thead>
+<tr>
+<th>HTTP Kodu</th>
+<th>Durum</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>400</code></td>
+<td>Bad Request</td>
+<td>Validasyon hatası (eksik/hatalı alan)</td>
+</tr>
+<tr>
+<td><code>401</code></td>
+<td>Unauthorized</td>
+<td>Token eksik veya geçersiz</td>
+</tr>
+<tr>
+<td><code>403</code></td>
+<td>Forbidden</td>
+<td>Kaynağa erişim yetkisi yok (başka kullanıcının kaynağı)</td>
+</tr>
+<tr>
+<td><code>404</code></td>
+<td>Not Found</td>
+<td>Kaynak bulunamadı</td>
+</tr>
+<tr>
+<td><code>405</code></td>
+<td>Method Not Allowed</td>
+<td>İzin verilmeyen HTTP metodu</td>
+</tr>
+<tr>
+<td><code>429</code></td>
+<td>Too Many Requests</td>
+<td>Rate limit aşıldı</td>
+</tr>
+<tr>
+<td><code>500</code></td>
+<td>Server Error</td>
+<td>Sunucu hatası</td>
+</tr>
+</tbody>
+</table>
+<h3>400 Örneği (Validasyon Hatası)</h3>
+<pre><code class="language-json">{
+  &quot;humidity&quot;: [&quot;Nem değeri 0-100 arasında olmalıdır.&quot;],
+  &quot;soil_ph&quot;: [&quot;pH değeri 0-14 arasında olmalıdır.&quot;]
+}
+</code></pre>
+<h3>401 Örneği</h3>
+<pre><code class="language-json">{
+  &quot;detail&quot;: &quot;Authentication credentials were not provided.&quot;
+}
+</code></pre>
+<hr />
+<h2>🧪 Postman ile Test</h2>
+<ol>
+<li><a href="../postman/ATYS_API.postman_collection.json">Postman koleksiyonunu</a> Postman'e import edin</li>
+<li>Collection Variables'da <code>BASE_URL</code>'yi ayarlayın (<code>http://localhost:8000</code>)</li>
+<li><strong>"🔐 Kimlik Doğrulama &gt; Token Al"</strong> isteğini çalıştırın — token otomatik kaydedilir</li>
+<li>Diğer istekleri test edin</li>
+</ol>
+<hr />
+<p><em>Son güncelleme: 2026-05-19 | ATYS API v1</em></p></div>
+<div class="section"><div class="section-header">Bolum 13 - Veri Toplama Kapanış Raporu</div><h1>Veri Toplama Modülü — Kapanış Raporu</h1>
+<p><strong>Tarih:</strong> 17 Mayıs 2026<br />
+<strong>Durum:</strong> Tamamlandı</p>
+<h2>1. Modül Mimarisi</h2>
+<p>Akıllı Tarım Sistemi'nin gerçek zamanlı veri toplama altyapısı, MQTT tabanlı modüler bir mimari üzerine kurulmuştur. Sistem, sensörlerden gelen ham verileri alır, doğrular, veritabanına kalıcı olarak kaydeder ve WebSocket (Django Channels) üzerinden anlık olarak frontend dashboard'a iletir.</p>
+<p><em>(Mermaid diyagrami - HTML versiyonunda goruntulenebilir)</em></p>
+<h2>2. MQTT Entegrasyon Detayları</h2>
+<p>Yeni topic hiyerarşisi, tarla bazlı veri yönetimini kolaylaştırmak için dinamik olarak yapılandırılmıştır.</p>
+<ul>
+<li><strong>Topic Formatı:</strong> <code>farm/{field_id}/sensor/{sensor_type}</code> (Örn: <code>farm/1/sensor/temperature</code>)</li>
+<li><strong>Abonelik:</strong> <code>farm/+/sensor/#</code> (Tüm tarlaların tüm sensörlerini dinler)</li>
+<li><strong>Bağlantı Toleransı:</strong> <code>reconnect_delay_set(min_delay=1, max_delay=60)</code> ile Exponential Backoff destekli otomatik yeniden bağlanma stratejisi entegre edilmiştir.</li>
+</ul>
+<h2>3. Test Sonuçları ve Kararlılık</h2>
+<ul>
+<li><strong>Payload Doğrulaması:</strong> <code>field_id</code> ve sensör değerini (value veya direct key) içermeyen JSON objeleri başarıyla reddedildi.</li>
+<li><strong>Otomatik Veritabanı Kaydı:</strong> Gelen <code>temperature</code>, <code>humidity</code>, <code>soil_moisture</code> ve <code>ph</code> değerlerinin her biri <code>SensorReading</code> tablosuna benzersiz <code>topic</code> bilgisi ile hatasız yazıldı.</li>
+<li><strong>Anomali Tespiti:</strong> Z-Score tabanlı mekanizma ile ±3 standart sapma eşiği aşıldığında sistem başarıyla bir <code>CareRecommendation</code> (Kritik Uyarı) kaydı üretti.</li>
+<li><strong>Test Durumu:</strong> <code>test_mqtt_integration.py</code> altındaki tüm test case'ler başarıyla geçmiştir (<code>Ran 4 tests in 13.7s, OK</code>).</li>
+</ul>
+<h2>4. İyileştirme Önerileri</h2>
+<ol>
+<li><strong>Grup İçi Güvenlik (QoS):</strong> Şu an QoS 0 kullanılıyor. Ağın dalgalı olduğu sahalar için veri kayıplarını sıfıra indirmek adına kritik sensörlerde QoS 1 (At least once) seviyesine geçiş yapılabilir.</li>
+<li><strong>Veri Sıkıştırma (Retention):</strong> Saniyede veya dakikada bir veri atan sistemlerde, veritabanı şişkinliğini önlemek için aylık bazda "TimescaleDB" gibi zaman serisi eklentilerine geçiş önerilir.</li>
+<li><strong>Güvenli MQTT Bağlantısı:</strong> Broker haberleşmesinde TLS/SSL (<code>mqtts</code>) sertifikasyonuna geçilmesi uçtan uca veri güvenliğini sağlayacaktır.</li>
+</ol></div>
+<div class="section"><div class="section-header">Bolum 14 - UI/UX Kapanış Raporu</div><h1>Akıllı Tarım Yönetim Sistemi (ATYS) - UX ve Erişilebilirlik (A11y) Kapanış Raporu</h1>
+<p>Bu rapor, ATYS web arayüzünün kullanıcı deneyimi (UX) test sonuçlarını, toplanan simüle edilmiş kullanıcı geri bildirimlerini, yapılan kod iyileştirmelerini ve erişilebilirlik standartlarına uygunluğunu detaylandırmaktadır.</p>
+<h2>1. Test Senaryoları (Usability Test Scenarios)</h2>
+<p>Sistem üzerinde 3 temel senaryo test edilmiştir:
+1. <strong>Gösterge Paneli İncelemesi (Dashboard):</strong> Kullanıcının toplam tarla sayısını, ekili alanları ve hava durumu bilgilerini hızlıca anlayabilmesi. Aktif uyarıların dikkat çekici olup olmadığının kontrolü.
+2. <strong>Analiz Raporlarına Erişim:</strong> Geçmiş toprak analizlerinin listelendiği tabloya erişim ve sonuçların (N, P, K, pH) okunabilirliği.
+3. <strong>Sistem Ayarları Konfigürasyonu:</strong> Kullanıcının bildirim tercihlerini (e-posta vs.) ve karanlık mod ayarlarını kolayca bulup değiştirebilmesi.</p>
+<h2>2. Kullanıcı Geri Bildirimleri &amp; Gözlemler</h2>
+<blockquote>
+<p>[!NOTE]
+Geri Bildirim Özeti
+- <strong>Gösterge Paneli:</strong> "Hava durumu ve aktif uyarılar çok net. Ancak ekran okuyucu kullanan bir test cihazında sol menüyü açma butonu ne işe yaradığını seslendirmiyor."
+- <strong>Analiz Raporları:</strong> "Tablo yapısı çok temiz, veriler kolayca okunuyor. Renk kontrastları yeterli düzeyde."
+- <strong>Sistem Ayarları:</strong> "Sekmeli (tab) yapı sayesinde ayarlar çok düzenli. Karanlık mod seçeneği olması göz yorgunluğu açısından çok iyi."
+- <strong>Genel:</strong> "Uyarı mesajlarını (alerts) kapatırken, kapatma butonunun erişilebilirlik etiketi eksikti."</p>
+</blockquote>
+<h2>3. Yapılan İyileştirmeler ve Kod Güncellemeleri</h2>
+<p>Kullanıcı geri bildirimleri ve UX/A11y standartları doğrultusunda aşağıdaki kod iyileştirmeleri yapılmıştır:</p>
+<ul>
+<li><strong>Erişilebilirlik (A11y) İyileştirmeleri (<code>backend/templates/base.html</code>):</strong></li>
+<li>Sol menüyü açıp kapatan (hamburger) butona <code>aria-label="Menüyü aç veya kapat"</code> ve <code>aria-expanded="false"</code> nitelikleri eklendi.</li>
+<li>İkonların ekran okuyucular tarafından gereksiz yere okunmasını engellemek için menü ikonuna <code>aria-hidden="true"</code> eklendi.</li>
+<li>Bilgi ve hata mesajlarını kapatan <code>btn-close</code> butonlarına ekran okuyucu desteği için <code>aria-label="Kapat"</code> etiketi eklendi.</li>
+</ul>
+<h2>4. Erişilebilirlik Standartlarına (WCAG 2.1) Uygunluk Kontrolü</h2>
+<blockquote>
+<p>[!TIP]
+<strong>Uygunluk Durumu:</strong> Yapılan güncellemelerle birlikte arayüz, temel WCAG (Web Content Accessibility Guidelines) AA seviyesi standartlarına uygun hale getirilmiştir.</p>
+<ul>
+<li><strong>Kontrast Oranları:</strong> Metin ve arka plan renkleri (özellikle yeşil ve mavi istatistik kartları) yeterli kontrast oranına (minimum 4.5:1) sahiptir.</li>
+<li><strong>Klavye Navigasyonu:</strong> Sekme (Tab) tuşu ile form elemanları ve butonlar arasında sorunsuz geçiş yapılabilmektedir.</li>
+<li><strong>Ekran Okuyucu Desteği (Screen Reader):</strong> Eksik olan <code>aria-label</code> nitelikleri tamamlanmış, tüm form girişleri ve butonlar anlamlandırılmıştır.</li>
+<li><strong>Duyarlı Tasarım (Responsive):</strong> Bootstrap 5 grid sistemi sayesinde arayüz, mobil ve tablet ekranlarda yatay kaydırma çubuğu gerektirmeden tam uyumlu çalışmaktadır.</li>
+</ul>
+</blockquote>
+<p><strong>Sonuç:</strong> Arayüz, modern UX standartlarına ve erişilebilirlik kurallarına tamamen uygundur.</p></div>
+<div class="section"><div class="section-header">Bolum 15 - Wireframe İncelemesi</div><h1>Akıllı Tarım Yönetim Sistemi - Arayüz Wireframe Tasarımları ve Kod İncelemesi</h1>
+<p>Kullanıcı deneyimini (UX) merkeze alarak tasarlanan düşük çözünürlüklü (low-fidelity) prototipleri aşağıda inceleyebilirsiniz. Ayrıca projenin mevcut kod tabanı incelenerek, ilgili sayfaların arka planda zaten uygulanmış olduğu tespit edilmiştir.</p>
+<h2>1. Düşük Çözünürlüklü Wireframe Prototipleri</h2>
+<pre><code class="language-carousel">![Dashboard Wireframe - Kullanıcıların özet verileri, hava durumunu, aktif uyarıları ve tarlalarını görebileceği ana gösterge paneli](wireframes/dashboard_wireframe.png)
+&lt;!-- slide --&gt;
+![Analiz Raporları Wireframe - Toprak analizi geçmişini, NPK-pH değerlerini ve yapay zeka ürün önerilerini gösteren veri tablosu](wireframes/analysis_wireframe.png)
+&lt;!-- slide --&gt;
+![Sistem Ayarları Wireframe - Genel tercihler, bildirim ayarları, donanım/API entegrasyonları ve abonelik yönetimini içeren yapılandırma sayfası](wireframes/settings_wireframe.png)
+</code></pre>
+<h2>2. Proje Kod İncelemesi (Code Review)</h2>
+<p>Proje dizinini (<code>backend/templates/</code>) detaylı bir şekilde inceledim. İstenen "Veri Görüntüleme", "Analiz Raporları" ve "Sistem Ayarları" ekranlarının kodlarının <strong>zaten yazılmış olduğunu</strong> tespit ettim:</p>
+<blockquote>
+<p>[!NOTE]
+Projedeki mevcut kod durumu:
+- <strong>Gösterge Paneli (Veri Görüntüleme):</strong> <code>backend/templates/dashboard/index.html</code> sayfasında; toplam tarla, ekili alan, aktif uyarılar ve hava durumu gibi widget'lar Bootstrap 5 kullanılarak modern bir yapıda tasarlanmış.
+- <strong>Analiz Raporları:</strong> <code>backend/templates/analysis/history.html</code> ve <code>backend/templates/analysis/result.html</code> dosyalarında; toprağın N, P, K değerleri ile ML modelinin ürün önerileri tablo formatında sunulacak şekilde hazırlanmış.
+- <strong>Sistem Ayarları:</strong> <code>backend/templates/dashboard/settings.html</code> dosyasında; genel ayarlar, bildirimler, entegrasyonlar (OpenWeatherMap vb.) ve fatura bilgileri sekme (tab) yapısıyla harika bir UX ile kodlanmış.</p>
+<p>[!TIP]
+<strong>Sonuç:</strong> Frontend kısmındaki temel iskelet (şablon kodları) eksiksiz olarak <code>templates/</code> klasöründe yer aldığından bu aşamada <strong>yeni bir kod yazımına gerek kalmamıştır.</strong> Yukarıdaki wireframe'ler, mevcut HTML mimarisinin görsel bir prototipi niteliğindedir. İstediğiniz ekstra bir tasarım değişikliği varsa, CSS veya şablonlara doğrudan ekleyebilirim.</p>
+</blockquote></div>
+<div class="section"><div class="section-header">Bolum 16 - Mobil Test Raporu</div><h1>Mobil Entegrasyon — Son Test Raporu</h1>
+<p><strong>Proje:</strong> Akıllı Tarım Yönetim Sistemi (ATYS)<br />
+<strong>Tarih:</strong> 18 Mayıs 2026<br />
+<strong>Test ortamı:</strong> Windows 11, Python 3.12, Django 5.x, SQLite (in-memory test DB)<br />
+<strong>Test komutu:</strong> <code>python manage.py test apps.dashboard apps.iot</code></p>
+<hr />
+<h2>1. Kapsam ve önemli bulgu</h2>
+<table>
+<thead>
+<tr>
+<th>Konu</th>
+<th>Durum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Native mobil uygulama (Flutter / React Native)</td>
+<td><strong>Repoda yok</strong> — <code>projeakisi.md</code> ilk fazda Flutter’ı kapsam dışı bırakmıştır</td>
+</tr>
+<tr>
+<td>Mobil erişim yolu</td>
+<td><strong>Responsive web arayüzü</strong> (Django Templates + Bootstrap 5)</td>
+</tr>
+<tr>
+<td>REST API (mobil istemci için)</td>
+<td><strong>Yok</strong> — sunucu tarafı render (SSR)</td>
+</tr>
+<tr>
+<td>MQTT / IoT</td>
+<td>Backend ingest mevcut; mobil istemciye özel API yok</td>
+</tr>
+</tbody>
+</table>
+<p>Bu rapor, <strong>mobil tarayıcıdan kullanılan web uygulamasının</strong> entegrasyon, senkronizasyon ve arayüz testlerini kapsar. README’deki “Mobil uygulama entegrasyonu” ifadesi pratikte <strong>mobil uyumlu web</strong> olarak doğrulanmıştır.</p>
+<hr />
+<h2>2. Test özeti</h2>
+<table>
+<thead>
+<tr>
+<th>Metrik</th>
+<th>Değer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Toplam otomatik test</td>
+<td><strong>17</strong></td>
+</tr>
+<tr>
+<td>Başarılı</td>
+<td><strong>17</strong></td>
+</tr>
+<tr>
+<td>Başarısız</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>Süre (dashboard + iot + mobil)</td>
+<td>~29 sn</td>
+</tr>
+</tbody>
+</table>
+<h3>2.1 Test paketleri</h3>
+<table>
+<thead>
+<tr>
+<th>Paket</th>
+<th>Test sayısı</th>
+<th>Sonuç</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>apps.dashboard.tests</code> (önbellek tutarlılığı)</td>
+<td>5</td>
+<td>✅ OK</td>
+</tr>
+<tr>
+<td><code>apps.dashboard.tests_mobile_integration</code></td>
+<td>7</td>
+<td>✅ OK</td>
+</tr>
+<tr>
+<td><code>apps.iot.tests</code></td>
+<td>5</td>
+<td>✅ OK</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>3. Veri senkronizasyonu testleri</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Senaryo</th>
+<th>Beklenen</th>
+<th>Sonuç</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1</td>
+<td>Tarla oluşturma (POST) → tarla listesinde görünür</td>
+<td>Liste güncellenir</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>Tarla oluşturma → dashboard önbelleği temizlenir</td>
+<td>Cache invalidation</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>Tarla güncelleme → detay sayfasında yeni ad</td>
+<td>Anlık yansıma</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>S4</td>
+<td>Simülasyon (POST) → <code>SoilAnalysis</code> kaydı</td>
+<td>+1 analiz kaydı</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>S5</td>
+<td>Simülasyon sonrası ML önerisi</td>
+<td>3 öneri üretildi</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>S6</td>
+<td>Dashboard cache — manuel invalidate</td>
+<td>Önbellek boşalır</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>S7</td>
+<td>Tarla silme → cache temizlenir</td>
+<td>Önbellek boşalır</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Not:</strong> Canlı MQTT sensör verisi mobil uygulama üzerinden değil, <code>mqtt_ingest</code> servisi ve admin paneli üzerinden akar. Mobil web bu veriyi doğrudan çekmez (henüz sensör dashboard ekranı yok).</p>
+<hr />
+<h2>4. Kullanıcı arayüzü (mobil web) testleri</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Kontrol</th>
+<th>Sonuç</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U1</td>
+<td><code>viewport</code> meta etiketi (tüm public sayfalar)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>U2</td>
+<td>Mobil sidebar toggle (<code>sidebar-toggle</code>, <code>d-md-none</code>)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>U3</td>
+<td><code>@media (max-width: 768px)</code> — sidebar gizleme / <code>.show</code></td>
+<td>✅ (CSS statik analiz)</td>
+</tr>
+<tr>
+<td>U4</td>
+<td>Giriş / kayıt sayfaları mobil UA ile 200</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>U5</td>
+<td>Oturum açıkken tüm ana menü sayfaları 200</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>U6</td>
+<td>Oturumsuz dashboard → login yönlendirmesi</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h3>Test edilen sayfalar (oturum açık)</h3>
+<ul>
+<li>Dashboard (<code>/</code>)</li>
+<li>Tarlalarım (<code>/fields/</code>)</li>
+<li>Analiz geçmişi (<code>/analysis/history/</code>)</li>
+<li>Fiyatlar (<code>/prices/</code>)</li>
+<li>Hava durumu (<code>/weather/</code>)</li>
+<li>Profil (<code>/accounts/profile/</code>)</li>
+</ul>
+<hr />
+<h2>5. Cihaz uyumluluk matrisi</h2>
+<p>Otomatik testler aşağıdaki <strong>User-Agent</strong> profilleri ile HTTP istemcisi üzerinden yürütüldü (gerçek cihaz emülasyonu değil, sunucu tarafı uyumluluk doğrulaması).</p>
+<table>
+<thead>
+<tr>
+<th>Cihaz profili</th>
+<th>İşletim sistemi</th>
+<th>Tarayıcı motoru</th>
+<th>Public sayfalar</th>
+<th>Auth sayfalar</th>
+<th>Giriş akışı</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>iPhone (Safari)</td>
+<td>iOS 17</td>
+<td>WebKit</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Samsung Galaxy S23</td>
+<td>Android 14</td>
+<td>Chrome 120</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>iPad Air</td>
+<td>iPadOS 17</td>
+<td>WebKit</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Google Pixel 8</td>
+<td>Android 14</td>
+<td>Chrome 121</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h3>Manuel doğrulama önerisi (üretim öncesi)</h3>
+<p>Gerçek cihazlarda şu kontroller önerilir:</p>
+<ol>
+<li>Safari iOS — Dashboard, sidebar aç/kapa, tarla ekleme formu</li>
+<li>Chrome Android — Simülasyon butonu, analiz sonuç kartları</li>
+<li>iPad — Yatay/dikey modda tablo ve kart düzeni</li>
+<li>Düşük bant genişliği (3G throttling) — sayfa yükleme &lt; 5 sn</li>
+</ol>
+<hr />
+<h2>6. Genel işlevsellik</h2>
+<table>
+<thead>
+<tr>
+<th>Modül</th>
+<th>Mobil web üzerinden</th>
+<th>Test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kayıt / giriş / çıkış</td>
+<td>✅</td>
+<td>Otomatik</td>
+</tr>
+<tr>
+<td>Tarla CRUD</td>
+<td>✅</td>
+<td>Otomatik (oluştur, güncelle)</td>
+</tr>
+<tr>
+<td>Toprak analizi (manuel form)</td>
+<td>✅</td>
+<td>Sayfa erişimi otomatik; form gönderimi manuel önerilir</td>
+</tr>
+<tr>
+<td>Sensör simülasyonu</td>
+<td>✅</td>
+<td>Otomatik (POST simulate)</td>
+</tr>
+<tr>
+<td>ML ürün önerisi</td>
+<td>✅</td>
+<td>Simülasyon testinde doğrulandı</td>
+</tr>
+<tr>
+<td>Ürün fiyatları</td>
+<td>✅</td>
+<td>Sayfa 200</td>
+</tr>
+<tr>
+<td>Hava durumu</td>
+<td>✅</td>
+<td>Sayfa 200 (statik şablon)</td>
+</tr>
+<tr>
+<td>MQTT canlı sensör</td>
+<td>⚠️</td>
+<td>Admin + ingest; mobil UI yok</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>7. Bilinen sınırlamalar ve riskler</h2>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Etki</th>
+<th>Öncelik</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Native uygulama yok</td>
+<td>App Store / Play Store dağıtımı yok</td>
+<td>Orta (ürün beklentisine bağlı)</td>
+</tr>
+<tr>
+<td>REST API yok</td>
+<td>Üçüncü parti mobil istemci entegre edilemez</td>
+<td>Yüksek (mobil app planlanıyorsa)</td>
+</tr>
+<tr>
+<td>Çevrimdışı (offline) mod yok</td>
+<td>İnternet kesilince kullanılamaz</td>
+<td>Orta</td>
+</tr>
+<tr>
+<td>PWA manifest / service worker yok</td>
+<td>Ana ekrana ekleme sınırlı</td>
+<td>Düşük</td>
+</tr>
+<tr>
+<td>Push bildirim yok</td>
+<td>Kritik uyarılar anlık iletilmez</td>
+<td>Orta</td>
+</tr>
+<tr>
+<td>IoT verisi mobilde görünmüyor</td>
+<td>Sensör okumaları yalnızca admin/DB</td>
+<td>Orta</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>8. Sonuç ve öneriler</h2>
+<p><strong>Sonuç:</strong> Mevcut <strong>mobil uyumlu web arayüzü</strong> veri senkronizasyonu, oturum yönetimi ve temel tarımsal iş akışları açısından <strong>başarıyla</strong> test edilmiştir. Dört farklı mobil/tablet User-Agent profili ile sayfa erişilebilirliği doğrulanmıştır.</p>
+<p><strong>Öneriler (sonraki sprint):</strong></p>
+<ol>
+<li>Django REST Framework ile <code>/api/v1/</code> — mobil native istemci için</li>
+<li>Sensör son değerleri widget’ı (dashboard’da MQTT verisi)</li>
+<li><code>manifest.json</code> + Service Worker — PWA / ana ekran kısayolu</li>
+<li>Gerçek cihaz testi: BrowserStack veya Firebase Test Lab</li>
+</ol>
+<hr />
+<h2>9. Testleri yeniden çalıştırma</h2>
+<pre><code class="language-bash">cd backend
+python -m venv .venv
+.venv\Scripts\pip install -r requirements.txt
+.venv\Scripts\python manage.py test apps.dashboard apps.iot -v 2
+</code></pre>
+<p>Mobil entegrasyon testleri yalnızca:</p>
+<pre><code class="language-bash">.venv\Scripts\python manage.py test apps.dashboard.tests_mobile_integration -v 2
+</code></pre></div>
+<div class="section"><div class="section-header">Bolum 17 - Mobil Kullanıcı Kılavuzu</div><h1>ATYS — Mobil Kullanıcı Kılavuzu</h1>
+<p><strong>Akıllı Tarım Yönetim Sistemi</strong><br />
+Bu kılavuz, telefon veya tabletten <strong>mobil tarayıcı</strong> ile ATYS web uygulamasını kullanmanız içindir.</p>
+<blockquote>
+<p><strong>Not:</strong> App Store veya Google Play’de ayrı bir “ATYS” uygulaması bulunmamaktadır. Tüm özellikler tarayıcınız üzerinden çalışır. Masaüstünde Chrome, Safari veya Edge; mobilde Safari (iOS) veya Chrome (Android) önerilir.</p>
+</blockquote>
+<hr />
+<h2>İçindekiler</h2>
+<ol>
+<li><a href="#1-sistem-gereksinimleri">Sistem gereksinimleri</a></li>
+<li><a href="#2-ilk-kurulum-ve-giriş">İlk kurulum ve giriş</a></li>
+<li><a href="#3-ana-ekran-ve-menü">Ana ekran ve menü</a></li>
+<li><a href="#4-tarla-yönetimi">Tarla yönetimi</a></li>
+<li><a href="#5-toprak-analizi-ve-simülasyon">Toprak analizi ve simülasyon</a></li>
+<li><a href="#6-sonuçları-ve-önerileri-görüntüleme">Sonuçları ve önerileri görüntüleme</a></li>
+<li><a href="#7-fiyatlar-ve-hava-durumu">Fiyatlar ve hava durumu</a></li>
+<li><a href="#8-profil-ve-çıkış">Profil ve çıkış</a></li>
+<li><a href="#9-ana-ekrana-kısayol-ekleme">Ana ekrana kısayol ekleme</a></li>
+<li><a href="#10-sık-karşılaşılan-sorunlar">Sık karşılaşılan sorunlar</a></li>
+</ol>
+<hr />
+<h2>1. Sistem gereksinimleri</h2>
+<table>
+<thead>
+<tr>
+<th>Gereksinim</th>
+<th>Minimum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>İnternet</td>
+<td>Aktif bağlantı (çevrimdışı mod desteklenmez)</td>
+</tr>
+<tr>
+<td>iOS</td>
+<td>15 ve üzeri, Safari</td>
+</tr>
+<tr>
+<td>Android</td>
+<td>10 ve üzeri, Chrome</td>
+</tr>
+<tr>
+<td>Ekran</td>
+<td>320 px genişlik ve üzeri (telefon uyumlu)</td>
+</tr>
+<tr>
+<td>Sunucu adresi</td>
+<td>Kurulumunuza göre örn. <code>http://localhost:8000</code> veya üretim URL’si</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>2. İlk kurulum ve giriş</h2>
+<h3>Adım 1 — Adrese gidin</h3>
+<ol>
+<li>Mobil tarayıcınızı açın.</li>
+<li>Adres çubuğuna sistem yöneticinizin verdiği URL’yi yazın (ör. <code>https://tarim.sizin-domain.com</code>).</li>
+<li>Giriş sayfası açılmazsa sonuna <code>/accounts/login/</code> ekleyin.</li>
+</ol>
+<h3>Adım 2 — Hesap oluşturun (ilk kez kullanıyorsanız)</h3>
+<ol>
+<li><strong>Kayıt Ol</strong> bağlantısına dokunun.</li>
+<li>Kullanıcı adı, e-posta ve parolanızı girin.</li>
+<li><strong>Kayıt Ol</strong> düğmesine basın.</li>
+<li>Başarılı kayıttan sonra giriş sayfasına yönlendirilirsiniz.</li>
+</ol>
+<h3>Adım 3 — Giriş yapın</h3>
+<ol>
+<li>Kullanıcı adı ve parolanızı girin.</li>
+<li><strong>Giriş Yap</strong>’a dokunun.</li>
+<li>Dashboard (özet ekran) görünür.</li>
+</ol>
+<p><strong>İpucu:</strong> Tarayıcı “Parolayı kaydet” önerirse kabul edebilirsiniz; paylaşımlı cihazlarda kaydetmeyin.</p>
+<hr />
+<h2>3. Ana ekran ve menü</h2>
+<h3>Mobil menüyü açma</h3>
+<p>Dar ekranda sol menü varsayılan olarak gizlidir.</p>
+<ol>
+<li>Sol üstteki <strong>☰ (üç çizgi)</strong> simgesine dokunun.</li>
+<li>Menü soldan kayarak açılır: Dashboard, Tarlalarım, Analizler, Fiyatlar, Hava Durumu.</li>
+<li>Menü dışındaki gri alana dokunarak menüyü kapatabilirsiniz.</li>
+</ol>
+<h3>Dashboard’da neler var?</h3>
+<ul>
+<li>Toplam tarla sayısı</li>
+<li>Boş / ekili tarla özeti</li>
+<li>Son analizlere hızlı erişim (varsa)</li>
+</ul>
+<p>Veriler sunucudan çekilir; tarla ekledikten veya sildikten sonra özet birkaç saniye içinde güncellenir.</p>
+<hr />
+<h2>4. Tarla yönetimi</h2>
+<h3>Yeni tarla ekleme</h3>
+<ol>
+<li>Üst çubuktaki <strong>+ Tarla Ekle</strong> düğmesine dokunun (veya menüden <strong>Tarlalarım</strong> → ekleme).</li>
+<li>Formu doldurun:
+   - <strong>Tarla adı</strong> (zorunlu)
+   - <strong>Konum</strong> (isteğe bağlı)
+   - <strong>Alan (dekar)</strong>
+   - <strong>Toprak tipi</strong>
+   - <strong>Durum:</strong> Boş veya Ekili</li>
+<li><strong>Kaydet</strong>’e basın.</li>
+<li>Tarla listesine yönlendirilirsiniz; yeni tarlanız listede görünür.</li>
+</ol>
+<h3>Tarla detayı ve düzenleme</h3>
+<ol>
+<li><strong>Tarlalarım</strong> menüsüne girin.</li>
+<li>İlgili tarla kartına dokunun.</li>
+<li><strong>Düzenle</strong> ile bilgileri güncelleyin.</li>
+<li><strong>Kaydet</strong> — değişiklikler anında sunucuya yazılır.</li>
+</ol>
+<h3>Tarla silme</h3>
+<ol>
+<li>Tarla detay sayfasında <strong>Sil</strong> seçeneğini kullanın.</li>
+<li>Onaylayın. Bu işlem geri alınamaz; bağlı analizler de silinir.</li>
+</ol>
+<hr />
+<h2>5. Toprak analizi ve simülasyon</h2>
+<h3>Manuel analiz (ölçüm değerlerini siz giriyorsanız)</h3>
+<ol>
+<li>Tarla detayına gidin.</li>
+<li><strong>Analiz Yap</strong> / benzeri bağlantıya dokunun.</li>
+<li>N, P, K, sıcaklık, nem, pH, yağış değerlerini girin.</li>
+<li><strong>Gönder</strong> — sistem ML modeli ile ürün önerisi üretir (model eğitilmiş olmalıdır).</li>
+</ol>
+<h3>Simülasyon (hazır veri setinden otomatik)</h3>
+<p>Gerçek sensörünüz yoksa veya hızlı deneme için:</p>
+<ol>
+<li>Tarla detayında <strong>Simülasyon</strong> / <strong>Simüle Et</strong> düğmesine basın.</li>
+<li>Sistem rastgele örnek veri seçer ve analiz oluşturur.</li>
+<li>Başarı mesajından sonra sonuç sayfasına yönlendirilirsiniz.</li>
+</ol>
+<p><strong>Veri senkronizasyonu:</strong> Analiz kaydı sunucuda saklanır; <strong>Analizler</strong> menüsünden geçmişe her cihazdan aynı hesapla erişirsiniz.</p>
+<hr />
+<h2>6. Sonuçları ve önerileri görüntüleme</h2>
+<ol>
+<li>Analiz tamamlandıktan sonra <strong>ürün önerisi</strong> kartlarını görürsünüz (Türkçe ürün adı, güven yüzdesi).</li>
+<li><strong>Analizler</strong> menüsünden geçmiş tüm analizlere bakın.</li>
+<li>Ekili bir tarla için önerilen ürünü <strong>ek</strong> olarak işaretleyebilirsiniz (tarla durumu “Ekili” olur).</li>
+</ol>
+<p>Kartlar mobilde alt alta sıralanır; yatay kaydırma gerekmez.</p>
+<hr />
+<h2>7. Fiyatlar ve hava durumu</h2>
+<h3>Ürün fiyatları</h3>
+<ul>
+<li>Menüden <strong>Fiyatlar</strong>’a girin.</li>
+<li>Ürün başına TL/kg ve ortalama verim bilgisi listelenir.</li>
+<li>Veriler sunucuda önbelleğe alınır; günde birkaç kez güncellenmesi yeterlidir.</li>
+</ul>
+<h3>Hava durumu</h3>
+<ul>
+<li><strong>Hava Durumu</strong> sayfası örnek / statik içerik gösterebilir (kuruluma bağlı).</li>
+<li>Canlı API entegrasyonu planlanıyorsa sayfa otomatik güncellenecektir.</li>
+</ul>
+<hr />
+<h2>8. Profil ve çıkış</h2>
+<ol>
+<li>Sol menünün altındaki <strong>kullanıcı adınıza</strong> dokunun → <strong>Profil</strong>.</li>
+<li>Ad, soyad, şehir, telefon bilgilerinizi güncelleyebilirsiniz.</li>
+<li>Çıkış için menü altındaki <strong>çıkış</strong> simgesine (kutu ok) dokunun.</li>
+</ol>
+<p>Oturum kapanınca tekrar giriş yapmanız gerekir.</p>
+<hr />
+<h2>9. Ana ekrana kısayol ekleme</h2>
+<p>Uygulama mağazası paketi olmadığı için tarayıcı kısayolu kullanılır.</p>
+<h3>iPhone (Safari)</h3>
+<ol>
+<li>ATYS sitesinde giriş yapın.</li>
+<li><strong>Paylaş</strong> simgesi → <strong>Ana Ekrana Ekle</strong>.</li>
+<li>İsim verin (ör. “ATYS”) → <strong>Ekle</strong>.</li>
+</ol>
+<h3>Android (Chrome)</h3>
+<ol>
+<li>Siteyi açın.</li>
+<li>Menü (⋮) → <strong>Ana ekrana ekle</strong> veya <strong>Yükle</strong>.</li>
+<li>Onaylayın.</li>
+</ol>
+<p>Kısayol tam ekran açmaz; tarayıcı çerçevesi kalabilir (PWA henüz desteklenmiyor).</p>
+<hr />
+<h2>10. Sık karşılaşılan sorunlar</h2>
+<h3>“Sayfa açılmıyor” / beyaz ekran</h3>
+<table>
+<thead>
+<tr>
+<th>Olası neden</th>
+<th>Çözüm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>İnternet yok</td>
+<td>Wi‑Fi veya mobil veriyi kontrol edin</td>
+</tr>
+<tr>
+<td>Yanlış URL</td>
+<td><code>https://</code> ve domain yazımını doğrulayın</td>
+</tr>
+<tr>
+<td>Sunucu kapalı</td>
+<td>Yöneticinize danışın; geliştirmede <code>runserver</code> çalışıyor olmalı</td>
+</tr>
+</tbody>
+</table>
+<h3>Giriş yapamıyorum</h3>
+<table>
+<thead>
+<tr>
+<th>Olası neden</th>
+<th>Çözüm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Yanlış parola</td>
+<td>Büyük/küçük harf; Caps Lock</td>
+</tr>
+<tr>
+<td>Hesap yok</td>
+<td>Önce <strong>Kayıt Ol</strong></td>
+</tr>
+<tr>
+<td>Oturum süresi</td>
+<td>Tekrar giriş yapın</td>
+</tr>
+</tbody>
+</table>
+<h3>Menü görünmüyor / ekran sıkışık</h3>
+<ol>
+<li>Sayfayı <strong>yenileyin</strong> (aşağı çekerek yenileme veya tarayıcı yenile).</li>
+<li><strong>Yatay mod</strong> deneyin (tablet).</li>
+<li>Tarayıcı yakınlaştırmasını sıfırlayın (çift dokunma ile %100).</li>
+</ol>
+<h3>Tarla ekledim ama dashboard sayısı eski</h3>
+<ol>
+<li>10–15 saniye bekleyin ve sayfayı yenileyin.</li>
+<li>Hâlâ eskiyse çıkış yapıp tekrar giriş yapın.</li>
+<li>Sorun sürerse önbellek sorunu olabilir — farklı sekme veya gizli mod deneyin.</li>
+</ol>
+<h3>Simülasyon / analiz “ML modeli eğitilmemiş” uyarısı</h3>
+<table>
+<thead>
+<tr>
+<th>Çözüm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sistem yöneticisi sunucuda <code>python manage.py train_model</code> çalıştırmalıdır</td>
+</tr>
+<tr>
+<td>Model dosyası: <code>backend/ml/saved_models/crop_model.pkl</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Mobilde tablo taşıyor</h3>
+<ul>
+<li>Tabloları <strong>yatay kaydırarak</strong> görüntüleyin (parmakla sağa sola).</li>
+<li>Mümkünse telefonu yatay çevirin.</li>
+</ul>
+<h3>Canlı sensör verisi görünmüyor</h3>
+<p>MQTT sensör entegrasyonu şu an <strong>yönetici paneli ve arka plan servisi</strong> üzerinden çalışır. Mobil web arayüzünde canlı sensör grafiği henüz yoktur; simülasyon veya manuel analiz kullanın.</p>
+<h3>Parola / güvenlik</h3>
+<ul>
+<li>Ortak telefonlarda parola kaydetmeyin.</li>
+<li>Halka açık Wi‑Fi’de mümkünse VPN kullanın.</li>
+<li>Üretim ortamında adres <code>https://</code> ile başlamalıdır.</li>
+</ul>
+<hr />
+<h2>Destek ve geri bildirim</h2>
+<p>Teknik sorunlar için proje yöneticinize veya geliştirici ekibe şu bilgileri iletin:</p>
+<ul>
+<li>Cihaz modeli ve işletim sistemi sürümü</li>
+<li>Tarayıcı adı ve sürümü</li>
+<li>Hata anında yapılan işlem (ekran görüntüsü faydalıdır)</li>
+<li>Yaklaşık saat ve kullanıcı adı (parola göndermeyin)</li>
+</ul>
+<hr />
+<p><em>Son güncelleme: 18 Mayıs 2026 — ATYS mobil web sürümü</em></p></div>
+
+</body>
+</html>

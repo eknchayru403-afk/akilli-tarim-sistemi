@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Sistem Ayarları{% endblock %}
+{% block page_title %}Sistem Ayarları{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-3 mb-4">
+        <div class="list-group">
+            <a href="#general" class="list-group-item list-group-item-action active" data-bs-toggle="list">Genel Ayarlar</a>
+            <a href="#notifications" class="list-group-item list-group-item-action" data-bs-toggle="list">Bildirim Tercihleri</a>
+            <a href="#integrations" class="list-group-item list-group-item-action" data-bs-toggle="list">Entegrasyonlar</a>
+            <a href="#billing" class="list-group-item list-group-item-action" data-bs-toggle="list">Abonelik & Fatura</a>
+        </div>
+    </div>
+    
+    <div class="col-lg-9">
+        <div class="tab-content">
+            <!-- Genel Ayarlar -->
+            <div class="tab-pane fade show active" id="general">
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        <i class="bi bi-gear-fill me-2"></i>Genel Sistem Ayarları
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Varsayılan Dil</label>
+                                <select class="form-select">
+                                    <option value="tr" selected>Türkçe</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Ölçü Birimleri</label>
+                                <select class="form-select">
+                                    <option value="metric" selected>Metrik (°C, Hektar, kg)</option>
+                                    <option value="imperial">Emperyal (°F, Acre, lb)</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Saat Dilimi</label>
+                                <select class="form-select">
+                                    <option value="Europe/Istanbul" selected>Europe/Istanbul (UTC+3)</option>
+                                </select>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="darkModeSwitch">
+                                <label class="form-check-label" for="darkModeSwitch">Karanlık Mod (Dark Mode)</label>
+                            </div>
+                            <button type="button" class="btn btn-primary"><i class="bi bi-save me-1"></i> Kaydet</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bildirimler -->
+            <div class="tab-pane fade" id="notifications">
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        <i class="bi bi-bell-fill me-2"></i>Bildirim Tercihleri
+                    </div>
+                    <div class="card-body">
+                        <h6 class="fw-semibold">Uygulama İçi Bildirimler</h6>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="notifAlerts" checked>
+                            <label class="form-check-label" for="notifAlerts">Kritik Sensör Uyarıları</label>
+                        </div>
+                        <div class="form-check form-switch mb-4">
+                            <input class="form-check-input" type="checkbox" id="notifWeather" checked>
+                            <label class="form-check-label" for="notifWeather">Aşırı Hava Olayları</label>
+                        </div>
+
+                        <h6 class="fw-semibold">E-Posta Bildirimleri</h6>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="emailReports" checked>
+                            <label class="form-check-label" for="emailReports">Haftalık Analiz Raporları</label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="emailMarketing">
+                            <label class="form-check-label" for="emailMarketing">Yenilikler ve Duyurular</label>
+                        </div>
+                        <button type="button" class="btn btn-primary"><i class="bi bi-save me-1"></i> Kaydet</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Entegrasyonlar -->
+            <div class="tab-pane fade" id="integrations">
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        <i class="bi bi-plug-fill me-2"></i>Donanım & API Entegrasyonları
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3 p-3 border rounded">
+                            <div>
+                                <h6 class="mb-1"><i class="bi bi-router me-2 text-primary"></i>ATYS Sensör İstasyonu</h6>
+                                <p class="text-muted mb-0 small">Tarlanızdaki fiziksel sensör istasyonlarını bağlayın.</p>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary">Yapılandır</button>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3 p-3 border rounded">
+                            <div>
+                                <h6 class="mb-1"><i class="bi bi-cloud-drizzle me-2 text-info"></i>OpenWeatherMap API</h6>
+                                <p class="text-muted mb-0 small">Hassas meteoroloji verileri için kendi API anahtarınızı girin.</p>
+                            </div>
+                            <span class="badge bg-success">Bağlı</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fatura -->
+            <div class="tab-pane fade" id="billing">
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        <i class="bi bi-credit-card-2-front-fill me-2"></i>Abonelik & Fatura
+                    </div>
+                    <div class="card-body text-center py-5">
+                        <i class="bi bi-award text-warning" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3">ATYS Pro Plan</h5>
+                        <p class="text-muted">Aktif (Yenilenme tarihi: 12.06.2026)</p>
+                        <button class="btn btn-outline-secondary">Planı Değiştir</button>
+                        <button class="btn btn-outline-danger">İptal Et</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
